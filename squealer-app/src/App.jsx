@@ -15,6 +15,3 @@ function App() {
 }
 
 export default App;
-
-
-//branch navbar
