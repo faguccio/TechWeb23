@@ -1,15 +1,36 @@
-const express = require("express");
-const mongoose = require("mongoose");
+import * as Const from "./const.js";
 
+import express from "express";
+import mongoose from "mongoose";
+
+//constants
 const app = express();
-const port = 3000;
+const port = Const.SERVER_PORT;
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+// App initialization
+app.use(express.json());
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Server listening on port ${port}`);
+});
+
+app.get("/sium", (req, res) => {
+  res.status(201).send({
+    sium: "ciao",
+    size: 30,
+  });
+});
+
+app.post("/sium/:id:size", (req, res) => {
+  const { id, size } = req.params;
+  const { logo } = req.body;
+
+  if (!logo) {
+    res.status(418).send({ message: "No logo" });
+  }
+
+  res.send({ soim: "richiesta di sborra effettuata con successo" });
+  console.log(`${id} e ${size} e ${logo}`);
 });
 
 async function main() {
@@ -24,4 +45,5 @@ async function main() {
   console.log(silence.name); // 'Silence'
 }
 
-main().catch((err) => console.log(err));
+//main().catch((err) => console.log(err));
+// no server for the moment
