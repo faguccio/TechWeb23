@@ -2,37 +2,24 @@ import * as Const from "./const.js";
 
 import express from "express";
 import mongoose from "mongoose";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import { appRouter } from "./handlers/router.js";
 
 //constants
 const app = express();
 const port = Const.SERVER_PORT;
+//const specs = swaggerJsdoc(Const.SWAGGER_OPTION);
 
 // App initialization
 app.use(express.json());
+app.use(appRouter);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
 
-app.get("/sium", (req, res) => {
-  res.status(201).send({
-    sium: "ciao",
-    size: 30,
-  });
-});
-
-app.post("/sium/:id:size", (req, res) => {
-  const { id, size } = req.params;
-  const { logo } = req.body;
-
-  if (!logo) {
-    res.status(418).send({ message: "No logo" });
-  }
-
-  res.send({ soim: "richiesta di sborra effettuata con successo" });
-  console.log(`${id} e ${size} e ${logo}`);
-});
-
+/*
 async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/test");
   const kittySchema = new mongoose.Schema({
@@ -45,5 +32,8 @@ async function main() {
   console.log(silence.name); // 'Silence'
 }
 
-//main().catch((err) => console.log(err));
-// no server for the moment
+main().catch((err) => console.log(err));
+no server for the moment
+*/
+
+//app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));

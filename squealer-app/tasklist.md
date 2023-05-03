@@ -17,6 +17,7 @@ Per capire come implementare il componente, il primo passo e' fare un endpoint c
 
 1. [ ] endpoint nel backend
 
+   - uso di swagger per ricordarsi come sono fatte le risorse
    - definizione di tutti i campi necessari ad un post
 
 2. [ ] fetch nel frontend
