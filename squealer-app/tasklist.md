@@ -15,16 +15,16 @@
 
 Per capire come implementare il componente, il primo passo e' fare un endpoint che ritorni tutti i dati di un messaggio/post. Dopodiche' posso implementare le funzioni fetch per ottenere tali dati e renderizzarli sul post
 
-1. [ ] endpoint nel backend
+1. [x] endpoint nel backend
 
    - uso di swagger per ricordarsi come sono fatte le risorse
    - definizione di tutti i campi necessari ad un post
 
-2. [ ] fetch nel frontend
-3. [ ] prendere i dati e da li costruire il componente
+2. [x] fetch nel frontend
+3. [x] prendere i dati e da li costruire il componente
 
-   - [ ] user
-   - [ ] destinatari
-   - [ ] corpo testuale
-   - [ ] immagine
+   - [x] user
+   - [x] destinatari
+   - [x] corpo testuale
+   - [x] immagine
    - [ ] geolocalizzazione

@@ -4,11 +4,9 @@ import * as Const from "../const.js";
 export const appRouter = Router();
 
 const getPost = async (req, res) => {
-  console.log(req.params.id);
-
   const message = {
-    _id: 1,
-    _id_sender: 15,
+    id: 1,
+    id_sender: 15,
     recipients: ["#sium", "@cazzone"],
     text: "Ragazzi volevo dirvi che il Sium non e' piu' forte del porcodiaz sebbene molti infedeli di voi possano credere che lo sia. Avete travisato gli insegnamenti del CRISTO redentore",
     timestamp: "19.30, 27.03.2001",
@@ -17,7 +15,7 @@ const getPost = async (req, res) => {
     Geolocation: null,
   };
 
-  if (message._id != req.params.id)
+  if (message.id != req.params.id)
     return res
       .status(Const.BAD_REQUEST)
       .json(new JsonError(`Can\'t find message with id ${req.params.id} `));
@@ -26,12 +24,22 @@ const getPost = async (req, res) => {
   //return res.status(OK_CONST).json(animal);
 };
 
-const fakeUser = {
-  id: 15,
-  username: "Fabio Giordano",
-  pro_pic:
-    "https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
+const getUser = async (req, res) => {
+  const dummyuser = {
+    id: 15,
+    username: "Fabio Giordano",
+    pro_pic:
+      "https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
+  };
+
+  if (dummyuser.id != req.params.id)
+    return res
+      .status(Const.BAD_REQUEST)
+      .json(`Can\'t find user with id ${req.params.id} `);
+
+  return res.status(200).json(dummyuser);
 };
 
 //messages
 appRouter.get("/message/:id", getPost);
+appRouter.get("/user/:id", getUser);
