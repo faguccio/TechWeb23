@@ -12,7 +12,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PostCard id={1} />
+      <PostCard id={"64565a05867620df0ef89f49"} />
       <ReactQueryDevtools />
     </QueryClientProvider>
   );
