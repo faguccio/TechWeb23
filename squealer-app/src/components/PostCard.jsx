@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import ReactionBar from "./ReactionBar";
 import { useQuery } from "react-query";
 
 function PostCard({ id }) {
   //const [data, setData] = useState({});
   //const [user, setUser] = useState(null);
+  const smileEmoji = "🙂";
 
   const fetchData = async () => {
     const res = await fetch(`http://localhost:3000/message/${id}`);
@@ -58,7 +58,7 @@ function PostCard({ id }) {
             <p>Destinatari</p>
           </div>
           <p className="mt-3 text-gray-700 text-xs">{data.text}</p>
-          {data.image ? (
+          {data.image_path ? (
             <img
               className="my-5 rounded-lg"
               src={data.image_path}
@@ -66,6 +66,24 @@ function PostCard({ id }) {
             />
           ) : null}
           <div className="flex justify-end"></div>
+          <div className="mt-4 flex items-center">
+            <div className="flex mx-2 items-center text-gray-700 text-sm mr-3">
+              <button className="btn btn-sm text-lg">{smileEmoji}</button>
+              <span>12</span>
+            </div>
+            <div className="flex mx-2 items-center text-gray-700 text-sm">
+              <button className="text-lg">{smileEmoji}</button>
+              <span>8</span>
+            </div>
+            <div className="flex mx-2 items-center text-gray-700 text-sm">
+              <button className="text-lg">{smileEmoji}</button>
+              <span>8</span>
+            </div>
+            <div className="flex mx-2 items-center text-gray-700 text-sm">
+              <button className="text-lg">{smileEmoji}</button>
+              <span>8</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

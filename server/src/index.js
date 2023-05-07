@@ -23,7 +23,10 @@ app.listen(port, () => {
 });
 
 async function connectDB() {
-  mongoose.connect("mongodb://root:secret@database:27017/");
+  const uri = Const.DB_URI;
+  console.log(uri);
+  await mongoose.connect(uri);
+  console.log("Connected");
   migration();
 }
 
