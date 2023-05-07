@@ -21,10 +21,11 @@ Per capire come implementare il componente, il primo passo e' fare un endpoint c
    - definizione di tutti i campi necessari ad un post
 
 2. [x] fetch nel frontend
+
 3. [x] prendere i dati e da li costruire il componente
 
    - [x] user
    - [x] destinatari
    - [x] corpo testuale
    - [x] immagine
-   - [ ] geolocalizzazione
+   - [x] geolocalizzazione

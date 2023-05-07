@@ -14,7 +14,7 @@ export const migration = async () => {
       timestamp: "2011-10-10T14:48:00",
       image_path:
         "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F451855%2Ftree-sea-grass-nature-451855.jpeg%3Fcs%3Dsrgb%26dl%3Dacqua-albero-cielo-451855.jpg%26fm%3Djpg&f=1&nofb=1&ipt=0e7f3717726bc66d6397ab3f958887a3bc43e15bf96fa8ca9d349cac02ab3532&ipo=images",
-      geolocation: { lat: 10, lon: 20 },
+      geolocation: { lat: 43.8625456, lon: 10.4621366 },
     },
     {
       _id: new Types.ObjectId("64565a05867620df0ef89f50"),
@@ -24,7 +24,7 @@ export const migration = async () => {
       timestamp: "2021-10-10T14:48:00",
       image_path:
         "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F451855%2Ftree-sea-grass-nature-451855.jpeg%3Fcs%3Dsrgb%26dl%3Dacqua-albero-cielo-451855.jpg%26fm%3Djpg&f=1&nofb=1&ipt=0e7f3717726bc66d6397ab3f958887a3bc43e15bf96fa8ca9d349cac02ab3532&ipo=images",
-      geolocation: { lat: 10, lon: 20 },
+      geolocation: { lat: 43.8625456, lon: 10.4621366 },
     },
   ];
 
