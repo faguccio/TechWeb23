@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import GeoMap from "./GeoMap";
 
 function PostCard({ id }) {
   //const [data, setData] = useState({});
@@ -82,26 +82,8 @@ function PostCard({ id }) {
               alt="A tree"
             />
           ) : null}
-          <div
-            id="map"
-            className="h-52 md:h-96 z-0 w-auto  shadow-lg rounded-lg shadow-gray-500"
-          >
-            <MapContainer
-              className="rounded-lg z-0"
-              center={[data.geolocation.lat, data.geolocation.lon]}
-              zoom={13}
-              scrollWheelZoom={false}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <Marker position={[data.geolocation.lat, data.geolocation.lon]}>
-                <Popup>
-                  A pretty CSS3 popup. <br /> Easily customizable.
-                </Popup>
-              </Marker>
-            </MapContainer>
+          <div className="h-52 md:h-96 z-0 w-auto  shadow-lg rounded-lg shadow-gray-500">
+            <GeoMap geolocation={data.geolocation} />
           </div>
           <div className="flex justify-end">
             <div className="mt-4 flex flex-wrap items-center">
