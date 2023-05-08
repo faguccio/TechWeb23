@@ -1,5 +1,6 @@
 export const SERVER_PORT = 3000;
 export const BAD_REQUEST = 400;
+export const STATUS_OK = 200;
 export const SWAGGER_OPTION = {
   definition: {
     openapi: "3.0.0",
@@ -34,3 +35,8 @@ export const DB_SECRET = "secret";
 export const DB_URI = `mongodb://${DB_USER}:${DB_SECRET}@${DB_ADDR}:${DB_PORT}`;
 
 export const critic_mass_index = 0.2;
+export const standard_chars = {
+  day: 500,
+  week: 2500,
+  month: 8000,
+};

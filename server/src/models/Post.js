@@ -8,6 +8,7 @@ const postSchema = new Schema({
   timestamp: Date,
   image_path: String,
   geolocation: { lat: Number, lon: Number },
+  reactions: { positive: Number, negative: Number },
 });
 
 export const Post = mongoose.model("Post", postSchema);
