@@ -1,31 +1,29 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import GeoMap from "./GeoMap";
+import LoadingSpinner from "./LoadingSpinner";
 
 function PostCard({ id }) {
-  //const [data, setData] = useState({});
-  //const [user, setUser] = useState(null);
-  const reactions = [
-    { emoji: "😁", amount: 7, id: "A" },
-    { emoji: "🙂", amount: 13, id: "B" },
-    { emoji: "😑", amount: 2, id: "C" },
-    { emoji: "😤", amount: 30, id: "D" },
-  ];
+  const queryClient = useQueryClient();
+  const [liked, setLiked] = useState([false, false]);
 
-  const reactionsUI = reactions.map((reaction) => (
-    <div
-      className="flex mx-2 items-center text-gray-700 text-sm"
-      key={crypto.randomUUID()}
-    >
-      <button className="btn btn-sm btn-outline text-lg px-2 mr-1">
-        {reaction.emoji}
-      </button>
-      <span>{reaction.amount}</span>
-    </div>
-  ));
+  const positiveR = {
+    emoji: "😁",
+    type: "positive",
+    alt: "Like Button",
+    amount: 0,
+  };
+  const negativeR = {
+    emoji: "😤",
+    type: "negative",
+    alt: "Dislike Button",
+    amount: 0,
+  };
+
+  const reactions = [positiveR, negativeR];
 
   const fetchData = async () => {
-    const res = await fetch(`http://localhost:3000/message/${id}`);
+    const res = await fetch(`http://localhost:3000/post/${id}`);
     return res.json();
     //setData(ret);
   };
@@ -44,11 +42,56 @@ function PostCard({ id }) {
   }
 
   const { data, status } = useQuery(["data", id], fetchData);
+
   const { data: user, status2 } = useQuery(["user", id], fetchUser, {
     enabled: !!data,
   });
 
-  if (status !== "success") return "Loading...";
+  const addLike = useMutation({
+    mutationFn: async (rtype) => {
+      const data = { type: rtype, increase: true };
+      const res = await fetch(`http://localhost:3000/post/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["data", id] });
+    },
+  });
+
+  if (status !== "success")
+    return (
+      <div className="flex items-center justify-center">
+        <a>{status}</a>
+        <LoadingSpinner />
+      </div>
+    );
+
+  const reactionsUI = reactions.map((reaction) => (
+    <div
+      className="flex mx-2 items-center text-gray-700 text-sm"
+      key={crypto.randomUUID()}
+    >
+      <button
+        className="btn btn-sm btn-outline text-lg px-2 mr-1"
+        aria-label={reaction.alt}
+        onClick={() => {
+          addLike.mutate(reaction.type);
+        }}
+      >
+        {reaction.emoji}
+      </button>
+      <span>
+        {reaction.type === "positive"
+          ? data.reactions.positive
+          : data.reactions.negative}
+      </span>
+    </div>
+  ));
 
   return (
     <div className="flex bg-white shadow-lg rounded-lg mx-4 md:mx-auto my-8 md:max-w-2xl ">
@@ -56,9 +99,14 @@ function PostCard({ id }) {
         <img
           className="w-12 h-12 rounded-full object-cover mr-2 shadow"
           src={
-            user
-              ? user.propic_path
-              : "https://e7.pngegg.com/pngimages/321/641/png-clipart-load-the-map-loading-load.png"
+            user ? (
+              user.propic_path
+            ) : (
+              <div
+                class="animate-spin radial-progress"
+                style="--value:70;"
+              ></div>
+            )
           }
           alt="avatar"
         />
