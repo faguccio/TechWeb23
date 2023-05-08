@@ -1,20 +1,20 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { Routes, Route } from "react-router-dom";
+
+
+import { routeList } from "./router";
+import NavBar from "./components/NavBar";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <>
-      <div className="btn btn-primary">
-        <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      </div>
-    </>
+    <div>
+      <NavBar />
+      <Routes>{routeList}</Routes>
+    </div>
   );
 }
 
 export default App;
 
-
-//navbar branch
