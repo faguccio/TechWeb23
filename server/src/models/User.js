@@ -1,10 +1,23 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const postSchema = new Schema({
+const userSchema = new Schema({
   name: String,
-  posts: [mongoose.Types.ObjectId],
   propic_path: String,
+
+  posts: [mongoose.Types.ObjectId],
+  posts_received: [mongoose.Types.ObjectId],
+
+  leftovers_chars: {
+    day: Number,
+    week: Number,
+    month: Number,
+  },
+  standard_chars: {
+    day: Number,
+    week: Number,
+    month: Number,
+  },
 });
 
-export const User = mongoose.model("User", postSchema);
+export const User = mongoose.model("User", userSchema);

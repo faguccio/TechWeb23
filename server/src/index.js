@@ -4,7 +4,7 @@ import express from "express";
 import mongoose from "mongoose";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import { appRouter } from "./handlers/router.js";
+import { appRouter } from "./routes/router.js";
 import cors from "cors";
 import { migration } from "./migration.js";
 

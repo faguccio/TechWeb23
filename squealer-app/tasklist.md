@@ -29,3 +29,8 @@ Per capire come implementare il componente, il primo passo e' fare un endpoint c
    - [x] corpo testuale
    - [x] immagine
    - [x] geolocalizzazione
+
+4. [ ] reazioni
+   - [x] aggiungere reazioni all componente
+   - [ ] aggiungere al backend
+   - [ ] aggiungere funzioni di aggiunta e tolta
