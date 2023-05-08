@@ -14,13 +14,6 @@ function NavBar() {
         <div className="flex justify-between items-center">
           <div className="-ml-10 md:ml-0">
             <NavLink to="/">
-              <img
-                className="py-2 scale-50 md:scale-75"
-                src={img1}
-                width="300px"
-                alt="frisbee icon"
-                onClick={() => window.scrollTo(0, 0)}
-              />
             </NavLink>
           </div>
   
