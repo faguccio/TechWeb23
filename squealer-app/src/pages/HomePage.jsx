@@ -6,7 +6,7 @@ import InfiniteScroll from "react-infinite-scroller";
 
 function HomePage() {
   const userID = "64569d259d19f7f3611babe1";
-  const [page, setPage] = useState(1);
+  //const [page, setPage] = useState(1);
   const limit = 2;
   const fetchPost = async (page) => {
     const res = await fetch(
@@ -26,7 +26,7 @@ function HomePage() {
 
       if (!fetching && scrollHeight - scrollTop <= clientHeight * 1.5) {
         fetching = true;
-        console.log(hasNextPage);
+        console.log(`dentro lo scrolling ${hasNextPage}`);
         if (hasNextPage) {
           let res = await fetchNextPage();
         }
@@ -38,16 +38,20 @@ function HomePage() {
     return () => {
       document.removeEventListener("scroll", onScroll);
     };
-  }, []);*/
+  }, []);
+  */
 
   const { data, error, fetchNextPage, hasNextPage, status } = useInfiniteQuery({
-    queryKey: ["posts"],
+    queryKey: ["posts", "infinite"],
     queryFn: ({ pageParam = 1 }) => fetchPost(pageParam),
-    getNextPageParam: (lastPage, pages) => {
-      console.log(lastPage);
-      lastPage.nextPage != "no-more-pages"
-        ? lastPage.nextPage
-        : lastPage.nextPage;
+    getNextPageParam: (lastPage) => {
+      console.log(lastPage.nextPage);
+      console.log(
+        `this is what I returned last time ${
+          lastPage.nextPage > 0 ? lastPage.nextPage : undefined
+        }`
+      );
+      return lastPage.nextPage > 0 ? lastPage.nextPage : undefined;
     },
   });
 
@@ -56,23 +60,15 @@ function HomePage() {
   if (status === "error") return <h4>Ups!, {error}</h4>;
 
   return (
-    <div>
-      <InfiniteScroll
-        pageStart={0}
-        loadMore={fetchNextPage}
-        hasMore={!!hasNextPage}
-        loader={
-          <div className="loader" key={0}>
-            Loading ...
-          </div>
-        }
-      >
-        {data.pages.map((page) =>
-          page.pages.map((mid) => (
-            <PostCard id={mid} key={crypto.randomUUID()} />
-          ))
-        )}
-      </InfiniteScroll>
+    <div className="">
+      {data.pages.map((page) =>
+        page.posts.map((mid) => <PostCard id={mid} key={crypto.randomUUID()} />)
+      )}
+      <div className="flex justify-center">
+        <button className="btn" onClick={fetchNextPage}>
+          {hasNextPage ? "More" : "No more posts..."}
+        </button>
+      </div>
     </div>
   );
 }

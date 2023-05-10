@@ -26,9 +26,9 @@ export const getHomePagePosts = async (req, res) => {
   const user = req.params.id;
   try {
     const allPages = await getUserHome(user);
-    const nextPage = endIndex < allPages.length ? page + 1 : "no-more-pages";
+    const nextPage = endIndex < allPages.length ? page + 1 : -1;
     const ret = {
-      pages: allPages.slice(startIndex, endIndex),
+      posts: allPages.slice(startIndex, endIndex),
       nextPage: nextPage,
     };
 
