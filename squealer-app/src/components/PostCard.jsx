@@ -41,7 +41,7 @@ function PostCard({ id }) {
     });
   }
 
-  const { data, status } = useQuery(["data", id], fetchData);
+  const { data, status } = useQuery(["post-card", id], fetchData);
 
   const { data: user, status2 } = useQuery(["user", id], fetchUser, {
     enabled: !!data,
@@ -59,14 +59,13 @@ function PostCard({ id }) {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["data", id] });
+      queryClient.invalidateQueries({ queryKey: ["post-card", id] });
     },
   });
 
   if (status !== "success")
     return (
       <div className="flex items-center justify-center">
-        <a>{status}</a>
         <LoadingSpinner />
       </div>
     );

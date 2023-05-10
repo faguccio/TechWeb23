@@ -3,7 +3,7 @@ import * as Const from "../const.js";
 import { Post } from "../models/Post.js";
 import { User } from "../models/User.js";
 import { useLike } from "../routes/post-route.js";
-import { updateLike } from "../services/post-service.js";
+import { getHomePagePosts } from "../routes/post-route.js";
 
 export const appRouter = Router();
 
@@ -23,3 +23,4 @@ const getUser = async (req, res) => {
 appRouter.get("/post/:id", getPost);
 appRouter.get("/user/:id", getUser);
 appRouter.patch("/post/:id", useLike);
+appRouter.get("/home/post/:id", getHomePagePosts);

@@ -1,9 +1,7 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import PostCard from "./components/PostCard";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import HomePage from "./pages/HomePage";
 
 const queryClient = new QueryClient({});
 
@@ -12,7 +10,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PostCard id={"64565a05867620df0ef89f49"} />
+      <HomePage />
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

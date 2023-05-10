@@ -26,7 +26,7 @@ async function connectDB() {
   const uri = Const.DB_URI;
   console.log(uri);
   await mongoose.connect(uri);
-  console.log("Connected");
+  console.log("Connected to DB");
   migration();
 }
 

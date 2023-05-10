@@ -2,10 +2,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const channelSchema = new Schema({
-  name: {
-    type: String,
-    lowercase: true,
-  },
+  name: String,
 
   owners: [mongoose.Types.ObjectId],
   allowed_readers: [mongoose.Types.ObjectId],
@@ -14,4 +11,4 @@ const channelSchema = new Schema({
   posts: [mongoose.Types.ObjectId],
 });
 
-export const Post = mongoose.model("Post", channelSchema);
+export const Channel = mongoose.model("Channel", channelSchema);

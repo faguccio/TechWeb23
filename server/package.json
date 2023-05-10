@@ -6,6 +6,10 @@
   "author": "Fabio",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon --watch src src/index.js"
+  },
   "type": "module",
   "dependencies": {
     "cors": "^2.8.5",
@@ -13,5 +17,8 @@
     "mongoose": "^7.0.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }

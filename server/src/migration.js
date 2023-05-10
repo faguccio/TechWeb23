@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { Post } from "./models/Post.js";
 import { User } from "./models/User.js";
+import { Channel } from "./models/Channel.js";
 import * as Const from "./const.js";
 
 export const migration = async () => {
@@ -46,6 +47,10 @@ export const migration = async () => {
         new Types.ObjectId("64565a05867620df0ef89f49"),
         new Types.ObjectId("64565a05867620df0ef89f50"),
       ],
+      channels: [
+        new Types.ObjectId("6459038a3a8419267a26f5ce"),
+        new Types.ObjectId("6459038a3a8419267a26f5cf"),
+      ],
       leftovers_chars: {
         day: 200,
         week: 500,
@@ -61,6 +66,43 @@ export const migration = async () => {
 
   userList.map((item) => {
     item = new User(item);
+    item.save();
+  });
+
+  await Channel.deleteMany();
+
+  const channelList = [
+    {
+      _id: new Types.ObjectId("6459038a3a8419267a26f5ce"),
+      name: "#sium",
+      owners: [],
+      allowed_readers: [],
+      allowed_writers: [],
+
+      posts: [
+        new Types.ObjectId("64565a05867620df0ef89f49"),
+        new Types.ObjectId("64565a05867620df0ef89f50"),
+        new Types.ObjectId("64565a05867620df0ef89f49"),
+        new Types.ObjectId("64565a05867620df0ef89f50"),
+        new Types.ObjectId("64565a05867620df0ef89f49"),
+        new Types.ObjectId("64565a05867620df0ef89f50"),
+        new Types.ObjectId("64565a05867620df0ef89f49"),
+        new Types.ObjectId("64565a05867620df0ef89f49"),
+      ],
+    },
+    {
+      _id: new Types.ObjectId("6459038a3a8419267a26f5cf"),
+      name: "#nonesistono",
+      owners: [],
+      allowed_readers: [],
+      allowed_writers: [],
+
+      posts: [new Types.ObjectId("64565a05867620df0ef89f50")],
+    },
+  ];
+
+  channelList.map((item) => {
+    item = new Channel(item);
     item.save();
   });
 };

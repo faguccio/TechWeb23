@@ -7,6 +7,7 @@ const userSchema = new Schema({
 
   posts: [mongoose.Types.ObjectId],
   posts_received: [mongoose.Types.ObjectId],
+  channels: [mongoose.Types.ObjectId],
 
   leftovers_chars: {
     day: Number,
