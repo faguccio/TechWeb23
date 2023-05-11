@@ -12,7 +12,7 @@ function NavBar() {
   return (
     <div className="md:flex md:justify-between sticky z-10 top-0 bg-base-100 items-center">
       <div className="flex justify-between items-center">
-        <div className="-ml-10 md:ml-0">
+        <div className="-ml-2 md:ml-0">
           <NavLink to="/">
             <img
               className="py-2 scale-50 md:scale-75"
