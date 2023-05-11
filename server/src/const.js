@@ -40,3 +40,5 @@ export const standard_chars = {
   week: 2500,
   month: 8000,
 };
+
+export const SECRET = "adorousarejavascript";

@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import HomePage from "./pages/HomePage";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { routeList } from "./router";
+import NavBar from "./components/NavBar";
 
 const queryClient = new QueryClient({});
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <QueryClientProvider client={queryClient}>
-      <HomePage />
+      <BrowserRouter>
+        <NavBar />
+        <Routes>{routeList}</Routes>
+      </BrowserRouter>
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

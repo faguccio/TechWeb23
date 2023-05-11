@@ -18,6 +18,15 @@ function HomePage() {
   };
 
   /*
+  const scrollUp = () => {
+    const element = document.getElementById("section-1");
+    if (element) {
+      // 👇 Will scroll smoothly to the top of the next section
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };*/
+
+  /*
   useEffect(() => {
     let fetching = false;
     const onScroll = async (event) => {
@@ -65,7 +74,7 @@ function HomePage() {
         page.posts.map((mid) => <PostCard id={mid} key={crypto.randomUUID()} />)
       )}
       <div className="flex justify-center">
-        <button className="btn" onClick={fetchNextPage}>
+        <button className="btn mb-96" onClick={fetchNextPage}>
           {hasNextPage ? "More" : "No more posts..."}
         </button>
       </div>
