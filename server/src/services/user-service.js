@@ -17,3 +17,23 @@ export const getUserHome = async (id) => {
     console.log(`Update likes service, ${id} (${err.message})`);
   }
 };
+
+export const createUser = async (userData) => {
+  try {
+    const user = new User(userData);
+    const res = await user.save();
+    return { status: "success" };
+  } catch (err) {
+    console.log(`creatingUser service, (${err.message})`);
+  }
+};
+
+export const verifyLogin = async (name, password) => {
+  const result = await User.find({ name: name, password: password });
+  if (result.length !== 1) return "invalid username or password";
+
+  return {
+    username: result[0].username,
+    id: result[0]._id.toString(),
+  };
+};

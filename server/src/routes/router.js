@@ -3,7 +3,9 @@ import * as Const from "../const.js";
 import { Post } from "../models/Post.js";
 import { User } from "../models/User.js";
 import { useLike } from "../routes/post-route.js";
-import { getHomePagePosts } from "../routes/post-route.js";
+import { getHomePagePosts } from "./post-route.js";
+import * as userRoutes from "./user-routes.js";
+import { verifyToken } from "./utilites.js";
 
 export const appRouter = Router();
 
@@ -24,3 +26,10 @@ appRouter.get("/post/:id", getPost);
 appRouter.get("/user/:id", getUser);
 appRouter.patch("/post/:id", useLike);
 appRouter.get("/home/post/:id", getHomePagePosts);
+
+appRouter.post("/users/register", userRoutes.register);
+appRouter.post("/users/login", userRoutes.login);
+
+appRouter.get("/personal", verifyToken, (req, res) => {
+  res.json(`verificato: ${JSON.stringify(req.authData)}`);
+});
