@@ -129,9 +129,11 @@ function PostCard({ id }) {
               alt="A tree"
             />
           ) : null}
-          <div className="h-52 md:h-96 z-0 w-auto  shadow-lg rounded-lg shadow-gray-500">
-            <GeoMap geolocation={data.geolocation} />
-          </div>
+          {!!data.geolocation ? (
+            <div className="h-52 md:h-96 z-0 w-auto  shadow-lg rounded-lg shadow-gray-500">
+              <GeoMap geolocation={data.geolocation} />
+            </div>
+          ) : null}
           <div className="flex justify-end">
             <div className="mt-4 flex flex-wrap items-center">
               {reactionsUI}

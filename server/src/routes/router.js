@@ -32,6 +32,7 @@ appRouter.post("/users/register", userRoutes.register);
 appRouter.post("/users/login", userRoutes.login);
 
 appRouter.get("/channels/:id", channelRoutes.getChannelPosts);
+appRouter.post("/channels/:name/posts", channelRoutes.addPostToChannel);
 
 appRouter.get("/personal", verifyToken, (req, res) => {
   res.json(`verificato: ${JSON.stringify(req.authData)}`);

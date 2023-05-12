@@ -30,6 +30,16 @@ export const migration = async () => {
       geolocation: { lat: 43.8625456, lon: 10.4621366 },
       reactions: { positive: 144445, negative: 564 },
     },
+    {
+      _id: new Types.ObjectId("64565a05867620df0ef89f51"),
+      sender: new Types.ObjectId("64569d259d19f7f3611babe3"),
+      recipients: ["#sium"],
+      text: "Non credete agli gnomi (firmato associazione gnomi)",
+      timestamp: "2013-10-10T14:48:00",
+      image_path: null,
+      geolocation: null,
+      reactions: { positive: 2, negative: 1 },
+    },
   ];
 
   postList.map((item) => {
@@ -62,6 +72,15 @@ export const migration = async () => {
       },
       propic_path:
         "https://this-person-does-not-exist.com/img/avatar-genbe010322231cb9e777078e4195e87c79.jpg",
+    },
+
+    {
+      _id: new Types.ObjectId("64569d259d19f7f3611babe3"),
+      name: "achille-lauro22",
+      password: "davidebassi",
+      posts: [new Types.ObjectId("64565a05867620df0ef89f51")],
+      propic_path:
+        "https://this-person-does-not-exist.com/img/avatar-gena379629b770580ab53d90cc61d84c43b.jpg",
     },
   ];
 
