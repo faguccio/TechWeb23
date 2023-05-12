@@ -2,9 +2,10 @@ import express, { Router } from "express";
 import * as Const from "../const.js";
 import { Post } from "../models/Post.js";
 import { User } from "../models/User.js";
-import { useLike } from "../routes/post-route.js";
+import { useLike } from "./post-route.js";
 import { getHomePagePosts } from "./post-route.js";
 import * as userRoutes from "./user-routes.js";
+import * as channelRoutes from "./channel-routes.js";
 import { verifyToken } from "./utilites.js";
 
 export const appRouter = Router();
@@ -29,6 +30,8 @@ appRouter.get("/home/post/:id", getHomePagePosts);
 
 appRouter.post("/users/register", userRoutes.register);
 appRouter.post("/users/login", userRoutes.login);
+
+appRouter.get("/channels/:id", channelRoutes.getChannelPosts);
 
 appRouter.get("/personal", verifyToken, (req, res) => {
   res.json(`verificato: ${JSON.stringify(req.authData)}`);

@@ -81,14 +81,14 @@ export const migration = async () => {
       allowed_writers: [],
 
       posts: [
-        new Types.ObjectId("64565a05867620df0ef89f49"),
-        new Types.ObjectId("64565a05867620df0ef89f50"),
-        new Types.ObjectId("64565a05867620df0ef89f49"),
-        new Types.ObjectId("64565a05867620df0ef89f50"),
-        new Types.ObjectId("64565a05867620df0ef89f49"),
-        new Types.ObjectId("64565a05867620df0ef89f50"),
-        new Types.ObjectId("64565a05867620df0ef89f49"),
-        new Types.ObjectId("64565a05867620df0ef89f49"),
+        {
+          content: new Types.ObjectId("64565a05867620df0ef89f49"),
+          timestamp: "2011-10-10T14:48:00",
+        },
+        {
+          content: new Types.ObjectId("64565a05867620df0ef89f50"),
+          timestamp: "2021-10-10T14:48:00",
+        },
       ],
     },
     {
