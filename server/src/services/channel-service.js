@@ -32,3 +32,19 @@ export const channelNameToId = async (channelName) => {
     );
   }
 };
+
+export const addPostToChannelByName = async (
+  channelName,
+  post_ID,
+  timestamp
+) => {
+  try {
+    const id = await channelNameToId(channelName);
+    const res = await addPostToChannel(id, post_ID, timestamp);
+    return res;
+  } catch (err) {
+    console.log(
+      `add post to channel by name service, ${channelName} (${err.message})`
+    );
+  }
+};

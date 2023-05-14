@@ -1,4 +1,5 @@
 import * as Const from "./const.js";
+import { automatic } from "./services/automatic-service.js";
 
 import express from "express";
 import mongoose from "mongoose";
@@ -29,6 +30,8 @@ async function connectDB() {
   console.log("Connected to DB");
   migration();
 }
+
+setInterval(automatic, Const.AUTOMATIC_POST_TIME);
 
 connectDB().catch((err) => console.log(err));
 

@@ -24,3 +24,14 @@ export const updatePost = async (id, changes) => {
   }
 };
 */
+
+export const savePost = async (postData) => {
+  try {
+    const post = new Post(postData);
+    await post.save();
+    return { status: "success" };
+  } catch (err) {
+    console.log(`save post service, ${postData.id} (${err.message})`);
+    return { status: "failure" };
+  }
+};

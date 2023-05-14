@@ -51,6 +51,12 @@ export const migration = async () => {
 
   const userList = [
     {
+      _id: new Types.ObjectId("64569d259d19f7f3611babe0"),
+      name: "Official-Squeal",
+      password: "password-dura",
+      propic_path: "https://cdn-icons-png.flaticon.com/512/2188/2188053.png",
+    },
+    {
       _id: new Types.ObjectId("64569d259d19f7f3611babe1"),
       name: "mammalona",
       password: "forza roma",
@@ -118,6 +124,24 @@ export const migration = async () => {
       allowed_writers: [],
 
       posts: [new Types.ObjectId("64565a05867620df0ef89f50")],
+    },
+    {
+      _id: new Types.ObjectId("6459038a3a8419267a26f5c0"),
+      name: "§JOKESQEUAL",
+      owners: [],
+      allowed_readers: [],
+      allowed_writers: [],
+
+      posts: [],
+    },
+    {
+      _id: new Types.ObjectId("6459038a3a8419267a26f5c1"),
+      name: "§FACTSQUEAL",
+      owners: [],
+      allowed_readers: [],
+      allowed_writers: [],
+
+      posts: [],
     },
   ];
 
