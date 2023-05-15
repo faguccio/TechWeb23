@@ -30,10 +30,19 @@ export const createUser = async (userData) => {
 
 export const verifyLogin = async (name, password) => {
   const result = await User.find({ name: name, password: password });
-  if (result.length !== 1) return "invalid username or password";
 
-  return {
-    username: result[0].username,
-    id: result[0]._id.toString(),
-  };
+  if (result.length == 0) 
+    return {
+      valid_credentials: false,
+      message: "invalid username or password"
+    }
+  else{
+    //console.log("result ",result);
+    return {
+      valid_credentials: true,
+      //username: result[0].username,
+      id: result[0]._id.toString(),
+    };
+  }
+
 };
