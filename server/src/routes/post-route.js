@@ -24,14 +24,11 @@ export const getHomePagePosts = async (req, res) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
   const user = req.params.id;
-  try {
-    const allPages = await getUserHome(user);
-    const nextPage = endIndex < allPages.length ? page + 1 : -1;
-    const ret = {
-      posts: allPages.slice(startIndex, endIndex),
-      nextPage: nextPage,
-    };
 
+  try {
+    let allPages = await getUserHome(user);
+    const pageContent = allPages.slice(startIndex, endIndex);
+    const ret = pageContent;
     return res.status(Const.STATUS_OK).json(ret);
   } catch (err) {
     console.log(`get home page post, ${user} (${err.message})`);

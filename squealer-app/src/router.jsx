@@ -1,5 +1,6 @@
 import HomePage from "./pages/HomePage";
 import AccountPage from "./pages/AccountPage";
+import ChannelPage from "./pages/ChannelPage";
 
 import { Route, Link } from "react-router-dom";
 
@@ -17,6 +18,13 @@ export const pages = [
     element: <AccountPage />,
     displayNav: true,
     id: 1,
+  },
+  {
+    path: "/channel/:name",
+    name: "channelView",
+    element: <ChannelPage />,
+    displayNav: true,
+    id: 2,
   },
 ];
 

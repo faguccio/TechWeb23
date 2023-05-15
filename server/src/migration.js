@@ -40,6 +40,14 @@ export const migration = async () => {
       geolocation: null,
       reactions: { positive: 2, negative: 1 },
     },
+    {
+      _id: new Types.ObjectId("64565a05867620df0ef89f66"),
+      sender: new Types.ObjectId("64569d259d19f7f3611babe0"),
+      recipients: ["#sium"],
+      text: "Hasbulla camananiovqetbuidfj",
+      timestamp: "2015-10-10T14:48:00",
+      reactions: { positive: 0, negative: 0 },
+    },
   ];
 
   postList.map((item) => {
@@ -113,6 +121,10 @@ export const migration = async () => {
         {
           content: new Types.ObjectId("64565a05867620df0ef89f50"),
           timestamp: "2021-10-10T14:48:00",
+        },
+        {
+          content: new Types.ObjectId("64565a05867620df0ef89f66"),
+          timestamp: "2015-10-10T14:48:00",
         },
       ],
     },

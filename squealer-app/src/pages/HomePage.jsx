@@ -1,14 +1,20 @@
 import PostCard from "../components/PostCard";
-import { useEffect, useState } from "react";
-import { useQuery, useInfiniteQuery, useQueryClient } from "react-query";
+import { useEffect, useState, useRef } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
 import InfiniteScroll from "react-infinite-scroller";
 
 function HomePage() {
   const userID = "64569d259d19f7f3611babe1";
-  //const [page, setPage] = useState(1);
+  const [postList, setPostList] = useState([]);
+  const pageN = useRef(1);
+  const hasMorePages = useRef(true);
+  const fetching = useRef(false);
+
   const limit = 2;
   const fetchPost = async (page) => {
+    console.log(
+      `http://localhost:3000/home/post/${userID}?page=${page}&limit=${limit}`
+    );
     const res = await fetch(
       `http://localhost:3000/home/post/${userID}?page=${page}&limit=${limit}`
     );
@@ -17,65 +23,38 @@ function HomePage() {
     return ret;
   };
 
-  /*
-  const scrollUp = () => {
-    const element = document.getElementById("section-1");
-    if (element) {
-      // 👇 Will scroll smoothly to the top of the next section
-      element.scrollIntoView({ behavior: "smooth" });
+  const handleMorePost = async () => {
+    if (fetching.current || !hasMorePages.current) return;
+
+    fetching.current = true;
+    const res = await fetchPost(pageN.current);
+    if (res.length > 1) {
+      setPostList(postList.concat(res).filter((post) => post != null));
+      pageN.current += 1;
+    } else {
+      console.log("No more posts to load!");
+      hasMorePages.current = false;
     }
-  };*/
+    fetching.current = false;
+  };
 
-  /*
   useEffect(() => {
-    let fetching = false;
-    const onScroll = async (event) => {
-      const { scrollHeight, scrollTop, clientHeight } =
-        event.target.scrollingElement;
-
-      if (!fetching && scrollHeight - scrollTop <= clientHeight * 1.5) {
-        fetching = true;
-        console.log(`dentro lo scrolling ${hasNextPage}`);
-        if (hasNextPage) {
-          let res = await fetchNextPage();
-        }
-        fetching = false;
-      }
-    };
-
-    document.addEventListener("scroll", onScroll);
-    return () => {
-      document.removeEventListener("scroll", onScroll);
-    };
+    handleMorePost();
   }, []);
-  */
-
-  const { data, error, fetchNextPage, hasNextPage, status } = useInfiniteQuery({
-    queryKey: ["posts", "infinite"],
-    queryFn: ({ pageParam = 1 }) => fetchPost(pageParam),
-    getNextPageParam: (lastPage) => {
-      console.log(lastPage.nextPage);
-      console.log(
-        `this is what I returned last time ${
-          lastPage.nextPage > 0 ? lastPage.nextPage : undefined
-        }`
-      );
-      return lastPage.nextPage > 0 ? lastPage.nextPage : undefined;
-    },
-  });
-
-  if (status === "loading") return <LoadingSpinner />;
-
-  if (status === "error") return <h4>Ups!, {error}</h4>;
 
   return (
     <div className="">
-      {data.pages.map((page) =>
-        page.posts.map((mid) => <PostCard id={mid} key={crypto.randomUUID()} />)
-      )}
+      {postList.map((page) => (
+        <PostCard id={page} key={crypto.randomUUID()} />
+      ))}
       <div className="flex justify-center">
-        <button className="btn mb-96" onClick={fetchNextPage}>
-          {hasNextPage ? "More" : "No more posts..."}
+        <button
+          className={
+            hasMorePages.current ? "btn mb-96" : "btn mb-96 btn-disabled"
+          }
+          onClick={handleMorePost}
+        >
+          {hasMorePages.current ? "more" : "No more posts"}
         </button>
       </div>
     </div>

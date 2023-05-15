@@ -11,9 +11,12 @@ import { verifyToken } from "./utilites.js";
 export const appRouter = Router();
 
 const getPost = async (req, res) => {
-  const post = await Post.findOne({ _id: req.params.id });
-  return res.status(200).json(post);
-  //return res.status(OK_CONST).json(animal);
+  try {
+    const post = await Post.findOne({ _id: req.params.id });
+    return res.status(200).json(post);
+  } catch (err) {
+    console.log(`get post, ${req.params.id} (${err.message})`);
+  }
 };
 
 const getUser = async (req, res) => {
