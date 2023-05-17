@@ -15,7 +15,7 @@ export const automatic = async () => {
   console.log("Here");
 
   const jokes = await getJokesApi(limit);
-  await savePosts(jokes, "§JOKESQEUAL", "joke");
+  await savePosts(jokes, "§JOKESQUEAL", "joke");
   const facts = await getFactsApi(limit);
   await savePosts(facts, "§FACTSQUEAL", "fact");
 };

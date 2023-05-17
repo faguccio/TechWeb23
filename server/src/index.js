@@ -28,7 +28,7 @@ async function connectDB() {
   console.log(uri);
   await mongoose.connect(uri);
   console.log("Connected to DB");
-  migration();
+  //migration();
 }
 
 setInterval(automatic, Const.AUTOMATIC_POST_TIME);

@@ -11,6 +11,17 @@ export const getChannelPosts = async (id) => {
   }
 };
 
+export const getChannelPostByName = async (name) => {
+  try {
+    const channel = await Channel.findOne({ name: name });
+    return channel.posts
+      .sort((objA, objB) => Number(objB.timestamp) - Number(objA.timestamp))
+      .map((post) => post.content);
+  } catch (err) {
+    console.log(`get channel by name service, ${name} (${err.message})`);
+  }
+};
+
 export const addPostToChannel = async (channel_ID, post_ID, timestamp) => {
   try {
     const channel = await Channel.findOne({ _id: channel_ID });

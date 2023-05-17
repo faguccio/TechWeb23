@@ -1,13 +1,18 @@
 import * as Const from "../const.js";
 import * as channelService from "../services/channel-service.js";
 
-export const getChannelPosts = async (req, res) => {
+export const getChannelPosts = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    const ret = await channelService.getChannelPosts(id);
-    return res.status(Const.STATUS_OK).json(ret);
+    let name = req.params.name;
+    name = ["§", "@"].includes(name[0]) ? name : "#" + name;
+    if (name[0] == "@") {
+      //ritorna i post inviati dall'utente, dovranno essere leggibili dal pubblico
+    }
+    const ret = await channelService.getChannelPostByName(name);
+    res.locals.content = ret;
+    next();
   } catch (err) {
-    console.log(`get channel's posts route, ${id} (${err.message})`);
+    console.log(`get channel's posts route by name  (${err.message})`);
   }
 };
 

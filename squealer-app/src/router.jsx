@@ -20,8 +20,9 @@ export const pages = [
     id: 1,
   },
   {
-    path: "/channel/:name",
-    name: "channelView",
+    path: "/channels/:name",
+    default: "/channels/§JOKESQUEAL",
+    name: "channel",
     element: <ChannelPage />,
     displayNav: true,
     id: 2,
@@ -36,7 +37,7 @@ export const linkList = pages
   .filter((page) => page.displayNav)
   .map((page) => (
     <Link
-      to={page.path}
+      to={page.default ? page.default : page.path}
       className="btn btn-ghost normal-case text-xl"
       onClick={() => window.scrollTo(0, 0)}
       key={page.id}

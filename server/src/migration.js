@@ -139,7 +139,7 @@ export const migration = async () => {
     },
     {
       _id: new Types.ObjectId("6459038a3a8419267a26f5c0"),
-      name: "§JOKESQEUAL",
+      name: "§JOKESQUEAL",
       owners: [],
       allowed_readers: [],
       allowed_writers: [],
