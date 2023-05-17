@@ -1,9 +1,10 @@
+import { Route, Link } from "react-router-dom";
+
 import HomePage from "./pages/HomePage";
-import AccountPage from "./pages/AccountPage";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
+import AccountPage from "./pages/AccountPage";
 
-import { Route, Link } from "react-router-dom";
 
 export const pages = [
   {
@@ -14,23 +15,23 @@ export const pages = [
     id: 0,
   },
   {
-    path: "/account",
-    name: "account",
-    element: <AccountPage />,
-    displayNav: true,
-    id: 1,
-  },
-  {
     path: "/register",
     name: "register",
     element: <RegisterPage />,
     displayNav: false,
-    id: 2,
+    id: 1,
   },
   {
     path: "/login",
     name: "login",
     element: <LoginPage />,
+    displayNav: false,
+    id: 2,
+  },
+  {
+    path: "/account",
+    name: "account",
+    element: <AccountPage />,
     displayNav: false,
     id: 3,
   },

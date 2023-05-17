@@ -1,20 +1,8 @@
 import { useForm } from 'react-hook-form';
-import * as Login from './LoginPage';
-
+import { loginUser } from '../utils';
 
 function RegisterPage(){
     const { register, handleSubmit } = useForm();
-    const onSubmit = data => {
-        //console.log(data);
-        registerUser(data.username, data.password, data.propic).then((res) => {
-            //console.log("res", res);
-            if(res.status === "success"){
-                Login.loginUser(data);
-            }
-            
-        });
-        
-    }
 
     const registerUser = async (username, password, propic) => {
         const res = await fetch(
@@ -36,10 +24,23 @@ function RegisterPage(){
         return ret;
     }
 
+    const onSubmit = data => {
+        //console.log(data);
+        registerUser(data.username, data.password, data.propic).then((res) => {
+            //console.log("res", res);
+            if(res.status === "success"){
+                loginUser(data);
+            }
+            
+        });
+        
+    }
+
+
 
     return(
-        <div className="flex flex-col items-center justify-center h-screen">
-            <div className="flex flex-col items-center justify-center w-96">
+        <div className="flex flex-col items-center justify-center h-full">
+            <div className="flex flex-col items-center justify-center w-96 mt-24">
                 <h1 className="text-4xl font-bold mb-8">Register</h1>
                 <div className="alert alert-error shadow-lg hidden flex-row justify-start w-full mb-4"
                     role="alert" 
@@ -51,8 +52,8 @@ function RegisterPage(){
                     <input className="w-full mb-4 p-2 rounded-md" type="text" placeholder="Username" {...register("username", {required:true})}/>
                     <input className="w-full mb-4 p-2 rounded-md" type="password" placeholder="Password" {...register("password", {required:true})}/>
                     <input className="w-full mb-4 p-2 rounded-md" type="url" placeholder="Profile Pic" {...register("propic")}/>
-                    <button className="w-full mb-4 p-2 rounded-md bg-blue-500 text-white font-bold" type="submit">Register</button>
-                    <p className="text-sm">Already have an account? <a className="text-blue-500" href="/login">Login</a></p>
+                    <button className="w-full mb-4 p-2 rounded-md bg-blue-500 text-white font-bold" type="submit">Sign up</button>
+                    <p className="text-sm">Already have an account? <a className="text-blue-500" href="/login">Sign in</a></p>
                 </form>
             </div>
         </div>              
