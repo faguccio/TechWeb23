@@ -2,6 +2,7 @@ export const SERVER_PORT = 3000;
 export const BAD_REQUEST = 400;
 export const STATUS_OK = 200;
 export const STATUS_UNAUTHORIZED = 401;
+export const STATUS_NOT_FOUND = 404;
 
 export const SWAGGER_OPTION = {
   definition: {

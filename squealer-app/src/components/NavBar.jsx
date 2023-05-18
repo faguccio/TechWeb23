@@ -15,7 +15,6 @@ function NavBar() {
   if(localStorage.getItem("userID") !== null){
 
     const userID = localStorage.getItem("userID").toString();
-    console.log(userID); 
 
     const fetchUser = async () => {
       const res = await fetch(`http://localhost:3000/user/${userID}`);
@@ -34,29 +33,6 @@ function NavBar() {
     }, [user]);
   }
 
-  /*
-  const userID = localStorage.getItem("userID").toString();
-
-  const fetchUser = async () => {
-    await fetch(`http://localhost:3000/user/${userID}`).then((res) => {
-      return res.json();
-    });
-  }
-
-  const { data } = useQuery(["user", userID], fetchUser);
-
-  console.log(userID); 
-
-  if (userID) {
-    console.log(data.propic_path);
-    
-    if (data.propic_path !== "") {
-      setAvatarPath(data.propic_path);
-    }
-    
-
-  }
-*/
 
   return (
     <div className="md:flex md:justify-between sticky z-10 top-0 bg-base-100 items-center">
@@ -79,14 +55,14 @@ function NavBar() {
               ? (
                 <NavLink to="/account">
                   <div className="avatar">
-                    <div className="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-0">
+                    <div className="w-12 rounded-full ring ring-offset-base-100 ring-offset-0">
                       <img src={avatarPath} />
                     </div>
                   </div>
                 </NavLink>
               ) : (
                 <NavLink to="/login">
-                  <button className="btn btn-sm btn-outline">Sign in</button>
+                  <button className="btn btn-sm btn-outline">Log in</button>
                 </NavLink>
               )
             }
@@ -133,7 +109,7 @@ function NavBar() {
             </NavLink>
           ) : (
             <NavLink to="/login">
-              <button className="btn btn-outline">Sign in</button>
+              <button className="btn btn-outline">Log in</button>
             </NavLink>
           )
         }

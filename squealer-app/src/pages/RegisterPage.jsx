@@ -42,12 +42,6 @@ function RegisterPage(){
         <div className="flex flex-col items-center justify-center h-full">
             <div className="flex flex-col items-center justify-center w-96 mt-24">
                 <h1 className="text-4xl font-bold mb-8">Register</h1>
-                <div className="alert alert-error shadow-lg hidden flex-row justify-start w-full mb-4"
-                    role="alert" 
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span id='error_message' style={{margin:0}}></span>
-                </div>
                 <form className="flex flex-col items-center justify-center" onSubmit={handleSubmit(onSubmit)}>
                     <input className="w-full mb-4 p-2 rounded-md" type="text" placeholder="Username" {...register("username", {required:true})}/>
                     <input className="w-full mb-4 p-2 rounded-md" type="password" placeholder="Password" {...register("password", {required:true})}/>

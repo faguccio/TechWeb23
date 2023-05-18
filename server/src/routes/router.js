@@ -23,12 +23,16 @@ const getUser = async (req, res) => {
 
 //routes
 appRouter.get("/post/:id", getPost);
-appRouter.get("/user/:id", getUser);
 appRouter.patch("/post/:id", useLike);
 appRouter.get("/home/post/:id", getHomePagePosts);
 
+appRouter.get("/user/:id", getUser);
+appRouter.patch("/user/:id", userRoutes.updateUser);
+appRouter.delete("/user/:id", userRoutes.deleteUser);
+
 appRouter.post("/users/register", userRoutes.register);
 appRouter.post("/users/login", userRoutes.login);
+
 
 appRouter.get("/personal", verifyToken, (req, res) => {
   res.json(`verificato: ${JSON.stringify(req.authData)}`);
