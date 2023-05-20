@@ -1,11 +1,10 @@
-import { Route, Link } from "react-router-dom";
+import { Route, Link, createBrowserRouter } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import AccountPage from "./pages/AccountPage";
 import ChannelPage from "./pages/ChannelPage";
-
 
 export const pages = [
   {
@@ -42,13 +41,13 @@ export const pages = [
     name: "channel",
     element: <ChannelPage />,
     displayNav: true,
-    id: 2,
+    id: 4,
   },
 ];
 
-export const routeList = pages.map((page) => (
+/*export const routeList = pages.map((page) => (
   <Route path={page.path} key={page.id} element={page.element} />
-));
+));*/
 
 export const linkList = pages
   .filter((page) => page.displayNav)

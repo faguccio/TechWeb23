@@ -31,6 +31,7 @@ appRouter.get("/user/:id", getUser);
 appRouter.patch("/post/:id", useLike);
 appRouter.get("/home/post/:id", getHomePagePosts);
 
+appRouter.get("/user/channels/all", verifyToken, userRoutes.getUserChannelList);
 appRouter.post("/users/register", userRoutes.register);
 appRouter.post("/users/login", userRoutes.login);
 

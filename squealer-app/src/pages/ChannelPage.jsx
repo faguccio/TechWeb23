@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import { useEffect, useState, useRef } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
-import SearchBar from "../components/SearchBar";
+import ChannelBar from "../components/ChannelBar";
 
 function ChannelPage() {
   const channelName = useParams().name;
@@ -46,22 +46,24 @@ function ChannelPage() {
   }, []);
 
   return (
-    <div className="">
-      <div className="flex justify-end mr-6 mt-3">
-        <SearchBar />
+    <div className="flex justify-center">
+      <div className="mr-6 bg-orange-200">
+        <ChannelBar />
       </div>
-      {postList.map((page) => (
-        <PostCard id={page} key={crypto.randomUUID()} />
-      ))}
-      <div className="flex justify-center">
-        <button
-          className={
-            hasMorePages.current ? "btn mb-96" : "btn mb-96 btn-disabled"
-          }
-          onClick={handleMorePost}
-        >
-          {hasMorePages.current ? "more" : "No more posts"}
-        </button>
+      <div className="">
+        {postList.map((page) => (
+          <PostCard id={page} key={crypto.randomUUID()} />
+        ))}
+        <div className="flex justify-center">
+          <button
+            className={
+              hasMorePages.current ? "btn mb-96" : "btn mb-96 btn-disabled"
+            }
+            onClick={handleMorePost}
+          >
+            {hasMorePages.current ? "more" : "No more posts"}
+          </button>
+        </div>
       </div>
     </div>
   );

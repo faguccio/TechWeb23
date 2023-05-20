@@ -19,19 +19,29 @@ export const login = async (req, res) => {
       req.body.name,
       req.body.password
     );
-    
+
     if (!authData.valid_credentials) {
       return res
         .status(Const.STATUS_UNAUTHORIZED)
         .json({ message: authData.message });
-    }else{
+    } else {
       const userID = authData.id;
       const token = jwt.sign({ authData: authData }, Const.SECRET);
-      return res.status(Const.STATUS_OK).json({userID, token });
+      return res.status(Const.STATUS_OK).json({ userID, token });
     }
   } catch (err) {
     // sara necessario ritornare l'errore di unauthorized nel caso di credenziali sbagliate
     console.log(`login user route,(${err.message})`);
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
+  }
+};
+
+export const getUserChannelList = async (req, res) => {
+  try {
+    const names = await userService.getUserChannels(req.authData.id);
+    return res.status(Const.STATUS_OK).json(names);
+  } catch (err) {
+    console.log(`get channel list, (${err.message})`);
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
   }
 };
