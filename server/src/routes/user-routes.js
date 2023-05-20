@@ -65,3 +65,23 @@ export const deleteUser = async (req, res) => {
     console.log(`Delete user service, ${id} (${err.message})`);
   }
 } 
+
+export const getManagers = async (req, res) => {
+  try{
+    const managers = await User.find({type: "manager", managing: null});
+    return res.status(Const.STATUS_OK).json(managers);
+  }catch(err){
+    console.log(`Get managers service, (${err.message})`);
+  }
+
+}
+
+export const getManager = async (req, res) => {
+  try{
+    const vipId = req.params.id;
+    const manager = await User.findOne({type: "manager", managing: vipId});
+    return res.status(Const.STATUS_OK).json(manager);
+  }catch(err){
+    console.log(`Get manager service, (${err.message})`);
+  }
+}

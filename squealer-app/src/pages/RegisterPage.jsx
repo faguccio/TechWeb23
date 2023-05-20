@@ -5,6 +5,14 @@ function RegisterPage(){
     const { register, handleSubmit } = useForm();
 
     const registerUser = async (username, password, propic) => {
+        let user = {
+            name: username,
+            password: password,
+        }
+        if(propic!==""){
+            user.propic_path = propic;
+        }
+        console.log(user);
         const res = await fetch(
             `http://localhost:3000/users/register`,
             {
@@ -12,11 +20,7 @@ function RegisterPage(){
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    name: username,
-                    password: password,
-                    propic_path: propic
-                }),
+                body: JSON.stringify(user),
             }
         );
         const ret = await res.json();
