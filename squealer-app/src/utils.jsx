@@ -29,9 +29,9 @@ const loginRequest = async (username, password) => {
 
 export function loginUser (inputData) {
     loginRequest(inputData.username, inputData.password).then((res) => {
-        //console.log("res", res);
+        
         if(res.status === Const.STATUS_OK){
-            document.querySelector(".alert").classList.replace("flex", "hidden")
+            //document.querySelector(".alert").classList.replace("flex", "hidden")
             //remove old token and userID from Local Storage and add new ones
             localStorage.removeItem("token");
             localStorage.removeItem("userID");

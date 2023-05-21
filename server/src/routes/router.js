@@ -27,10 +27,15 @@ const getUser = async (req, res) => {
 
 //routes
 appRouter.get("/post/:id", getPost);
-appRouter.get("/user/:id", getUser);
 appRouter.patch("/post/:id", useLike);
 appRouter.get("/home/post/:id", getHomePagePosts);
 
+appRouter.get("/user/:id", getUser);
+appRouter.patch("/user/:id", userRoutes.updateUser);
+appRouter.delete("/user/:id", userRoutes.deleteUser);
+appRouter.get("/user/manager/:id", userRoutes.getManager);
+
+appRouter.get("/users/managers/", userRoutes.getManagers);
 appRouter.post("/users/register", userRoutes.register);
 appRouter.post("/users/login", userRoutes.login);
 
