@@ -34,40 +34,16 @@ function NavBar() {
     }, [user]);
   }
 
-  /*
-  const userID = localStorage.getItem("userID").toString();
-
-  const fetchUser = async () => {
-    await fetch(`http://localhost:3000/user/${userID}`).then((res) => {
-      return res.json();
-    });
-  }
-
-  const { data } = useQuery(["user", userID], fetchUser);
-
-  console.log(userID); 
-
-  if (userID) {
-    console.log(data.propic_path);
-    
-    if (data.propic_path !== "") {
-      setAvatarPath(data.propic_path);
-    }
-    
-
-  }
-*/
-
   return (
     <div>
-      <div className="bg-primary md:flex md:justify-between sticky z-10 top-0 bg-base-100 items-center">
+      <div className="bg-primary md:flex md:justify-between px-2 md:py-2 sticky z-10 top-0 bg-base-100 items-center">
         <div className="flex justify-between items-center">
           <div className="-ml-2 md:ml-0">
             <Link to="/">
               <img
-                className="py-2 scale-50 md:scale-75"
+                className="scale-50 md:scale-75"
                 src="https://seeklogo.com/images/V/vulture-logo-AF847BCA43-seeklogo.com.png"
-                width="100px"
+                width="75px"
                 alt="website logo"
                 onClick={() => window.scrollTo(0, 0)}
               />
