@@ -9,4 +9,9 @@
 
 ## TODO
 
-La home e la channel view vanno fuse. La channel bar e la search bar possono stare insieme, mentre la channel view e' solo una richiesta api diversa
+### Squealer app
+
+- La home e la channel view vanno fuse. La channel bar e la search bar possono stare insieme, mentre la channel view e' solo una richiesta api diversa
+- Manca la parte di generazione messaggi automatici da parte del client
+- iscriversi (e togliersi) ai canali
+- creare canali
