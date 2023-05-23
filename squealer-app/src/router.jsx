@@ -5,6 +5,7 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import AccountPage from "./pages/AccountPage";
 import ChannelPage from "./pages/ChannelPage";
+import SearchPage from "./pages/SearchPage";
 
 export const pages = [
   {
@@ -42,6 +43,13 @@ export const pages = [
     element: <ChannelPage />,
     displayNav: true,
     id: 4,
+  },
+  {
+    path: "/search/posts",
+    name: "search",
+    element: <SearchPage />,
+    displayNav: false,
+    id: 5,
   },
 ];
 

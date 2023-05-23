@@ -35,3 +35,13 @@ export const savePost = async (postData) => {
     return { status: "failure" };
   }
 };
+
+export const searchBody = async (keyword) => {
+  try {
+    const posts = await Post.find({ text: { $regex: keyword } });
+    return posts;
+  } catch {
+    console.log(`search body, ${keyword} (${err.message})`);
+    return { status: "failure" };
+  }
+};

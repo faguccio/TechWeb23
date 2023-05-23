@@ -44,5 +44,5 @@ export const standard_chars = {
 };
 
 export const SECRET = "adorousarejavascript";
-export const AUTOMATIC_POST_TIME = 1000 * 60 * 25;
+export const AUTOMATIC_POST_TIME = 1000 * 60 * 15;
 export const ninja_api_key = "ll0U185qnJvIwusy3ldNXw==CJaCR8zTdl5AxiGQ";
