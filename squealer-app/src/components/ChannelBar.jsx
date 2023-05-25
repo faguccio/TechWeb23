@@ -3,6 +3,11 @@ import { Route, useNavigate, Link } from "react-router-dom";
 
 function ChannelBar() {
   const [channel, setChannel] = useState([]);
+  const navigate = useNavigate();
+
+  if (!localStorage.token) {
+    navigate("/login");
+  }
 
   const getChannelList = async () => {
     const res = await fetch(`http://localhost:3000/user/channels/all`, {

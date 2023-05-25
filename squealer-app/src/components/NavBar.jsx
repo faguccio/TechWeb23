@@ -36,7 +36,7 @@ function NavBar() {
 
   return (
     <div>
-      <div className="bg-primary md:flex md:justify-between px-2 md:py-2 sticky z-10 top-0 bg-base-100 items-center">
+      <div className="bg-primary md:flex md:justify-between px-2 md:py-2 sticky z-10 top-0 items-center">
         <div className="flex justify-between items-center">
           <div className="-ml-2 md:ml-0">
             <Link to="/">
