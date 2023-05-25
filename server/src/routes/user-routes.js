@@ -19,15 +19,15 @@ export const login = async (req, res) => {
       req.body.name,
       req.body.password
     );
-    
+
     if (!authData.valid_credentials) {
       return res
         .status(Const.STATUS_UNAUTHORIZED)
         .json({ message: authData.message });
-    }else{
+    } else {
       const userID = authData.id;
       const token = jwt.sign({ authData: authData }, Const.SECRET);
-      return res.status(Const.STATUS_OK).json({userID, token });
+      return res.status(Const.STATUS_OK).json({ userID, token });
     }
   } catch (err) {
     // sara necessario ritornare l'errore di unauthorized nel caso di credenziali sbagliate
@@ -42,8 +42,10 @@ export const updateUser = async (req, res) => {
     const changes = req.body;
     const user = await User.findByIdAndUpdate(id, changes);
     if (!user) {
-      return res.status(Const.STATUS_NOT_FOUND).json({ message: "User not found, impossible to update" });
-    }else{
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ message: "User not found, impossible to update" });
+    } else {
       return res.status(Const.STATUS_OK).json({ message: "User updated" });
     }
   } catch (err) {
@@ -56,31 +58,41 @@ export const deleteUser = async (req, res) => {
     const id = req.params.id;
     const user = await User.findByIdAndDelete(id);
     if (!user) {
-      return res.status(Const.STATUS_NOT_FOUND).json({ message: "User not found, impossible to delete" });
-    }else{
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ message: "User not found, impossible to delete" });
+    } else {
       return res.status(Const.STATUS_OK).json({ message: "User deleted" });
     }
   } catch (err) {
     console.log(`Delete user service, ${id} (${err.message})`);
   }
-} 
+};
 
 export const getManagers = async (req, res) => {
-  try{
-    const managers = await User.find({type: "manager", managing: null});
+  try {
+    const managers = await User.find({ type: "manager", managing: null });
     return res.status(Const.STATUS_OK).json(managers);
-  }catch(err){
+  } catch (err) {
     console.log(`Get managers service, (${err.message})`);
   }
-
-}
+};
 
 export const getManager = async (req, res) => {
-  try{
+  try {
     const vipId = req.params.id;
-    const manager = await User.findOne({type: "manager", managing: vipId});
+    const manager = await User.findOne({ type: "manager", managing: vipId });
     return res.status(Const.STATUS_OK).json(manager);
-  }catch(err){
+  } catch (err) {
     console.log(`Get manager service, (${err.message})`);
   }
-}
+};
+export const getUserChannelList = async (req, res) => {
+  try {
+    const names = await userService.getUserChannels(req.authData.id);
+    return res.status(Const.STATUS_OK).json(names);
+  } catch (err) {
+    console.log(`get channel list, (${err.message})`);
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
+  }
+};

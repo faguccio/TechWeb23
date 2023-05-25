@@ -44,6 +44,15 @@ export const channelNameToId = async (channelName) => {
   }
 };
 
+export const channelIdToName = async (id) => {
+  try {
+    const channel = await Channel.findOne({ _id: id });
+    return channel.name;
+  } catch (err) {
+    console.log(`get channel name from id service, ${id} (${err.message})`);
+  }
+};
+
 export const addPostToChannelByName = async (
   channelName,
   post_ID,

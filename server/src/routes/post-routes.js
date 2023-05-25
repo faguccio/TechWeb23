@@ -1,6 +1,7 @@
 import { updateLike } from "../services/post-service.js";
 import * as Const from "../const.js";
 import { getUserHome } from "../services/user-service.js";
+import * as postService from "../services/post-service.js";
 
 export const useLike = async (req, res) => {
   try {
@@ -32,5 +33,19 @@ export const getHomePagePosts = async (req, res) => {
     return res.status(Const.STATUS_OK).json(ret);
   } catch (err) {
     console.log(`get home page post, ${user} (${err.message})`);
+  }
+};
+
+export const searchPostBody = async (req, res) => {
+  const keyword = req.query.kw;
+
+  try {
+    if (keyword) {
+      let posts = await postService.searchBody(keyword);
+      posts = posts.map((post) => post._id);
+      return res.status(Const.STATUS_OK).json(posts);
+    }
+  } catch {
+    console.log(`search post body, (${err.message})`);
   }
 };
