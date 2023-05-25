@@ -1,6 +1,6 @@
 import HomePage from "./pages/HomePage";
 import AccountPage from "./pages/AccountPage";
-
+import NewPostPage from "./pages/NewPostPage";
 import { Route, Link } from "react-router-dom";
 
 export const pages = [
@@ -11,6 +11,14 @@ export const pages = [
     displayNav: false,
     id: 0,
   },
+      {
+    path: "/newpost",
+    name: "new post",
+    element: <NewPostPage />,
+    displayNav: true,
+    id: 1,
+    class: "btn btn-info",
+  },
   {
     path: "/account",
     name: "account",
@@ -18,6 +26,7 @@ export const pages = [
     displayNav: true,
     id: 1,
   },
+
 ];
 
 export const routeList = pages.map((page) => (
