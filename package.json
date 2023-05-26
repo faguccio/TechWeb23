@@ -1,5 +1,13 @@
 {
-  "dependencies": {
-    "react-hook-form": "^7.43.9"
-  }
+  "name": "TechWeb23",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "srv": "docker-compose up > /dev/null 2> /dev/null & yarn --cwd ./server dev",
+    "sqlr": "footclient yarn --cwd ./squealer-app dev & yarn srv",
+    "man": "yarn --cwd ./manager-dash dev & footclient yarn srv"
+  },
+  "repository": "git@github.com:faguccio/TechWeb23.git",
+  "author": "Fabio <faga2703@gmail.com>",
+  "license": "MIT"
 }

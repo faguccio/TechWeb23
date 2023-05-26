@@ -6,6 +6,8 @@ import * as Const from "./const.js";
 
 export const migration = async () => {
   await Post.deleteMany();
+  await User.deleteMany();
+  await Channel.deleteMany();
 
   const postList = [
     {
@@ -55,8 +57,6 @@ export const migration = async () => {
     item.save();
   });
 
-  await User.deleteMany();
-
   const userList = [
     {
       _id: new Types.ObjectId("64569d259d19f7f3611babe0"),
@@ -102,8 +102,6 @@ export const migration = async () => {
     item = new User(item);
     item.save();
   });
-
-  await Channel.deleteMany();
 
   const channelList = [
     {
