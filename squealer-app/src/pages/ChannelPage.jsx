@@ -1,10 +1,11 @@
+import { useParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import { useEffect, useState, useRef } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
-import InfiniteScroll from "react-infinite-scroller";
+import SearchBar from "../components/SearchBar";
 
-function HomePage() {
-  const userID = "64569d259d19f7f3611babe1";
+function ChannelPage() {
+  const channelName = useParams().name;
   const [postList, setPostList] = useState([]);
   const pageN = useRef(1);
   const hasMorePages = useRef(true);
@@ -13,10 +14,10 @@ function HomePage() {
   const limit = 2;
   const fetchPost = async (page) => {
     console.log(
-      `http://localhost:3000/home/post/${userID}?page=${page}&limit=${limit}`
+      `http://localhost:3000/channels/${channelName}?page=${page}&limit=${limit}`
     );
     const res = await fetch(
-      `http://localhost:3000/home/post/${userID}?page=${page}&limit=${limit}`
+      `http://localhost:3000/channels/${channelName}?page=${page}&limit=${limit}`
     );
 
     const ret = await res.json();
@@ -29,7 +30,9 @@ function HomePage() {
     fetching.current = true;
     const res = await fetchPost(pageN.current);
     if (res.length > 1) {
-      setPostList(postList.concat(res).filter((post) => post != null));
+      setPostList([
+        ...new Set(postList.concat(res).filter((post) => post != null)),
+      ]);
       pageN.current += 1;
     } else {
       console.log("No more posts to load!");
@@ -44,6 +47,9 @@ function HomePage() {
 
   return (
     <div className="">
+      <div className="flex justify-end mr-6 mt-3">
+        <SearchBar />
+      </div>
       {postList.map((page) => (
         <PostCard id={page} key={crypto.randomUUID()} />
       ))}
@@ -61,4 +67,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default ChannelPage;

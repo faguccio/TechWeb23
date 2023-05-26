@@ -20,3 +20,20 @@ export const verifyToken = async (req, res, next) => {
       .json("Authentication header not found");
   }
 };
+
+export const pagination = async (req, res) => {
+  const page = Number(req.query.page);
+  const limit = Number(req.query.limit);
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  try {
+    let allPages = res.locals.content;
+    const pageContent = allPages.slice(startIndex, endIndex);
+    const ret = pageContent;
+    return res.status(Const.STATUS_OK).json(ret);
+  } catch (err) {
+    console.log(`pagination middleware, (${err.message})`);
+    return res.status(Const.BAD_REQUEST).json({ error: "bad paginaiton" });
+  }
+};

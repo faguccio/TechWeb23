@@ -8,7 +8,7 @@ const channelSchema = new Schema({
   allowed_readers: [mongoose.Types.ObjectId],
   allowed_writers: [mongoose.Types.ObjectId],
 
-  posts: [mongoose.Types.ObjectId],
+  posts: [{ content: mongoose.Types.ObjectId, timestamp: Date }],
 });
 
 export const Channel = mongoose.model("Channel", channelSchema);

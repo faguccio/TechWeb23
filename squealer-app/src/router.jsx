@@ -1,7 +1,11 @@
-import HomePage from "./pages/HomePage";
-import AccountPage from "./pages/AccountPage";
-import NewPostPage from "./pages/NewPostPage";
 import { Route, Link } from "react-router-dom";
+
+import HomePage from "./pages/HomePage";
+import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
+import AccountPage from "./pages/AccountPage";
+import ChannelPage from "./pages/ChannelPage";
+import NewPostPage from "./pages/NewPostPage";
 
 export const pages = [
   {
@@ -10,6 +14,20 @@ export const pages = [
     element: <HomePage />,
     displayNav: false,
     id: 0,
+  },
+  {
+    path: "/register",
+    name: "register",
+    element: <RegisterPage />,
+    displayNav: false,
+    id: 1,
+  },
+  {
+    path: "/login",
+    name: "login",
+    element: <LoginPage />,
+    displayNav: false,
+    id: 2,
   },
       {
     path: "/newpost",
@@ -23,8 +41,16 @@ export const pages = [
     path: "/account",
     name: "account",
     element: <AccountPage />,
+    displayNav: false,
+    id: 3,
+  },
+  {
+    path: "/channels/:name",
+    default: "/channels/§JOKESQUEAL",
+    name: "channel",
+    element: <ChannelPage />,
     displayNav: true,
-    id: 1,
+    id: 2,
   },
 
 ];
@@ -37,7 +63,7 @@ export const linkList = pages
   .filter((page) => page.displayNav)
   .map((page) => (
     <Link
-      to={page.path}
+      to={page.default ? page.default : page.path}
       className="btn btn-ghost normal-case text-xl"
       onClick={() => window.scrollTo(0, 0)}
       key={page.id}
