@@ -6,6 +6,7 @@
   - soluzione merdosa: elimino duplicati e faccio pagine abbastanza lunghe che non si nota se ne mancano alcuni (non vengono postati piu' post di quanti ne contiene una pagina nel frattempo)
 
 - deleted user: quando faccio la fetch di un utente per un post e lui e' eliminato metto come utente deleted user
+- Postcard finche non carica l'utente bugga l'immagine
 
 ## TODO
 
@@ -15,3 +16,4 @@
 - Manca la parte di generazione messaggi automatici da parte del client
 - iscriversi (e togliersi) ai canali
 - creare canali
+- Postcard non mostra destinatari
