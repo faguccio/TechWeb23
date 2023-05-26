@@ -39,7 +39,7 @@ function AccountPage() {
   }
 
   const queryClient = useQueryClient();
-  const { data: user, status } = useQuery(["user", userID], fetchUser);
+  const { data: user, status } = useQuery(["user"], fetchUser);
   const {mutate} = useMutation(upgradeAccount, {
     onSuccess: () => {
       queryClient.invalidateQueries("user", userID);
@@ -155,10 +155,10 @@ function AccountPage() {
       headers: { Authorization: localStorage.token },
     });
     const ret =  await res.json();
-    //console.log("managers:",ret); 
+    console.log("managers:",ret); 
     //setManagers(ret);
     return ret;
-  }
+  }     
   
   const fetchManager = async () => {
     const res = await fetch(`http://localhost:3000/userVip/manager`,{
@@ -196,21 +196,21 @@ function AccountPage() {
     return ret;
   }
   
-  const { data: manager, status: statusManager } = useQuery(["managerByUser", userID], fetchManager, {enabled: !!user && user.type === "vip"});
+  const { data: manager, status: statusManager } = useQuery(["managerByUser"], fetchManager, {enabled: !!user && user.type === "vip"});
   const {mutate: mutateManager} = useMutation(chooseManager, {
     onSuccess: () => {
       queryClient.invalidateQueries("managerByUser", userID);
     },
   });
   const {mutate: mutateRemoveManager} = useMutation(removeManager, {
-    onSuccess: () => {
+    onSuccess: () => {  
       queryClient.invalidateQueries("availableManagers");
       queryClient.invalidateQueries("managerByUser", userID);
     },
   });
   const { data: availableManagers, status: statusAvailableManagers } = useQuery("availableManagers", fetchAvailableManagers, {enabled: !!user && user.type === "vip"} );
   const userManaged = user?.managing;
-  const { data: userVip, status: statusUserVip } = useQuery(["userManaged", userManaged], fetchVipManaged, {enabled: !!user && !!userManaged && user.type === "manager"});
+  const { data: userVip, status: statusUserVip } = useQuery(["userManaged"], fetchVipManaged, {enabled: !!user && !!userManaged && user.type === "manager"});
 
   const handleRemoveManager = () => {
     mutateRemoveManager();
@@ -226,9 +226,9 @@ function AccountPage() {
       );
     }
     if(statusManager === "success"){
-      //console.log("success manager:",manager);
-      if(manager === null){
-        if(statusAvailableManagers === "success"){
+      console.log("success manager:",manager);
+      if(manager == null){
+        if(statusAvailableManagers === "success"){ 
           return(
             <button
               htmlFor="modal-smm"
@@ -299,13 +299,13 @@ function AccountPage() {
         <h1 className="text-4xl font-bold text-center hidden">Profile Page</h1>
         <div className="flex card shadow-lg compact bg-base-100 w-full mb-12 bg-teal-50">
           <div className="mt-4 ml-4">
-            {user.type == "normal" ? 
+            {user.type === "normal" ? 
               (<div className="badge ml-2">Normal</div>) : null}
-            {user.type == "vip" ?
+            {user.type === "vip" ?
               (<div className="badge badge-primary ml-2">Vip</div>) : null}
-            {user.type == "manager" ?
+            {user.type === "manager" ?
               (<div className="badge badge-primary ml-2">Manager</div>) : null}
-            {user.type == "admin" ?
+            {user.type === "admin" ?
               (<div className="badge badge-secondary ml-2">Moderator</div>) : null}
           </div>
           <div className="avatar px-10 py-2">
