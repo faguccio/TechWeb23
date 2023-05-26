@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Route, useNavigate, Link } from "react-router-dom";
 
-function ChannelBar() {
+function ChannelBar({ ccopy, setSub }) {
   const [channel, setChannel] = useState([]);
   const navigate = useNavigate();
 
@@ -16,6 +16,11 @@ function ChannelBar() {
     const ret = await res.json();
 
     setChannel(ret);
+    if (ccopy) {
+      ccopy.current = ret;
+      setSub(true);
+      console.log(setSub);
+    }
   };
 
   useEffect(() => {
@@ -43,14 +48,14 @@ function ChannelBar() {
           </Link>
         );
       })}{" "}
-      <a className="btn my-5">sium</a>
-      <a className="btn my-5">sium</a>
-      <a className="btn my-5">sium</a>
-      <a className="btn my-5">sium</a>
-      <a className="btn my-5">sium</a>
-      <a className="btn my-5">sium</a>
-      <a className="btn my-5">sium</a>
-      <a className="btn my-5">sium</a>
+      <a className="btn m-5">sium</a>
+      <a className="btn m-5">sium</a>
+      <a className="btn m-5">sium</a>
+      <a className="btn m-5">sium</a>
+      <a className="btn m-5">sium</a>
+      <a className="btn m-5">sium</a>
+      <a className="btn m-5">sium</a>
+      <a className="btn m-5">sium</a>
     </div>
   );
 }
