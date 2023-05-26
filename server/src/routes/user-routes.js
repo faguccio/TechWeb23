@@ -36,9 +36,22 @@ export const login = async (req, res) => {
   }
 };
 
+export const getUserInfo = async (req, res) => {
+  const user = await User.findOne({ _id: req.params.id});
+  return res.status(200).json({
+    name: user.name,
+    propic_path: user.propic_path,
+  });
+};
+
+export const getUser = async (req, res) => {
+  const user = await User.findOne({ _id: req.authData.id});
+  return res.status(200).json(user);
+};
+
 export const updateUser = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.authData.id;
     const changes = req.body;
     const user = await User.findByIdAndUpdate(id, changes);
     if (!user) {
@@ -55,7 +68,7 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.authData.id;
     const user = await User.findByIdAndDelete(id);
     if (!user) {
       return res
@@ -69,24 +82,69 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-export const getManagers = async (req, res) => {
+export const getAvailableManagers = async (req, res) => {
   try {
     const managers = await User.find({ type: "manager", managing: null });
     return res.status(Const.STATUS_OK).json(managers);
   } catch (err) {
-    console.log(`Get managers service, (${err.message})`);
+    console.log(`Get available managers service, (${err.message})`);
   }
 };
 
 export const getManager = async (req, res) => {
   try {
-    const vipId = req.params.id;
+    const vipId = req.authData.id;
     const manager = await User.findOne({ type: "manager", managing: vipId });
-    return res.status(Const.STATUS_OK).json(manager);
+    if(manager){
+      return res.status(Const.STATUS_OK).json(
+        {
+          _id: manager._id,
+          name: manager.name
+        }
+      );
+    }else
+      return res.status(Const.STATUS_OK).json(null);
   } catch (err) {
     console.log(`Get manager service, (${err.message})`);
   }
 };
+
+export const updateManager = async (req, res) => {
+  try {
+    const managerId = req.body.managerId;
+    const manager = await User.findByIdAndUpdate(managerId, {managing: req.body.managing});
+    if(manager){
+      return res.status(Const.STATUS_OK).json({message: "Manager updated"});
+    }else
+      return res.status(Const.STATUS_NOT_FOUND).json({message: "Manager not found, impossible to update"});
+  } catch (err) {
+    console.log(`Update manager service, (${err.message})`);
+  }
+};
+
+export const getVipManaged = async (req, res) => {
+  try {
+    const managerId = req.authData.id;
+    const manager = await User.findById(managerId);
+    if(manager){
+      const vip = await User.findById(manager.managing);
+      if(vip){
+        return res.status(Const.STATUS_OK).json(
+          {
+            _id: vip._id,
+            name: vip.name
+          }
+        );
+      }else
+        return res.status(Const.STATUS_OK).json(null);
+    }else
+      return res.status(Const.STATUS_NOT_FOUND).json({message: "Manager not found"});
+  } catch (err) {
+    console.log(`Get vip managed service, (${err.message})`);
+  }
+};
+
+
 export const getUserChannelList = async (req, res) => {
   try {
     const names = await userService.getUserChannels(req.authData.id);

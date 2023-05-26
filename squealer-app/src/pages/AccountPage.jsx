@@ -10,20 +10,23 @@ function AccountPage() {
     return;
   }
 
-  const userID = localStorage.getItem("userID").toString();
+  const userID = localStorage.userID;
 
-  const fetchUser = async (user_id) => {
-    const res = await fetch(`http://localhost:3000/user/${user_id}`);
-    console.log(res);
+  const fetchUser = async () => {
+    const res = await fetch(`http://localhost:3000/user`,{
+      headers: { Authorization: localStorage.token },
+    });
+    //console.log(res);
     return await res.json();
   };
 
   const upgradeAccount = async (inputData) =>{
 
-    const res = await fetch(`http://localhost:3000/user/${userID}`, {
+    const res = await fetch(`http://localhost:3000/user`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.token ,
       },
       body: JSON.stringify({
         type: inputData.type,
@@ -36,7 +39,7 @@ function AccountPage() {
   }
 
   const queryClient = useQueryClient();
-  const { data: user, status } = useQuery(["user", userID], () => fetchUser(userID));
+  const { data: user, status } = useQuery(["user", userID], fetchUser);
   const {mutate} = useMutation(upgradeAccount, {
     onSuccess: () => {
       queryClient.invalidateQueries("user", userID);
@@ -66,10 +69,11 @@ function AccountPage() {
     if(inputData.oldPassword === user.password){
       setModalChangePassword(false);
 
-      const res = await fetch(`http://localhost:3000/user/${userID}`, {
+      const res = await fetch(`http://localhost:3000/user`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: localStorage.token ,
         },
         body: JSON.stringify({
           password: inputData.newPassword
@@ -110,10 +114,11 @@ function AccountPage() {
     deleteAccount();
   }
   async function deleteAccount(){
-    const res = await fetch(`http://localhost:3000/user/${userID}`, {
+    const res = await fetch(`http://localhost:3000/user`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.token ,
       },
     });
     const ret = await res.json();
@@ -129,12 +134,14 @@ function AccountPage() {
   const chooseManager = async (inputData) =>{
     
     const managerId = inputData.managerId;
-    const res = await fetch(`http://localhost:3000/user/${managerId}`, {
+    const res = await fetch(`http://localhost:3000/userVip/manager`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.token ,
       },
       body: JSON.stringify({
+        managerId: managerId,
         managing: userID
       }),
     });
@@ -144,15 +151,19 @@ function AccountPage() {
   }
   
   const fetchAvailableManagers = async () => {
-    const res = await fetch(`http://localhost:3000/users/managers`);
+    const res = await fetch(`http://localhost:3000/userVip/managers`,{
+      headers: { Authorization: localStorage.token },
+    });
     const ret =  await res.json();
-    //console.log("return managers:",ret); 
+    //console.log("managers:",ret); 
     //setManagers(ret);
     return ret;
   }
   
   const fetchManager = async () => {
-    const res = await fetch(`http://localhost:3000/user/manager/${userID}`);
+    const res = await fetch(`http://localhost:3000/userVip/manager`,{
+      headers: { Authorization: localStorage.token },
+    });
     const ret =  await res.json();
     //console.log("manager:",ret);
     return ret;
@@ -160,12 +171,14 @@ function AccountPage() {
 
   const removeManager = async () =>{
     const managerId = manager._id;
-    const res = await fetch(`http://localhost:3000/user/${managerId}`, {
+    const res = await fetch(`http://localhost:3000/userVip/manager`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.token ,
       },
       body: JSON.stringify({
+        managerId: managerId,
         managing: null
       }),
     });
@@ -174,6 +187,15 @@ function AccountPage() {
     return ret;
   }
 
+  const fetchVipManaged = async () => {
+    const res = await fetch(`http://localhost:3000/userManager/vip`,{
+      headers: { Authorization: localStorage.token },
+    });
+    const ret =  await res.json();
+    //console.log("vip:",ret);
+    return ret;
+  }
+  
   const { data: manager, status: statusManager } = useQuery(["managerByUser", userID], fetchManager, {enabled: !!user && user.type === "vip"});
   const {mutate: mutateManager} = useMutation(chooseManager, {
     onSuccess: () => {
@@ -182,12 +204,13 @@ function AccountPage() {
   });
   const {mutate: mutateRemoveManager} = useMutation(removeManager, {
     onSuccess: () => {
+      queryClient.invalidateQueries("availableManagers");
       queryClient.invalidateQueries("managerByUser", userID);
     },
   });
   const { data: availableManagers, status: statusAvailableManagers } = useQuery("availableManagers", fetchAvailableManagers, {enabled: !!user && user.type === "vip"} );
   const userManaged = user?.managing;
-  const { data: userVip, status: statusUserVip } = useQuery(["userManaged", userManaged], () => fetchUser(userManaged), {enabled: !!user && !!userManaged && user.type === "manager"});
+  const { data: userVip, status: statusUserVip } = useQuery(["userManaged", userManaged], fetchVipManaged, {enabled: !!user && !!userManaged && user.type === "manager"});
 
   const handleRemoveManager = () => {
     mutateRemoveManager();
@@ -205,14 +228,16 @@ function AccountPage() {
     if(statusManager === "success"){
       //console.log("success manager:",manager);
       if(manager === null){
-        return(
-          <button
-            htmlFor="modal-smm"
-            className="btn btn-primary"
-            onClick={() => setModalManager(true)}
-          >Choose Manager
-          </button>
-        );
+        if(statusAvailableManagers === "success"){
+          return(
+            <button
+              htmlFor="modal-smm"
+              className="btn btn-primary"
+              onClick={() => setModalManager(true)}
+            >Choose Manager
+            </button>
+          );
+        }
       }else{
         return(
           <div className="flex flex-col items-center">

@@ -17,7 +17,9 @@ function NavBar() {
     const userID = localStorage.getItem("userID").toString();
 
     const fetchUser = async () => {
-      const res = await fetch(`http://localhost:3000/user/${userID}`);
+      const res = await fetch(`http://localhost:3000/user/${userID}`, {
+        headers: { Authorization: localStorage.token },
+      });
 
       return await res.json();
     };
