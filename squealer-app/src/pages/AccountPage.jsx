@@ -155,7 +155,7 @@ function AccountPage() {
       headers: { Authorization: localStorage.token },
     });
     const ret =  await res.json();
-    console.log("managers:",ret); 
+    //console.log("managers:",ret); 
     //setManagers(ret);
     return ret;
   }     
@@ -225,8 +225,8 @@ function AccountPage() {
         </div>
       );
     }
-    if(statusManager === "success"){
-      console.log("success manager:",manager);
+    if(statusManager === "success"){ 
+      //console.log("success manager:",manager);
       if(manager == null){
         if(statusAvailableManagers === "success"){ 
           return(
