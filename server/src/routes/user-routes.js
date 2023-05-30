@@ -36,6 +36,35 @@ export const login = async (req, res) => {
   }
 };
 
+export const loginPro = async (req, res) => {
+  try {
+    const authData = await userService.verifyLogin(
+      req.body.name,
+      req.body.password
+    );
+    if (!authData.valid_credentials) {
+      return res
+        .status(Const.STATUS_UNAUTHORIZED)
+        .json({ message: authData.message });
+    }else{
+      //console.log("authData: ",authData);
+      if(!authData.isPro)
+        return res.status(Const.STATUS_UNAUTHORIZED).json({ message: "User is not Pro" });
+      else{
+        const userID = authData.id;
+        const token = jwt.sign({ authData: authData }, Const.SECRET);
+        return res.status(Const.STATUS_OK).json({ userID, token });
+      }
+    }
+
+  }
+  catch (err) {
+    console.log(`login pro user route,(${err.message})`);
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
+  }
+};
+
+
 export const getUserInfo = async (req, res) => {
   const user = await User.findOne({ _id: req.params.id});
   return res.status(200).json({

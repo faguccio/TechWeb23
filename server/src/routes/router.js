@@ -41,6 +41,7 @@ appRouter.get("/userManager/vip", verifyToken, verifyManager, userRoutes.getVipM
 appRouter.get("/user/channels/all", verifyToken, userRoutes.getUserChannelList);
 appRouter.post("/users/register", userRoutes.register);
 appRouter.post("/users/login", userRoutes.login);
+appRouter.post("/users/loginPro", userRoutes.loginPro);
 
 appRouter.get("/channels/:name", channelRoutes.getChannelPosts, pagination);
 appRouter.post("/channels/:name/posts", channelRoutes.addPostToChannel);
