@@ -62,3 +62,23 @@ export const getUserChannels = async (id) => {
     console.log(`getUser (by id), ${id} (${err.message})`);
   }
 };
+
+export const addPostToUser = async (userId, postId) => {
+  try {
+    const user = await User.findOne({ _id: userId });
+    user.posts.push(postId);
+    user.save();
+  } catch (err) {
+    console.log(`addPostToUser, ${postId} (${err.message})`);
+  }
+};
+
+export const addPostToRecieved = async (userId, postId) => {
+  try {
+    const user = await User.findOne({ _id: userId });
+    user.posts_received.push(postId);
+    user.save();
+  } catch (err) {
+    console.log(`addPostToUser, ${postId} (${err.message})`);
+  }
+};

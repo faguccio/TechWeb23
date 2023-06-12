@@ -18,7 +18,7 @@ export const getChannelPostByName = async (name) => {
       .sort((objA, objB) => Number(objB.timestamp) - Number(objA.timestamp))
       .map((post) => post.content);
   } catch (err) {
-    console.log(`get channel by name service, ${name} (${err.message})`);
+    console.log(`getChannelPostByName, service, ${name} (${err.message})`);
   }
 };
 
@@ -28,7 +28,7 @@ export const addPostToChannel = async (channel_ID, post_ID, timestamp) => {
     channel.posts.push({ content: post_ID, timestamp: timestamp });
     return await channel.save();
   } catch (err) {
-    console.log(`get channel service, ${id} (${err.message})`);
+    console.log(`addPostToChannel, ${id} (${err.message})`);
   }
 };
 
@@ -66,5 +66,35 @@ export const addPostToChannelByName = async (
     console.log(
       `add post to channel by name service, ${channelName} (${err.message})`
     );
+  }
+};
+
+export const getChannelByName = async (name) => {
+  try {
+    const channel = await Channel.findOne({ name: name });
+    return channel;
+  } catch (err) {
+    console.log(`get channel by name service, ${name} (${err.message})`);
+  }
+};
+
+export const isNameAvailable = async (name) => {
+  if (!name) {
+    console.log(name);
+    return false;
+  }
+  const channel = await Channel.findOne({ name: name });
+  //console.log(channel);
+  //console.log(`Ho cercato il canale, ecco la sua negazione: ${!channel}`);
+  return !channel;
+};
+
+export const createChannel = async (newChannel) => {
+  try {
+    const item = new Channel(newChannel);
+    item.save();
+    return { status: "Success" };
+  } catch (err) {
+    console.log(`createChannel service, ${newChannel} (${err.message})`);
   }
 };

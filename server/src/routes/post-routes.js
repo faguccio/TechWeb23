@@ -2,6 +2,8 @@ import { updateLike } from "../services/post-service.js";
 import * as Const from "../const.js";
 import { getUserHome } from "../services/user-service.js";
 import * as postService from "../services/post-service.js";
+import * as userService from "../services/user-service.js";
+import * as channelService from "../services/channel-service.js";
 
 export const useLike = async (req, res) => {
   try {
@@ -45,7 +47,40 @@ export const searchPostBody = async (req, res) => {
       posts = posts.map((post) => post._id);
       return res.status(Const.STATUS_OK).json(posts);
     }
-  } catch {
+  } catch (err) {
     console.log(`search post body, (${err.message})`);
+  }
+};
+
+export const createPost = async (req, res) => {
+  try {
+    const userId = req.authData.id;
+    const newPost = req.body;
+    newPost.sender = userId;
+
+    const postId = await postService.createPost(newPost);
+
+    newPost.recipients.map(async (recipient) => {
+      if (recipient[0] == "@") {
+        //TODO controllare che l'utente esista
+        userService.addPostToRecieved(postId);
+      } else {
+        //TODO controllare che il canale esista
+        //TODO controllare accesso al canale
+        channelService.addPostToChannelByName(
+          recipient,
+          postId,
+          newPost.timestamp
+        );
+      }
+    });
+
+    console.log(userId, postId);
+    userService.addPostToUser(userId, postId);
+    res
+      .status(Const.STATUS_OK)
+      .json({ status: "success", msg: "Post created successfully" });
+  } catch (err) {
+    console.log(`createPost route, (${err.message})`);
   }
 };

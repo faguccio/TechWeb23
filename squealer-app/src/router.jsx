@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import AccountPage from "./pages/AccountPage";
 import ChannelPage from "./pages/ChannelPage";
 import SearchPage from "./pages/SearchPage";
+import AutoFunction from "./pages/AutoFunction";
 
 export const pages = [
   {
@@ -50,6 +51,13 @@ export const pages = [
     element: <SearchPage />,
     displayNav: false,
     id: 5,
+  },
+  {
+    path: "/post/automatic",
+    name: "automatic",
+    element: <AutoFunction />,
+    displayNav: true,
+    id: 9,
   },
 ];
 

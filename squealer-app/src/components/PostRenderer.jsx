@@ -51,7 +51,7 @@ function PostRenderer({ params }) {
   }, [params]);
 
   return (
-    <div className="md:mx-4">
+    <div className="flex flex-col items-center  md:mx-4">
       {postList.map((page) => (
         <PostCard id={page} key={crypto.randomUUID()} />
       ))}

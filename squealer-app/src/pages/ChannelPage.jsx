@@ -68,7 +68,7 @@ function ChannelPage() {
       </div>
 
       <div
-        className="flex flex-col items-center bg-slate-800 md:ml-72 pt-12"
+        className="flex flex-col items-center items-stretch bg-slate-800 md:ml-72 pt-12"
         onClick={() => setSideOpen(false)}
       >
         <div className="w-full flex flex-wrap mb-12 mt-16 items-center justify-around">

@@ -31,6 +31,7 @@ appRouter.get("/post/:id", getPost);
 appRouter.patch("/post/:id", useLike);
 appRouter.get("/home/post/:id", getHomePagePosts);
 appRouter.get("/search/posts", postRoutes.searchPostBody);
+appRouter.post("/post", verifyToken, postRoutes.createPost);
 
 appRouter.get("/user/:id", getUser);
 appRouter.patch("/user/:id", userRoutes.updateUser);
@@ -44,7 +45,10 @@ appRouter.post("/users/login", userRoutes.login);
 
 appRouter.get("/channels/:name", channelRoutes.getChannelPosts, pagination);
 appRouter.post("/channels/:name/posts", channelRoutes.addPostToChannel);
+appRouter.post("/channels/create", channelRoutes.createChannel, pagination);
+appRouter.get("/channels/:name/available", channelRoutes.isNameAvailable);
 
 appRouter.get("/personal", verifyToken, (req, res) => {
+  console.log("1 req");
   res.json(`verificato: ${JSON.stringify(req.authData)}`);
 });

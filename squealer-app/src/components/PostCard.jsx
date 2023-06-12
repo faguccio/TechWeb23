@@ -35,12 +35,6 @@ function PostCard({ id }) {
     // setUser(ret);
   };
 
-  function sium() {
-    navigator.geolocation.getCurrentPosition((position) => {
-      console.log(position);
-    });
-  }
-
   const { data, status } = useQuery(["post-card", id], fetchData);
 
   const { data: user, status2 } = useQuery(["user", id], fetchUser, {
@@ -93,8 +87,8 @@ function PostCard({ id }) {
   ));
 
   return (
-    <div className="flex bg-white shadow-lg rounded-lg mx-4 md:mx-auto my-8 md:max-w-2xl ">
-      <div className="flex items-start px-4 py-6">
+    <div className="flex bg-white shadow-lg rounded-lg mx-4 my-8 md:max-w-2xl">
+      <div className="flex items-start px-4 py-6 grow">
         <img
           className="w-12 h-12 rounded-full object-cover mr-2 shadow"
           src={
@@ -121,7 +115,9 @@ function PostCard({ id }) {
           <div>
             <p>Destinatari</p>
           </div>
-          <p className="mt-3 text-gray-700 text-xs md:text-sm">{data.text}</p>
+          <p className="mt-3 text-gray-700 text-xs w-full  md:text-sm">
+            {data.text}
+          </p>
           {data.image_path ? (
             <img
               className="my-5 rounded-lg"

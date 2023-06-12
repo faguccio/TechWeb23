@@ -17,3 +17,6 @@
 - iscriversi (e togliersi) ai canali
 - creare canali
 - Postcard non mostra destinatari
+- nel corpo del messaggio vanno creati gli hashtag come canali se menzionati
+- creazione di messaggi automatici aggiungere la posizione (abilitarla con await)
+- Quando premi unsubscribe e subscribe non fa la richiesta PATCH, potremmo lasciarlo cosi' all'esame lo sgama e lo correggiamo davanti a lui
