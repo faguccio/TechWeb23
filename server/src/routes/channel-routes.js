@@ -1,5 +1,6 @@
 import * as Const from "../const.js";
 import * as channelService from "../services/channel-service.js";
+import * as userService from "../services/user-service.js";
 
 export const getChannelPosts = async (req, res, next) => {
   try {
@@ -59,11 +60,26 @@ export const createChannel = async (req, res) => {
         .json({ status: "error", msg: "Channel already exists" });
     const newChannel = { name: name };
     if (name[0] == "§") {
-      if (!!req.body.owners) newChannel.owners = req.body.owners;
-      if (!!req.body.allowed_readers)
-        newChannel.allowed_readers = req.body.allowed_readers;
-      if (!!req.body.allowed_writers)
-        newChannel.allowed_writers = req.body.allowed_writers;
+      //owenrs sara' solo chi crea, estendibile in seguito
+      const userId = req.authData.id;
+      if (!!req.body.owners) newChannel.owners = [userId];
+      //aggiungo solo gli utenti che trovo
+      if (!!req.body.allowed_readers) {
+        newChannel.allowed_readers = await Promise.all(
+          req.body.allowed_readers.map(async (name) => {
+            const userId = await userService.userNameToId(name);
+            if (!!userId) return userId;
+          })
+        );
+      }
+      if (!!req.body.allowed_writers) {
+        newChannel.allowed_writers = await Promise.all(
+          req.body.allowed_writers.map(async (name) => {
+            const userId = await userService.userNameToId(name);
+            if (!!userId) return userId;
+          })
+        );
+      }
     }
     const myStatus = await channelService.createChannel(newChannel);
     //console.log(myStatus);createChannel

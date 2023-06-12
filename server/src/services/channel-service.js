@@ -93,7 +93,7 @@ export const createChannel = async (newChannel) => {
   try {
     const item = new Channel(newChannel);
     item.save();
-    return { status: "Success" };
+    return { status: "success" };
   } catch (err) {
     console.log(`createChannel service, ${newChannel} (${err.message})`);
   }

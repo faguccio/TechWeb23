@@ -7,6 +7,7 @@ import AccountPage from "./pages/AccountPage";
 import ChannelPage from "./pages/ChannelPage";
 import SearchPage from "./pages/SearchPage";
 import AutoFunction from "./pages/AutoFunction";
+import CreateChannelPage from "./pages/CreateChannelPage";
 
 export const pages = [
   {
@@ -58,6 +59,13 @@ export const pages = [
     element: <AutoFunction />,
     displayNav: true,
     id: 9,
+  },
+  {
+    path: "/new/channels/",
+    name: "channelCreation",
+    element: <CreateChannelPage />,
+    displayNav: true,
+    id: 10,
   },
 ];
 

@@ -82,3 +82,13 @@ export const addPostToRecieved = async (userId, postId) => {
     console.log(`addPostToUser, ${postId} (${err.message})`);
   }
 };
+
+export const userNameToId = async (name) => {
+  try {
+    const user = await User.findOne({ name: name });
+    if (!user) return null;
+    return user._id;
+  } catch (err) {
+    console.log(`userNameToId, service ${name} (${err.message})`);
+  }
+};

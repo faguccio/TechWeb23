@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import GeoMap from "./GeoMap.vue";
 
 const postData = ref(false);
 const userData = ref(false);
@@ -66,8 +67,15 @@ onMounted(() => {
           class="my-5 rounded-lg"
           :src="postData.image_path"
         />
-
-        <a>geolocation</a>
+        <div
+          v-if="postData.geolocation"
+          className="h-52 md:h-96 z-0 w-auto  shadow-lg  shadow-gray-500"
+        >
+          <GeoMap
+            lat="postData.geolocation.lat"
+            lon="postData.geolocation.lat"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -81,6 +89,7 @@ onMounted(() => {
     ></div>
   </div>
 </template>
+
 <!-- import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import GeoMap from "./GeoMap";

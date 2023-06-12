@@ -23,6 +23,7 @@ function AutoPage() {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: localStorage.token,
       },
       body: JSON.stringify({ name: name }),
     });
@@ -90,60 +91,67 @@ function AutoPage() {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex gap-x-16 items-center justify-center flex-wrap gap-y-10"
+        className="flex flex-col items-center gap-y-6"
       >
-        <div className="flex flex-col gap-y-4">
-          <label htmlFor="target-channel" className="text-xl">
-            Target Channel
-          </label>
-          <input
-            className="input input-bordered input-primary"
-            type="text"
-            id="target-channel"
-            {...register("targetChannel", {
-              required: "Specify the target channel",
-              pattern: { value: /^#/, message: "Channel must start with '#'" },
-            })}
-          />
-          {(errors.targetChannel?.type === "required" ||
-            errors.targetChannel?.type === "pattern") && (
-            <p role="alert">{errors.targetChannel?.message}</p>
-          )}
+        <div className="flex gap-x-16 items-center justify-center flex-wrap gap-y-10">
+          <div className="flex flex-col gap-y-4">
+            <label htmlFor="target-channel" className="text-xl">
+              Target Channel
+            </label>
+            <input
+              className="input input-bordered input-primary"
+              type="text"
+              id="target-channel"
+              {...register("targetChannel", {
+                required: "Specify the target channel",
+                pattern: {
+                  value: /^#/,
+                  message: "Channel must start with '#'",
+                },
+              })}
+            />
+            {(errors.targetChannel?.type === "required" ||
+              errors.targetChannel?.type === "pattern") && (
+              <p role="alert">{errors.targetChannel?.message}</p>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-y-4">
+            <label htmlFor="period" className="text-xl">
+              Period
+            </label>
+            <select
+              id="period "
+              className="select select-primary"
+              {...register("period")}
+            >
+              <option value={5}>5 sec</option>
+
+              <option value={30}>30 sec</option>
+              <option value={60}>1 min</option>
+              <option value={60 * 5}>5 min</option>
+              <option value={60 * 10}>10 min</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-y-4">
+            <label htmlFor="message" className="text-xl">
+              Message
+            </label>
+            <textarea
+              {...register("message", {
+                required: "Specify the message format",
+              })}
+              className="textarea input-bordered input-primary w-64"
+              placeholder="I'm cool at {TIME}"
+            ></textarea>
+            {errors.message?.type === "required" && (
+              <p role="alert">{errors.message?.message}</p>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-y-4">
-          <label htmlFor="period" className="text-xl">
-            Period
-          </label>
-          <select
-            id="period "
-            className="select select-primary"
-            {...register("period")}
-          >
-            <option value={5}>5 sec</option>
-
-            <option value={30}>30 sec</option>
-            <option value={60}>1 min</option>
-            <option value={60 * 5}>5 min</option>
-            <option value={60 * 10}>10 min</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-y-4">
-          <label htmlFor="message" className="text-xl">
-            Message
-          </label>
-          <textarea
-            {...register("message", { required: "Specify the message format" })}
-            className="textarea input-bordered input-primary w-64"
-            placeholder="I'm cool at {TIME}"
-          ></textarea>
-          {errors.message?.type === "required" && (
-            <p role="alert">{errors.message?.message}</p>
-          )}
-        </div>
-
-        <input className="btn" type="submit" value="SET UP!" />
+        <input className="btn w-fit" type="submit" value="SET UP!" />
       </form>
 
       <button

@@ -45,7 +45,7 @@ appRouter.post("/users/login", userRoutes.login);
 
 appRouter.get("/channels/:name", channelRoutes.getChannelPosts, pagination);
 appRouter.post("/channels/:name/posts", channelRoutes.addPostToChannel);
-appRouter.post("/channels/create", channelRoutes.createChannel, pagination);
+appRouter.post("/channels/create", verifyToken, channelRoutes.createChannel);
 appRouter.get("/channels/:name/available", channelRoutes.isNameAvailable);
 
 appRouter.get("/personal", verifyToken, (req, res) => {
