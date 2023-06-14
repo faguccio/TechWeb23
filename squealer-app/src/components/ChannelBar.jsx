@@ -1,12 +1,26 @@
 import { useEffect, useState } from "react";
-import { Route, useNavigate, Link } from "react-router-dom";
+import { Route, Link } from "react-router-dom";
 
 function ChannelBar({ ccopy, setSub }) {
   const [channel, setChannel] = useState([]);
-  const navigate = useNavigate();
 
   if (!localStorage.token) {
-    navigate("/login");
+    return (
+      <div className="m-6 flex flex-col items-center">
+        <p classame="text-xl text-black">
+          if you were logged, here the channels would appear
+        </p>
+        <Link
+          to={`/login`}
+          className="btn btn-primary normal-case m-2 mx-5"
+          onClick={() => {
+            window.scrollTo(0, 0);
+          }}
+        >
+          Login
+        </Link>
+      </div>
+    );
   }
 
   const getChannelList = async () => {

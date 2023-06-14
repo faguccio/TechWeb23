@@ -13,7 +13,9 @@ function PostRenderer({ params }) {
     const uri = `http://localhost:3000/channels/${params.name}?page=${page}&limit=${limit}`;
 
     console.log(uri);
-    const res = await fetch(uri);
+    const res = await fetch(uri, {
+      headers: { Authorization: localStorage.token },
+    });
 
     const ret = await res.json();
     return ret;

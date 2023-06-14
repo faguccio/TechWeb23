@@ -3,11 +3,10 @@ import * as Const from "../const.js";
 import { Post } from "../models/Post.js";
 import { User } from "../models/User.js";
 import { useLike } from "./post-routes.js";
-import { getHomePagePosts } from "./post-routes.js";
 import * as userRoutes from "./user-routes.js";
 import * as channelRoutes from "./channel-routes.js";
 import * as postRoutes from "./post-routes.js";
-import { verifyToken, pagination } from "./utilites.js";
+import { verifyToken, pagination, verifyTokenAndPass } from "./utilites.js";
 
 export const appRouter = Router();
 
@@ -29,7 +28,7 @@ const getUser = async (req, res) => {
 //routes
 appRouter.get("/post/:id", getPost);
 appRouter.patch("/post/:id", useLike);
-appRouter.get("/home/post/:id", getHomePagePosts);
+//appRouter.get("/home/post/:id", getHomePagePosts);
 appRouter.get("/search/posts", postRoutes.searchPostBody);
 appRouter.post("/post", verifyToken, postRoutes.createPost);
 
@@ -45,7 +44,12 @@ appRouter.get("/user/channels/all", verifyToken, userRoutes.getUserChannelList);
 appRouter.post("/users/register", userRoutes.register);
 appRouter.post("/users/login", userRoutes.login);
 
-appRouter.get("/channels/:name", channelRoutes.getChannelPosts, pagination);
+appRouter.get(
+  "/channels/:name",
+  verifyTokenAndPass,
+  channelRoutes.getChannelPosts,
+  pagination
+);
 appRouter.post("/channels/:name/posts", channelRoutes.addPostToChannel);
 appRouter.post("/channels/create", verifyToken, channelRoutes.createChannel);
 appRouter.get("/channels/:name/available", channelRoutes.isNameAvailable);

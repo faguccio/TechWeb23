@@ -1,6 +1,5 @@
 import { updateLike } from "../services/post-service.js";
 import * as Const from "../const.js";
-import { getUserHome } from "../services/user-service.js";
 import * as postService from "../services/post-service.js";
 import * as userService from "../services/user-service.js";
 import * as channelService from "../services/channel-service.js";
@@ -21,7 +20,7 @@ export const useLike = async (req, res) => {
   }
 };
 
-export const getHomePagePosts = async (req, res) => {
+/*export const getHomePagePosts = async (req, res, next) => {
   const page = Number(req.query.page);
   const limit = Number(req.query.limit);
   const startIndex = (page - 1) * limit;
@@ -29,14 +28,14 @@ export const getHomePagePosts = async (req, res) => {
   const user = req.params.id;
 
   try {
-    let allPages = await getUserHome(user);
+    let allPages = 
     const pageContent = allPages.slice(startIndex, endIndex);
     const ret = pageContent;
     return res.status(Const.STATUS_OK).json(ret);
   } catch (err) {
     console.log(`get home page post, ${user} (${err.message})`);
   }
-};
+};*/
 
 export const searchPostBody = async (req, res) => {
   const keyword = req.query.kw;

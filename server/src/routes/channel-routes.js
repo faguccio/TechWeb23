@@ -7,6 +7,18 @@ export const getChannelPosts = async (req, res, next) => {
     let name = req.params.name;
     name = ["§", "@"].includes(name[0]) ? name : "#" + name;
     if (name[0] == "@") {
+      if (name == "@me") {
+        console.log(req.authData);
+
+        if (!!req.authData) {
+          const ret = await userService.getUserHome(req.authData.id);
+          res.locals.content = ret;
+          next();
+        } else {
+          console.log("prendi i post normali");
+          //ritorna solo canali squeal ufficiali
+        }
+      }
       //ritorna i post inviati dall'utente, dovranno essere leggibili dal pubblico
     }
     const ret = await channelService.getChannelPostByName(name);

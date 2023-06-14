@@ -112,8 +112,14 @@ function PostCard({ id }) {
               {data.timestamp.split("T")[0]}
             </small>
           </div>
-          <div>
-            <p>Destinatari</p>
+          <div class="flex flex-wrap">
+            {data.recipients.map((rec) => {
+              return (
+                <a key={crypto.randomUUID()} class="mr-4">
+                  {rec}
+                </a>
+              );
+            })}
           </div>
           <p className="mt-3 text-gray-700 text-xs w-full  md:text-sm">
             {data.text}
