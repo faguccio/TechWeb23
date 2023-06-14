@@ -161,7 +161,8 @@ export const getVipManaged = async (req, res) => {
         return res.status(Const.STATUS_OK).json(
           {
             _id: vip._id,
-            name: vip.name
+            name: vip.name,
+            propic_path: vip.propic_path,
           }
         );
       }else
@@ -170,6 +171,24 @@ export const getVipManaged = async (req, res) => {
       return res.status(Const.STATUS_NOT_FOUND).json({message: "Manager not found"});
   } catch (err) {
     console.log(`Get vip managed service, (${err.message})`);
+  }
+};
+
+export const updateVipManaged = async (req, res) => {
+  try {
+    const managerId = req.authData.id;
+    const manager = await User.findById(managerId);
+    if(manager){
+      const changes = req.body;
+      const vip = await User.findByIdAndUpdate(manager.managing, changes);
+      if(vip){
+        return res.status(Const.STATUS_OK).json({message: "Vip updated"});
+      }else
+        return res.status(Const.STATUS_NOT_FOUND).json({message: "Vip not found, impossible to update"});
+    }else
+      return res.status(Const.STATUS_NOT_FOUND).json({message: "Manager not found"});
+  } catch (err) {
+    console.log(`Update vip managed service, (${err.message})`);
   }
 };
 

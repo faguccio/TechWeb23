@@ -37,6 +37,7 @@ appRouter.get("/userVip/manager", verifyToken, verifyVip, userRoutes.getManager)
 appRouter.patch("/userVip/manager", verifyToken, verifyVip, userRoutes.updateManager);
 appRouter.get("/userVip/managers/", verifyToken, verifyVip, userRoutes.getAvailableManagers);
 appRouter.get("/userManager/vip", verifyToken, verifyManager, userRoutes.getVipManaged);
+appRouter.patch("/userManager/vip", verifyToken, verifyManager, userRoutes.updateVipManaged);
 
 appRouter.get("/user/channels/all", verifyToken, userRoutes.getUserChannelList);
 appRouter.post("/users/register", userRoutes.register);
