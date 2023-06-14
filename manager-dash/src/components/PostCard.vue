@@ -72,8 +72,8 @@ onMounted(() => {
           className="h-52 md:h-96 z-0 w-auto  shadow-lg  shadow-gray-500"
         >
           <GeoMap
-            lat="postData.geolocation.lat"
-            lon="postData.geolocation.lat"
+            :lat="postData.geolocation.lat"
+            :lon="postData.geolocation.lon"
           />
         </div>
       </div>

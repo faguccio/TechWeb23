@@ -34,7 +34,9 @@ appRouter.get("/search/posts", postRoutes.searchPostBody);
 appRouter.post("/post", verifyToken, postRoutes.createPost);
 
 appRouter.get("/user/:id", getUser);
+appRouter.get("/users", userRoutes.getAllUsersFiltered);
 appRouter.patch("/user/:id", userRoutes.updateUser);
+appRouter.patch("/user/:id/chars", userRoutes.updateUserChars);
 appRouter.delete("/user/:id", userRoutes.deleteUser);
 appRouter.get("/user/manager/:id", userRoutes.getManager);
 

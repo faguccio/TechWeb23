@@ -92,3 +92,38 @@ export const userNameToId = async (name) => {
     console.log(`userNameToId, service ${name} (${err.message})`);
   }
 };
+
+export const usersContainingName = async (str) => {
+  try {
+    const users = await User.find({ name: { $regex: str, $options: "i" } });
+    if (!users) return null;
+    return users;
+  } catch (err) {
+    console.log(`usersContainingName, service ${str} (${err.message})`);
+  }
+};
+
+export const usersIsType = async (type) => {
+  try {
+    const users = await User.find({ type: type });
+    if (!users) return null;
+    return users;
+  } catch (err) {
+    console.log(`usersContainingName, service ${str} (${err.message})`);
+  }
+};
+
+export const filterAll = async (type, name, popularity) => {
+  try {
+    const users = await User.find({
+      name: { $regex: name, $options: "i" },
+      type: { $regex: type },
+    });
+    if (!users) return null;
+    return users;
+  } catch (err) {
+    console.log(`usersContainingName, service ${type} (${err.message})`);
+  }
+};
+
+//TODO user is popular
