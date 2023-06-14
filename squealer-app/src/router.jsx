@@ -8,6 +8,7 @@ import ChannelPage from "./pages/ChannelPage";
 import SearchPage from "./pages/SearchPage";
 import AutoFunction from "./pages/AutoFunction";
 import CreateChannelPage from "./pages/CreateChannelPage";
+import VisualizeMap from "./pages/VisualizeMap";
 
 export const pages = [
   {
@@ -66,6 +67,14 @@ export const pages = [
     element: <CreateChannelPage />,
     displayNav: true,
     id: 10,
+  },
+  {
+    path: "/channels/:name/visualize",
+    default: "/channels/info/visualize",
+    name: "visualService",
+    element: <VisualizeMap />,
+    displayNav: true,
+    id: 122,
   },
 ];
 

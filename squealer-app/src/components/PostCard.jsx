@@ -96,7 +96,7 @@ function PostCard({ id }) {
               user.propic_path
             ) : (
               <div
-                class="animate-spin radial-progress"
+                className="animate-spin radial-progress"
                 style="--value:70;"
               ></div>
             )
@@ -112,7 +112,7 @@ function PostCard({ id }) {
               {data.timestamp.split("T")[0]}
             </small>
           </div>
-          <div class="flex flex-wrap">
+          <div className="flex flex-wrap">
             {data.recipients.map((rec) => {
               return (
                 <a key={crypto.randomUUID()} class="mr-4">
@@ -133,7 +133,7 @@ function PostCard({ id }) {
           ) : null}
           {!!data.geolocation ? (
             <div className="h-52 md:h-96 z-0 w-auto  shadow-lg rounded-lg shadow-gray-500">
-              <GeoMap geolocation={data.geolocation} />
+              <GeoMap geolocation={[data.geolocation]} />
             </div>
           ) : null}
           <div className="flex justify-end">

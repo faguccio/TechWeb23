@@ -6,9 +6,9 @@ export const getChannelPosts = async (req, res, next) => {
   try {
     let name = req.params.name;
     name = ["§", "@"].includes(name[0]) ? name : "#" + name;
-    if (name[0] == "@") {
+    if (name[0] === "@") {
       if (name == "@me") {
-        console.log(req.authData);
+        //console.log(req.authData);
 
         if (!!req.authData) {
           const ret = await userService.getUserHome(req.authData.id);
@@ -22,6 +22,7 @@ export const getChannelPosts = async (req, res, next) => {
       //ritorna i post inviati dall'utente, dovranno essere leggibili dal pubblico
     }
     const ret = await channelService.getChannelPostByName(name);
+    if (!req.query.page) return res.status(Const.STATUS_OK).json(ret);
     res.locals.content = ret;
     next();
   } catch (err) {
@@ -55,7 +56,6 @@ export const isNameAvailable = async (req, res) => {
   try {
     const name = "#" + req.params.name;
     const chList = await channelService.getChannelByName(name);
-    console.log(chList);
     const isAvailable = !chList;
     return res.status(Const.STATUS_OK).json(isAvailable);
   } catch (err) {

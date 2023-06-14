@@ -40,7 +40,6 @@ export const pagination = async (req, res) => {
 
 export const verifyTokenAndPass = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
-  console.log(authHeader);
   if (authHeader) {
     jwt.verify(authHeader, Const.SECRET, (err, authData) => {
       if (err) {

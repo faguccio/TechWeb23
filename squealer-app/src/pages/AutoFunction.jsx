@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 
 function AutoPage() {
@@ -7,6 +7,12 @@ function AutoPage() {
     formState: { errors },
     handleSubmit,
   } = useForm();
+
+  const [showTimer, setShowTimer] = useState(false);
+
+  useEffect(() => {
+    if (!!localStorage.getItem("lastTimer")) setShowTimer(true);
+  }, []);
 
   // const [showNameErr, setShowNameErr] = useState(false);
 
@@ -45,30 +51,34 @@ function AutoPage() {
 
   const setupTimer = (data) => {
     clearInterval(localStorage.getItem("lastTimer"));
+    setShowTimer(true);
     localStorage.setItem(
       "lastTimer",
       setInterval(() => {
-        const newPost = {
-          //sender will be derived from the JWT
-          recipients: [data.targetChannel],
-          text: messageParsing(data.message),
-          timestamp: Date.now(),
-          //geolocation: await getLongAndLat(),
-        };
-
-        console.log(Number(data.period) * 1000);
-
-        fetch(`http://localhost:3000/post`, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            Authorization: localStorage.token,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newPost),
-        });
+        console.log("call");
+        sendMessage(data);
       }, Number(data.period) * 1000)
     );
+  };
+
+  const sendMessage = async (data) => {
+    const newPost = {
+      //sender will be derived from the JWT
+      recipients: [data.targetChannel],
+      text: messageParsing(data.message),
+      timestamp: Date.now(),
+      geolocation: await getLongAndLat(),
+    };
+
+    fetch(`http://localhost:3000/post`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Authorization: localStorage.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newPost),
+    });
   };
 
   const messageParsing = (msg) => {
@@ -154,14 +164,25 @@ function AutoPage() {
         <input className="btn w-fit" type="submit" value="SET UP!" />
       </form>
 
-      <button
-        className="btn"
-        onClick={() => {
-          clearInterval(localStorage.getItem("lastTimer"));
-        }}
+      <div
+        className={`${
+          showTimer ? "" : "hidden"
+        } flex flex-col gap-y-6 md:flex-row`}
       >
-        remove sending
-      </button>
+        <div className="badge badge-accent p-6 md:mr-12">
+          <a>A timer is Active!</a>
+        </div>
+        <button
+          className="btn"
+          onClick={() => {
+            clearInterval(localStorage.getItem("lastTimer"));
+            localStorage.setItem("lastTimer", null);
+            setShowTimer(false);
+          }}
+        >
+          remove sending
+        </button>
+      </div>
     </div>
   );
 }

@@ -12,10 +12,8 @@
 
 ### Squealer app
 
-- La home e la channel view vanno fuse. La channel bar e la search bar possono stare insieme, mentre la channel view e' solo una richiesta api diversa
 - iscriversi (e togliersi) ai canali
-- Quando premi unsubscribe e subscribe non fa la richiesta PATCH, potremmo lasciarlo cosi' all'esame lo sgama e lo correggiamo davanti a lui
-- Postcard non mostra destinatari
+  - Quando premi unsubscribe e subscribe non fa la richiesta PATCH, potremmo lasciarlo cosi' all'esame lo sgama e lo correggiamo davanti a lui
 - nel corpo del messaggio vanno creati gli hashtag come canali se menzionati
 - creazione di messaggi automatici aggiungere la posizione (abilitarla con await)
 - while a timer is set for automatic sending, show some colored stuff to attest that
