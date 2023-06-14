@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tanstack/vue-query": "^4.29.11",
     "daisyui": "^2.51.6",
     "leaflet": "^1.9.4",
     "vue": "^3.2.47",

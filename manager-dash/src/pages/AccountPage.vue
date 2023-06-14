@@ -51,7 +51,7 @@
                             <img :src="userManaged.propic_path" alt="Profile Picture" />
                         </div>
                     </div>
-                    <div class="card-body flex items-center">
+                    <div class="card-body flex items-center"> 
                         <h2 class="card-title text-2xl mb-4">{{ userManaged.name }}</h2>
                         <div class="card-actions flex flex-col items-center mt-4">
                             <button class="btn btn-info mb-3" @click="changeProfilePicHandler">Change profile pic</button>
@@ -77,22 +77,21 @@
 
 <script>
 import LoadingSpinner from '../components/LoadingSpinner.vue'
-import { useQueryClient, useQuery, useMutation } from '@tanstack/vue-query'
-import { computed } from 'vue';
+import { computed, ref, onMounted, watch, onBeforeMount} from 'vue';
+import  router  from '../router';
 
 export default {
     setup(){
-        // Access QueryClient instance
-        const queryClient = useQueryClient()
-        // Queries
-        const { data: user, status: statusUser } = useQuery(['user'], fetchUser)
-        // Mutations
-        const { mutate: changeProfilePicMutation} = useMutation(changeProfilePic, {
-            onSuccess: () => {
-                queryClient.invalidateQueries('user')
-            },
-        })
         
+        //Refs
+        const user = ref(null)
+        const statusUser = ref('loading')
+        const userManaged = ref(null)
+        const statusUserManaged = ref('loading')
+        
+        //const enabled = computed(() => !!user.value && user.value.type === 'manager')
+
+    
         // Functions
         async function fetchUser() {
             const response = await fetch('http://localhost:3000/user', {
@@ -101,13 +100,20 @@ export default {
                     Authorization: localStorage.token
                 },
             });
-            return response.json();
+            return await response.json();
         }
 
+        async function fetchUserManaged() {
+            const response = await fetch('http://localhost:3000/userManager/vip', {
+                method: 'GET',
+                headers: {
+                    Authorization: localStorage.token
+                },
+            });
+            return await response.json();
+        }    
         
-
         async function changeProfilePic() {
-            //console.log(propic_path.value);
             const response = await fetch('http://localhost:3000/user', {
                 method: 'PATCH',
                 headers: {
@@ -118,15 +124,58 @@ export default {
                     propic_path: propic_path.value
                 })
             });
-            //console.log(response);
-            return response.json();
+            return await response.json();
         }
+        
+        async function changeUserManagedProfilePic() {
+            const response = await fetch('http://localhost:3000/userManager/vip', {
+                method: 'PATCH',
+                headers: {
+                    Authorization: localStorage.token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    propic_path: propic_path.value
+                })
+            });
+            return await response.json();
+        }
+        
+        function fetchData(){
+            fetchUser()
+            .then((userData) => {
+                user.value = userData;
+                statusUser.value = 'success';
+            })
+            .then(()=>{
+                if(user.value.type === 'manager' && user.value.managing!==null){
+                    fetchUserManaged()
+                    .then((userManagedData) => {
+                        userManaged.value = userManagedData;
+                        statusUserManaged.value = 'success';
+                    })
+                }
+            })
+        }
+
+        onMounted(() => {
+            if(!localStorage.token){
+                router.push({name: 'login'});
+            }else{
+                fetchData();
+            }
+
+        })
+        
 
         return {
             user,
             statusUser,
-            changeProfilePicMutation,
-            queryClient,
+            userManaged,
+            statusUserManaged,
+            changeProfilePic,
+            changeUserManagedProfilePic,
+            fetchData,
         }
     },
     data() {
@@ -139,65 +188,21 @@ export default {
     },
     methods: {
         changeProfilePicHandler(){
-            //console.log(this.user.name, this.user.type, this.user.managing);
             if(this.user.managing === null && this.user.type === 'vip'){
-                this.changeProfilePicMutation();
+                this.changeProfilePic()
+                .then(()=>{
+                    this.fetchData();
+                })           
             }else{
-                this.changeUserManagedProfilePicMutation()
+                this.changeUserManagedProfilePic()
+                .then(()=>{
+                    this.fetchData();
+                })
             }
         },
         logoutHandler(){
             localStorage.removeItem('token');
             this.$router.push({name: 'login'});
-        }
-    },
-    beforeCreate() {
-        //Login Control
-        if (!localStorage.token) {
-            this.$router.push({ name: 'login' })
-        }
-        
-        //const enabled = computed(() => !!this.user && this.user.type === 'manager');
-
-        const { data: userManaged, status: statusUserManaged } = useQuery(['userManaged'], fetchUserManaged, 
-            {enabled: !!this.user && this.user.type === 'manager'})
-
-        const {mutate: changeUserManagedProfilePicMutation} = useMutation(changeUserManagedProfilePic, {
-            onSuccess: () => {
-                this.queryClient.invalidateQueries('userManaged')
-            },
-        })
-
-        async function fetchUserManaged() {
-            console.log(this.user);
-            //if(user?.type !== 'manager' && user?.managing === null) return null;
-            const response = await fetch('http://localhost:3000/userManager/vip', {
-                method: 'GET',
-                headers: {
-                    Authorization: localStorage.token
-                },
-            });
-            return response.json();
-        }
-
-        async function changeUserManagedProfilePic() {
-            const response = await fetch('http://localhost:3000/userManager/vip', {
-                method: 'PATCH',
-                headers: {
-                    Authorization: localStorage.token,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    propic_path: propic_path.value
-                })
-            });
-            return response.json();
-        } 
-        
-        return {
-            userManaged,
-            statusUserManaged,
-            changeUserManagedProfilePicMutation,
         }
     }
 }
