@@ -45,3 +45,14 @@ export const searchBody = async (keyword) => {
     return { status: "failure" };
   }
 };
+
+export const createPost = async (post) => {
+  try {
+    const newPost = new Post(post);
+    const postId = newPost.save();
+    return newPost._id;
+  } catch {
+    console.log(`create post service, (${err.message})`);
+    return { status: "failure" };
+  }
+};

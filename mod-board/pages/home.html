@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>Squealer - Admin Only - users</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="../const.js"></script>
+  </head>
+
+  <body>
+    <header class="flex flex-col justify-center items-center my-5">
+      <h1 class="text-4xl text-semibold">Admin home</h1>
+      <p>Choose the area you need to moderate</p>
+    </header>
+
+    <main>
+      <div class="flex flex-wrap m-8 gap-x-8 justify-center">
+        <div class="card w-96 bg-base-100 shadow-2xl">
+          <figure>
+            <img
+              class="w-48"
+              src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngall.com%2Fwp-content%2Fuploads%2F5%2FUser-Profile-PNG-Image.png&f=1&nofb=1&ipt=307c03fc70e2e70b4c8482c1cef80f73e905dd57f202983a7ca786c42fe87c26&ipo=images"
+              alt=""
+            />
+          </figure>
+          <div class="card-body">
+            <h2 class="card-title">Manage users</h2>
+            <p>
+              Here you can list users (filtering options are available). You can
+              also block or unblock a user and modify their leftover characters.
+            </p>
+            <div class="card-actions justify-end">
+              <a href="./users.html" class="btn btn-primary">USER PAGE</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card w-96 bg-base-100 shadow-2xl">
+          <figure>
+            <img
+              class="w-48"
+              src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngmart.com%2Ffiles%2F15%2FEmail-Symbol-PNG-Transparent-Picture.png&f=1&nofb=1&ipt=424ade193cb3647c2e6c06ca68f61fc01ae1b5f827dfad53c7437fba08cce642&ipo=images"
+              alt=""
+            />
+          </figure>
+          <div class="card-body">
+            <h2 class="card-title">Manage squeals</h2>
+            <p>
+              Here you can list squeals (filtering options are available). You
+              can change the recipients and modify the reactions values.
+            </p>
+            <div class="card-actions justify-end">
+              <a href="./squeals.html" class="btn btn-primary">SQUEALS PAGE</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card w-96 bg-base-100 shadow-2xl">
+          <figure>
+            <img
+              class="w-48"
+              src="https://static.vecteezy.com/system/resources/previews/000/551/062/original/user-icon-vector.jpg"
+              alt=""
+            />
+          </figure>
+          <div class="card-body">
+            <h2 class="card-title">Manage §CHANNELS</h2>
+            <p>
+              Here you can list official §CHANNELS. You can add, remove or
+              change the description. You can add or remove a squeal to an
+              official §CHANNELS.
+            </p>
+            <div class="card-actions justify-end">
+              <a href="./channels.html" class="btn btn-primary"
+                >§CHANNELS PAGE</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

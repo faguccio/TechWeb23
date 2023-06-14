@@ -88,10 +88,36 @@ export const updateUser = async (req, res) => {
         .status(Const.STATUS_NOT_FOUND)
         .json({ message: "User not found, impossible to update" });
     } else {
-      return res.status(Const.STATUS_OK).json({ message: "User updated" });
+      return res
+        .status(Const.STATUS_OK)
+        .json({ status: "success", message: "User updated" });
     }
   } catch (err) {
     console.log(`Update user service, ${id} (${err.message})`);
+  }
+};
+
+export const updateUserChars = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(req.body);
+    const changes = req.body;
+    const user = await User.findOne({ _id: id });
+    Object.keys(changes.leftovers_chars).map((key) => {
+      user.leftovers_chars[key] = changes.leftovers_chars[key];
+    });
+    user.save();
+    if (!user) {
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ message: "User not found, impossible to update" });
+    } else {
+      return res
+        .status(Const.STATUS_OK)
+        .json({ status: "success", message: "User updated" });
+    }
+  } catch (err) {
+    console.log(`Update user chars route, (${err.message})`);
   }
 };
 
@@ -199,6 +225,18 @@ export const getUserChannelList = async (req, res) => {
     return res.status(Const.STATUS_OK).json(names);
   } catch (err) {
     console.log(`get channel list, (${err.message})`);
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
+  }
+};
+
+export const getAllUsersFiltered = async (req, res) => {
+  try {
+    let type = !!req.query.type ? req.query.type : ".*";
+    let name = !!req.query.name ? req.query.name : ".*";
+    const users = await userService.filterAll(type, name, false);
+    res.status(Const.STATUS_OK).json(users);
+  } catch (err) {
+    console.log(`getAllUsersFiltered route, (${err.message})`);
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
   }
 };

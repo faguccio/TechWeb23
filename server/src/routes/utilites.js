@@ -57,3 +57,19 @@ export const verifyManager = async (req, res, next) => {
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: "Operation only for Manager user" });
   }
 }
+export const verifyTokenAndPass = async (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  console.log(authHeader);
+  if (authHeader) {
+    jwt.verify(authHeader, Const.SECRET, (err, authData) => {
+      if (err) {
+        return next();
+      } else {
+        req.authData = authData.authData;
+        return next();
+      }
+    });
+  } else {
+    return next();
+  }
+};

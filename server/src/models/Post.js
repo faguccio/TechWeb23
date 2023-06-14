@@ -6,7 +6,7 @@ const postSchema = new Schema({
   recipients: [String],
   text: String,
   timestamp: { type: Date, required: true },
-  image_path: String,
+  image_path: { type: String, default: null },
   geolocation: { lat: Number, lon: Number },
   reactions: {
     type: { positive: Number, negative: Number },

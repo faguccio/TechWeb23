@@ -13,7 +13,9 @@ function PostRenderer({ params }) {
     const uri = `http://localhost:3000/channels/${params.name}?page=${page}&limit=${limit}`;
 
     console.log(uri);
-    const res = await fetch(uri);
+    const res = await fetch(uri, {
+      headers: { Authorization: localStorage.token },
+    });
 
     const ret = await res.json();
     return ret;
@@ -51,7 +53,7 @@ function PostRenderer({ params }) {
   }, [params]);
 
   return (
-    <div className="md:mx-4">
+    <div className="flex flex-col items-center  md:mx-4">
       {postList.map((page) => (
         <PostCard id={page} key={crypto.randomUUID()} />
       ))}

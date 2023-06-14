@@ -11,8 +11,10 @@
   "dependencies": {
     "@tanstack/vue-query": "^4.29.11",
     "daisyui": "^2.51.6",
+    "leaflet": "^1.9.4",
     "vue": "^3.2.47",
-    "vue-router": "4"
+    "vue-router": "4",
+    "vue2-leaflet": "^2.7.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",
