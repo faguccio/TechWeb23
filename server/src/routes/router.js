@@ -28,7 +28,10 @@ appRouter.patch("/post/:id", useLike);
 appRouter.get("/search/posts", postRoutes.searchPostBody);
 appRouter.post("/post", verifyToken, postRoutes.createPost);
 
-appRouter.get("/user/:id", userRoutes.getUserInfo);
+appRouter.get("/user/:id", userRoutes.getUserById);
+appRouter.patch("/user/:id", userRoutes.updateUserById);
+appRouter.delete("/user/:id", userRoutes.deleteUserById);
+//appRouter.get("/user/manager/:id", userRoutes.getManager);
 appRouter.get("/user", verifyToken, userRoutes.getUser);
 appRouter.patch("/user", verifyToken, userRoutes.updateUser);
 appRouter.delete("/user", verifyToken, userRoutes.deleteUser);
@@ -39,12 +42,10 @@ appRouter.get("/userVip/managers/", verifyToken, verifyVip, userRoutes.getAvaila
 appRouter.get("/userManager/vip", verifyToken, verifyManager, userRoutes.getVipManaged);
 appRouter.patch("/userManager/vip", verifyToken, verifyManager, userRoutes.updateVipManaged);
 
-//appRouter.get("/user/:id", getUser);
 appRouter.get("/users", userRoutes.getAllUsersFiltered);
-//appRouter.patch("/user/:id", userRoutes.updateUser);
+
 appRouter.patch("/user/:id/chars", userRoutes.updateUserChars);
-//appRouter.delete("/user/:id", userRoutes.deleteUser);
-//appRouter.get("/user/manager/:id", userRoutes.getManager);
+
 
 appRouter.get("/user/channels/all", verifyToken, userRoutes.getUserChannelList);
 appRouter.post("/users/register", userRoutes.register);

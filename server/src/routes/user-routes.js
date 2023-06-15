@@ -64,19 +64,46 @@ export const loginPro = async (req, res) => {
   }
 };
 
-
-export const getUserInfo = async (req, res) => {
-  const user = await User.findOne({ _id: req.params.id});
-  return res.status(200).json({
-    name: user.name,
-    propic_path: user.propic_path,
-  });
-};
-
-export const getUser = async (req, res) => {
+export const getUserById = async (req, res) => {
   const user = await User.findOne({ _id: req.authData.id});
   return res.status(200).json(user);
 };
+
+export const updateUserById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const changes = req.body;
+    const user = await User.findByIdAndUpdate(id, changes);
+    if (!user) {
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ message: "User not found, impossible to update" });
+    } else {
+      return res
+        .status(Const.STATUS_OK)
+        .json({ status: "success", message: "User updated" });
+    }
+  } catch (err) {
+    console.log(`Update user service, ${id} (${err.message})`);
+  }
+};
+
+export const deleteUserById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ message: "User not found, impossible to delete" });
+    } else {
+      return res.status(Const.STATUS_OK).json({ message: "User deleted" });
+    }
+  } catch (err) {
+    console.log(`Delete user service, ${id} (${err.message})`);
+  }
+};
+
 
 export const updateUser = async (req, res) => {
   try {

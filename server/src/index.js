@@ -14,8 +14,14 @@ const app = express();
 const port = Const.SERVER_PORT;
 //const specs = swaggerJsdoc(Const.SWAGGER_OPTION);
 
+//CORS Options
+const corsOptions = {
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+};
+
 // App initialization
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(appRouter);
 
