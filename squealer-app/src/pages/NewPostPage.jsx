@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
-import axios from "axios";
+
 
 function NewPostPage() {
   const [avatarPath, setAvatarPath] = useState("https://placekitten.com/100/100");
@@ -27,7 +27,7 @@ function NewPostPage() {
   }, [user]);
 
   function handlePublishClick() {
-    const postData = {
+    const newPost = {
       sender: localStorage.getItem("userID"),
       recipients: [],
       text: postContent,
@@ -37,8 +37,15 @@ function NewPostPage() {
       reactions: { positive: 0, negative: 0 },
     };
 
-    axios
-      .post("http://localhost:3000/post", postData)
+    fetch(`http://localhost:3000/post`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Authorization: localStorage.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newPost),
+    })
       .then((response) => {
         console.log(response.data);
       })
