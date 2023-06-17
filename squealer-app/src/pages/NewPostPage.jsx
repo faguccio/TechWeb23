@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 
-
 function NewPostPage() {
   const [avatarPath, setAvatarPath] = useState("https://placekitten.com/100/100");
   const [postContent, setPostContent] = useState("");
   const [letterCount, setLetterCount] = useState(0);
   const [imagePath, setImagePath] = useState("");
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
   const userID = localStorage.getItem("userID")?.toString();
 
@@ -47,7 +47,10 @@ function NewPostPage() {
       body: JSON.stringify(newPost),
     })
       .then((response) => {
-        console.log(response.data);
+        if (response.ok) {
+          setShowSuccessNotification(true); // Visualizza la notifica di successo
+          setPostContent(""); // Svuota il contenuto del post
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -77,6 +80,9 @@ function NewPostPage() {
   return (
     <div className="flex justify-center">
       <div className="max-w-xl w-full bg-white shadow-md rounded-md p-4">
+        {showSuccessNotification && (
+          <div className="text-green-500 mb-2">Post inviato con successo</div>
+        )}
         <h1 className="text-2xl font-bold mb-4 text-center">Scrivi un nuovo Squeal!</h1>
         <div className="flex items-center mb-4">
           <img className="w-10 h-10 rounded-full mr-3" src={avatarPath} alt="User Avatar" />
