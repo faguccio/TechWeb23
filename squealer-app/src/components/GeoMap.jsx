@@ -1,7 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
 function GeoMap({ geolocation }) {
-  console.log(geolocation[0]);
   return (
     <MapContainer
       className="rounded-lg z-0"

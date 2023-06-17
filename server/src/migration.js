@@ -149,6 +149,15 @@ export const migration = async () => {
 
       posts: [],
     },
+    {
+      _id: new Types.ObjectId("6459038a3a8419267a26f5dd"),
+      name: "§CONTROVERSIAL",
+      owners: [],
+      allowed_readers: [],
+      allowed_writers: [],
+
+      posts: [],
+    },
   ];
 
   channelList.map((item) => {
@@ -156,16 +165,3 @@ export const migration = async () => {
     item.save();
   });
 };
-
-/*{
-      name: "achille-lauro22",
-      posts: [],
-      propic_path:
-        "https://this-person-does-not-exist.com/img/avatar-gena379629b770580ab53d90cc61d84c43b.jpg",
-    },
-    {
-      name: "il fortissimo",
-      posts: [],
-      propic_path:
-        "https://this-person-does-not-exist.com/img/avatar-gen55ceb8ae2b76c0311ca62dd9ea231d82.jpg",
-    }, */

@@ -8,6 +8,7 @@ import NavBar from "./components/NavBar";
 const queryClient = new QueryClient({});
 
 function App() {
+  localStorage.setItem("sessionUUID", crypto.randomUUID());
   const router = createBrowserRouter([
     {
       element: <NavBar />,

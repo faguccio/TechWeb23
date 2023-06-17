@@ -1,14 +1,72 @@
 import { Post } from "../models/Post.js";
+import { User } from "../models/User.js";
 
-export const updateLike = async (id, field, amount) => {
+export const updateLike = async (id, userId, type) => {
   try {
-    const post = await Post.findOne({ _id: id });
-    post["reactions"][field] += amount;
-    post.save();
+    if (type === "positive") {
+      addPostive(id, userId);
+    }
+
+    if (type === "negative") {
+      addNegative(id, userId);
+    }
   } catch (err) {
     console.log(`Update likes service, ${id} (${err.message})`);
   }
 };
+
+async function addPostive(postId, userId) {
+  const post = await Post.findOne({ _id: postId });
+  const user = await User.findOne({ _id: userId });
+
+  if (!user.postsLiked.includes(postId)) {
+    user.postsLiked.push(postId);
+    if (user.postsDisliked.includes(postId)) {
+      user.postsDisliked = user.postsDisliked.filter((myid) => {
+        return myid != postId;
+      });
+      post.reactions.negative -= 1;
+    }
+    post.reactions.positive += 1;
+  } else {
+    user.postsLiked = user.postsLiked.filter((myid) => {
+      return myid != postId;
+    });
+    post.reactions.positive -= 1;
+  }
+
+  const updatedUser = await user.save();
+  const updatedPost = await post.save();
+  calculatePostStatus(updatedPost, updatedUser);
+}
+
+async function addNegative(postId, userId) {
+  const post = await Post.findOne({ _id: postId });
+  const user = await User.findOne({ _id: userId });
+
+  if (!user.postsDisliked.includes(postId)) {
+    user.postsDisliked.push(postId);
+    if (user.postsLiked.includes(postId)) {
+      user.postsLiked = user.postsLiked.filter((myid) => {
+        return myid != postId;
+      });
+      post.reactions.positive -= 1;
+    }
+    post.reactions.negative += 1;
+  } else {
+    post.reactions.negative -= 1;
+    user.postsDisliked = user.postsDisliked.filter((myid) => {
+      return myid != postId;
+    });
+  }
+  const updatedUser = await user.save();
+  const updatedPost = await post.save();
+  calculatePostStatus(updatedPost, updatedUser);
+}
+
+async function calculatePostStatus(post, user) {
+  //here i should calculate the gaining or losing of characters
+}
 
 /*
 export const updatePost = async (id, changes) => {
@@ -53,6 +111,22 @@ export const createPost = async (post) => {
     return newPost._id;
   } catch {
     console.log(`create post service, (${err.message})`);
+    return { status: "failure" };
+  }
+};
+
+export const getPost = async (postId, sessionId) => {
+  try {
+    const post = await Post.findOne({ _id: postId });
+    if (!post.impressionsIds.includes(sessionId)) {
+      post.impressionsIds.push(sessionId);
+      post.impressions += 1;
+      await post.save();
+    }
+    delete post.impressionsIds;
+    return post;
+  } catch {
+    console.log(`getPost service, (${err.message})`);
     return { status: "failure" };
   }
 };

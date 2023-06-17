@@ -1,4 +1,3 @@
-import { updateLike } from "../services/post-service.js";
 import * as Const from "../const.js";
 import * as postService from "../services/post-service.js";
 import * as userService from "../services/user-service.js";
@@ -7,14 +6,14 @@ import * as channelService from "../services/channel-service.js";
 export const useLike = async (req, res) => {
   try {
     const id = req.params.id;
+    const userId = req.authData.id;
     const body = req.body;
+
     if (body.type !== "positive" && body.type !== "negative")
       return res.status(Const.BAD_REQUEST).json({ result: "BAD-BODY" });
 
-    const sign = body.increase ? 1 : -1;
-
-    await updateLike(id, body.type, sign);
-    return res.status(Const.STATUS_OK).json({ result: null });
+    await postService.updateLike(id, userId, body.type);
+    return res.status(Const.STATUS_OK).json({ result: "success" });
   } catch (err) {
     console.log(`Update likes route, ${id} (${err.message})`);
   }
@@ -81,5 +80,15 @@ export const createPost = async (req, res) => {
       .json({ status: "success", msg: "Post created successfully" });
   } catch (err) {
     console.log(`createPost route, (${err.message})`);
+  }
+};
+
+export const getPost = async (req, res) => {
+  try {
+    const sessionId = req.headers["my-unique-session"];
+    const post = await postService.getPost(req.params.id, sessionId);
+    return res.status(200).json(post);
+  } catch (err) {
+    console.log(`get post, ${req.params.id} (${err.message})`);
   }
 };

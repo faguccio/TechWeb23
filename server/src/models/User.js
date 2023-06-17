@@ -6,7 +6,11 @@ const userSchema = new Schema({
   name: { type: String, required: true },
 
   password: { type: String, required: true },
-  type: { type: String, default: "normal", enum: ["normal", "pro", "manager", "admin"]}, //Normal, Pro, Manager, Moderator
+  type: {
+    type: String,
+    default: "normal",
+    enum: ["normal", "pro", "manager", "admin"],
+  }, //Normal, Pro, Manager, Moderator
   blocked_flag: { type: Boolean, default: false }, //true if user is blocked
   managing: { type: mongoose.Types.ObjectId, default: null }, //account which I'm managing, ignore if type not manager
   card_number: { type: String, default: null }, //credit card number
@@ -20,6 +24,8 @@ const userSchema = new Schema({
   posts: { type: [mongoose.Types.ObjectId], default: [] },
   posts_received: { type: [mongoose.Types.ObjectId], default: [] },
   channels: { type: [mongoose.Types.ObjectId], default: [] },
+  postsLiked: { type: [mongoose.Types.ObjectId], default: [] },
+  postsDisliked: { type: [mongoose.Types.ObjectId], default: [] },
 
   leftovers_chars: {
     type: {

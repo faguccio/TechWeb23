@@ -12,6 +12,8 @@ const postSchema = new Schema({
     type: { positive: Number, negative: Number },
     default: { positive: 0, negative: 0 },
   },
+  impressions: { type: Number, default: 0 },
+  impressionsIds: { type: [String], default: [] },
 });
 
 //postSchema.index({ text: "text" });
