@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>Squealer - Admin Only</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="../const.js"></script>
+  </head>
+
+  <body class="flex flex-col items-center">
+    <header class="flex justify-center my-5">
+      <h1 class="text-4xl font-bold">Users management</h1>
+    </header>
+
+    <h2 class="font-semibold text-2xl">Filtering options</h2>
+    <form>
+      <label for="filter-type">By type</label>
+      <select id="filter-type" class="select mr-8">
+        <option value="all">All</option>
+        <option value="normal">Normal</option>
+        <option value="pro">Pro</option>
+        <option value="manager">Manager</option>
+        <option value="admin">Admin</option>
+      </select>
+      <label for="filter-name">By name</label>
+      <input
+        id="filter-name"
+        class="input input-bordered input-primary"
+        type="text"
+      />
+      <button class="btn btn-secondary" id="filter-button">FILTER</button>
+    </form>
+
+    <div id="users" class="mt-8"></div>
+
+    <template id="user-template">
+      <div class="flex flex-col rounded-lg shadow-2xl w-fit p-5 mb-6">
+        <div class="flex flex-row justify-around">
+          <img
+            id="image"
+            class="mask mask-squircle object-scale-down h-24 mx-2"
+            src=""
+            alt=""
+          />
+
+          <div class="">
+            <h2 class="font-semibold text-2xl" id="name"></h2>
+
+            <div class="flex items-center">
+              <h3 class="mr-4 text-lg font-medium">id:</h3>
+              <p id="userId"></p>
+            </div>
+
+            <div class="flex items-center">
+              <h3 class="mr-4 text-lg font-medium">Type:</h3>
+              <p class="" id="type"></p>
+            </div>
+          </div>
+
+          <form class="self-center">
+            <div class="flex flex-row items-center gap-x-4">
+              <label class="label" for="blocked"> User blocked </label>
+              <input id="blocked" type="checkbox" class="checkbox" />
+            </div>
+          </form>
+        </div>
+
+        <!-- mostrare informazioni dentro o fuori dal form? -->
+        <h3 class="font-semibold text-2xl mt-4">Leftover chars</h3>
+        <div class="flex justify-around gap-x-4">
+          <div class="flex flex-col items-center">
+            <h4 for="leftover-day">Day</h4>
+            <p id="leftover-day" class="badge badge-neutral p-4">0</p>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <h4 for="leftover-week">Week</h4>
+            <p id="leftover-week" class="badge badge-neutral p-4">0</p>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <h4 for="leftover-month">Month</h4>
+            <p id="leftover-month" class="badge badge-neutral p-4">0</p>
+          </div>
+        </div>
+
+        <form class="mt-5 flex flex-col">
+          <h3 class="font-semibold text-2xl">Modify characters</h3>
+          <div class="flex gap-x-4">
+            <div class="flex-col">
+              <label for="leftover-day-mod">Day</label>
+              <input
+                type="number"
+                class="input input-bordered input-primary"
+                id="leftover-day-mod"
+              />
+            </div>
+            <div class="flex-col">
+              <label for="leftover-week-mod">Week</label>
+              <input
+                type="number"
+                class="input input-bordered input-primary"
+                id="leftover-week-mod"
+              />
+            </div>
+            <div class="flex-col">
+              <label for="leftover-month-mod">Month</label>
+              <input
+                type="number"
+                class="input input-bordered input-primary"
+                id="leftover-month-mod"
+              />
+            </div>
+          </div>
+          <button
+            id="button-char"
+            class="btn btn-primary w-fit self-center mt-4"
+          >
+            Modify
+          </button>
+        </form>
+        <div id="success" class="mt-5 alert alert-success">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>Operation completed successfully</span>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      function populate(users) {
+        $("#users").empty();
+        users.map((user) => {
+          let userTemplate = $($("#user-template").html());
+
+          userTemplate.find("#image").attr("src", user.propic_path);
+          userTemplate.find("#name").text(user.name);
+          userTemplate.find("#userId").text(user._id);
+          userTemplate.find("#type").text(user.type);
+
+          userTemplate.find("#leftover-day").text(user.leftovers_chars.day);
+          userTemplate.find("#leftover-week").text(user.leftovers_chars.week);
+          userTemplate.find("#leftover-month").text(user.leftovers_chars.month);
+
+          const day = userTemplate.find("#leftover-day-mod");
+          const week = userTemplate.find("#leftover-week-mod");
+          const month = userTemplate.find("#leftover-month-mod");
+
+          const successAlert = userTemplate.find("#success");
+          successAlert.hide();
+
+          userTemplate.find("#button-char").click(async (e) => {
+            e.preventDefault();
+            newChars = {};
+            if (!!day.val()) {
+              newChars.day = day.val();
+            }
+            if (!!week.val()) {
+              newChars.week = week.val();
+            }
+            if (!!month.val()) {
+              newChars.month = month.val();
+            }
+
+            let res = await fetch(`${apiurl}/user/${user._id}/chars`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ leftovers_chars: newChars }),
+            });
+            console.log(newChars);
+            res = await res.json();
+            if (res.status == "success") {
+              successAlert.show();
+
+              setInterval(() => {
+                successAlert.hide(2000);
+              }, 2000);
+            }
+          });
+
+          userTemplate.find("#blocked").attr("checked", user.blocked_flag);
+          userTemplate.find("#blocked").change(async function (e) {
+            e.preventDefault();
+            const payload = { blocked_flag: this.checked };
+            console.log(payload);
+            let res = await fetch(`${apiurl}/user/${user._id}`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+            res = await res.json();
+            if (res.status == "success") {
+              successAlert.show();
+              setInterval(() => {
+                successAlert.hide(2000);
+              }, 2000);
+            }
+          });
+          $("#users").append(userTemplate);
+        });
+      }
+
+      function setUpFiltering() {
+        $("#filter-button").click((e) => {
+          e.preventDefault();
+          const type = $("#filter-type").val();
+          console.log(type);
+          const name = $("#filter-name").val();
+          console.log(name);
+          const part1 = type == "all" ? "" : `type=${type}&`;
+          const part2 = !!name ? `name=${name}&` : "";
+
+          makeRequest(`${apiurl}/users?${part1}${part2}`);
+        });
+      }
+
+      async function makeRequest(req) {
+        let res = await fetch(req);
+        res = await res.json();
+        console.log(res);
+        populate(res);
+      }
+
+      $(document).ready(() => {
+        setUpFiltering();
+        makeRequest(`${apiurl}/users`);
+      });
+    </script>
+  </body>
+</html>

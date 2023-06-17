@@ -6,6 +6,8 @@ import LoginPage from "./pages/LoginPage";
 import AccountPage from "./pages/AccountPage";
 import ChannelPage from "./pages/ChannelPage";
 import SearchPage from "./pages/SearchPage";import NewPostPage from "./pages/NewPostPage";
+import AutoFunction from "./pages/AutoFunction";
+import CreateChannelPage from "./pages/CreateChannelPage";
 
 export const pages = [
   {
@@ -59,7 +61,6 @@ export const pages = [
     displayNav: false,
     id: 5,
   },
-
 ];
 
 /*export const routeList = pages.map((page) => (

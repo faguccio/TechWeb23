@@ -34,7 +34,7 @@ function SearchPage() {
             } h-screen fixed flex w-72 md:left-0 md:w-72 bg-secondary duration-300`}
           >
             <div className={`overflow-y-scroll flex flex-1`}>
-              <ChannelBar />
+              <ChannelBar params={null} setSubbed={null} />
             </div>
           </div>
         </div>

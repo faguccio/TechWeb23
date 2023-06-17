@@ -1,86 +1,74 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import Humb from "../general/Humb.vue";
 
 const navItems = [
-  {
-    title: "Home",
-    destination: "/",
-  },
   {
     title: "Account",
     destination: "/account",
   },
 ];
 
-// const defaultMenuClasses = 'w-full md:block md:w-auto'
-
-const changeColorNav = (id) => {
-  const dict = navbarItems.map((item) => ({ name: item.destination }));
-
-  document.addEventListener("click", function () {
-    dict.forEach((element) => {
-      document.getElementById(element.name).style.backgroundColor = "white";
-    });
-  });
+const scrollTop = () => {
+  2;
+  window.scrollTo(0, 0);
 };
 
-// let menuOpen = false
-// let menuClasses = ref<string>('hidden ' + defaultMenuClasses)
-// let isLogged = ref<boolean>(Helpers.isLogged())
-// const toggleMenu = () => {
-//   menuOpen = !menuOpen
-//   if (menuOpen) menuClasses.value = defaultMenuClasses
-//   else menuClasses.value = 'hidden ' + defaultMenuClasses
-// }
+const isNavExpanded = ref(false);
+const navLayout = computed(() => {
+  return `${
+    isNavExpanded.value ? "grid" : "hidden"
+  } md:flex md:mx-5 pb-4 md:pb-0`;
+});
 
-// const login = () => {
-//   router.redirect('/login')
-// }
-
-// const logout = () => {
-//   // TODO maybe an alert
-//   Helpers.doLogout()
-//   window.location.reload()
-//   router.redirect('/')
-// }
-
-// const root = import.meta.env.BASE_URL
+const toggleMenu = () => {
+  isNavExpanded.value = !isNavExpanded.value;
+};
 </script>
 
 <template>
   <div
-    class="bg-primary md:flex md:justify-between px-2 md:py-2 sticky z-10 top-0 bg-base-100 items-center"
+    class="bg-primary flex flex-col md:flex-row md:justify-between px-2 md:py-2 sticky z-10 top-0 bg-base-100 items-center"
   >
-    <ul class="flex">
-      <li
+    <div class="flex justify-between items-center w-full">
+      <div class="-ml-2 md:ml-0">
+        <router-link to="/">
+          <img
+            class="scale-50 md:scale-75 w-24"
+            src="https://seeklogo.com/images/V/vulture-logo-AF847BCA43-seeklogo.com.png"
+            alt="website logo"
+            @click="scrollTop"
+          />
+        </router-link>
+      </div>
+
+      <button
+        class="btn btn-square btn-ghost scale-125 md:hidden"
+        @click="toggleMenu"
+      >
+        <Humb />
+      </button>
+    </div>
+
+    <div :class="navLayout">
+      <a
         v-for="item in navItems"
         :key="item.destination"
         :id="item.destination"
-        v-on:click="changeColorNav(item.destination)"
         class="mx-4"
       >
         <router-link :to="item.destination">
-          <button href="#" class="btn">
+          <button class="btn">
             {{ item.title }}
           </button>
         </router-link>
-      </li>
-    </ul>
+      </a>
+    </div>
   </div>
 </template>
 
 <!-- <div className="flex justify-between items-center">
-          <div className="-ml-2 md:ml-0">
-            <Link to="/">
-              <img
-                className="scale-50 md:scale-75"
-                src="https://seeklogo.com/images/V/vulture-logo-AF847BCA43-seeklogo.com.png"
-                width="75px"
-                alt="website logo"
-                onClick={() => window.scrollTo(0, 0)}
-              />
-            </Link>
-          </div>
+          
 
           <div className="flex items-center">
             <div className="md:hidden">
@@ -119,10 +107,6 @@ const changeColorNav = (id) => {
             </button>
           </div>
         </div> -->
-
-<!-- className={
-            isNavExpanded ? "grid md:flex md:mx-5" : "hidden md:flex md:mx-5"
-          } -->
 
 <!-- function NavBar() {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
