@@ -7,7 +7,7 @@ function NewPostPage() {
   const [letterCount, setLetterCount] = useState(0);
   const [imagePath, setImagePath] = useState("");
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   const userID = localStorage.getItem("userID")?.toString();
 
@@ -48,19 +48,24 @@ function NewPostPage() {
     })
       .then((response) => {
         if (response.ok) {
-          setShowSuccessNotification(true); // Visualizza la notifica di successo
-          setPostContent(""); // Svuota il contenuto del post
+          setPostContent("");
+          setImagePath("");
+          setImageLoaded(false);
+          setNotification("Post inviato con successo");
+        } else {
+          throw new Error("Errore nell'invio del post");
         }
       })
       .catch((error) => {
         console.error(error);
+        setNotification("Errore nell'invio del post");
       });
   }
 
   useEffect(() => {
     let count = postContent.replace(/\s/g, "").length;
     if (imageLoaded) {
-      count += 120;
+      count += 125;
     }
     setLetterCount(count);
   }, [postContent, imageLoaded]);
@@ -80,19 +85,12 @@ function NewPostPage() {
   return (
     <div className="flex justify-center">
       <div className="max-w-xl w-full bg-white shadow-md rounded-md p-4">
-        {showSuccessNotification && (
-          <div className="text-green-500 mb-2">Post inviato con successo</div>
-        )}
         <h1 className="text-2xl font-bold mb-4 text-center">Scrivi un nuovo Squeal!</h1>
         <div className="flex items-center mb-4">
           <img className="w-10 h-10 rounded-full mr-3" src={avatarPath} alt="User Avatar" />
           <div className="flex-1 relative">
             {imageLoaded && (
-              <img
-                className="w-full rounded-md mb-2"
-                src={imagePath}
-                alt="Uploaded Image"
-              />
+              <img className="w-full rounded-md mb-2" src={imagePath} alt="Uploaded Image" />
             )}
             <textarea
               className="border border-gray-300 outline-none w-full p-2"
@@ -119,7 +117,7 @@ function NewPostPage() {
             />
           </div>
           {imageLoaded && (
-            <div className="text-green-500">Immagine caricata (120 caratteri)</div>
+            <div className="text-green-500">Immagine caricata (125 caratteri)</div>
           )}
         </div>
         <div className="flex justify-end">
@@ -127,6 +125,15 @@ function NewPostPage() {
             Pubblica
           </button>
         </div>
+        {notification && (
+          <div className="text-center mt-4">
+            {notification.includes("success") ? (
+              <p className="text-green-500">{notification}</p>
+            ) : (
+              <p className="text-red-500">{notification}</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
