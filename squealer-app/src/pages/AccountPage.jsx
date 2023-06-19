@@ -63,7 +63,7 @@ function AccountPage() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userID");
-    window.location.replace("/");
+    window.location.replace("/app/");
   };
 
   const handleChangePassword = (data) => {
