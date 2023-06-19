@@ -2,27 +2,32 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Const } from "../utils";
 
 function AccountPage() {
+  const navigate = useNavigate();
   if (!localStorage.getItem("token") && !localStorage.getItem("userID")) {
-    window.location.replace("/login");
+    navigate("/login");
     return;
   }
 
-  const userID = localStorage.getItem("userID").toString();
+  const userID = localStorage.userID;
 
-  const fetchUser = async (user_id) => {
-    const res = await fetch(`${Const.apiurl}/user/${user_id}`);
-    console.log(res);
+  const fetchUser = async () => {
+    const res = await fetch(`${Const.apiurl}/user`, {
+      headers: { Authorization: localStorage.token },
+    });
+    //console.log(res);
     return await res.json();
   };
 
   const upgradeAccount = async (inputData) => {
-    const res = await fetch(`${Const.apiurl}/user/${userID}`, {
+    const res = await fetch(`${Const.apiurl}/user`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.token,
       },
       body: JSON.stringify({
         type: inputData.type,
@@ -35,9 +40,7 @@ function AccountPage() {
   };
 
   const queryClient = useQueryClient();
-  const { data: user, status } = useQuery(["user", userID], () =>
-    fetchUser(userID)
-  );
+  const { data: user, status } = useQuery(["user"], fetchUser);
   const { mutate } = useMutation(upgradeAccount, {
     onSuccess: () => {
       queryClient.invalidateQueries("user", userID);
@@ -48,22 +51,30 @@ function AccountPage() {
     register: registerPw,
     handleSubmit: handleSubmitPw,
     reset: resetPw,
+    setFocus: setFocusPw,
   } = useForm();
   const {
     register: registerUpgrade,
     handleSubmit: handleSubmitUpgrade,
     reset: resetUpgrade,
+    setFocus: setFocusUpgrade,
   } = useForm();
   const {
     register: registerManager,
     handleSubmit: handleSubmitManager,
     reset: resetManager,
+    setFocus: setFocusManager,
   } = useForm();
+
+  const [modalChangePassword, setModalChangePassword] = useState(false);
+  const [modalUpgradeAccount, setModalUpgradeAccount] = useState(false);
+  const [modalDeleteAccount, setModalDeleteAccount] = useState(false);
+  const [modalManager, setModalManager] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userID");
-    window.location.replace("/app/");
+    navigate("/");
   };
 
   const handleChangePassword = (data) => {
@@ -71,12 +82,13 @@ function AccountPage() {
   };
   const changePassword = async (inputData) => {
     if (inputData.oldPassword === user.password) {
-      document.getElementById("modal-change-password").checked = false;
+      setModalChangePassword(false);
 
-      const res = await fetch(`${Const.apiurl}/user/${userID}`, {
+      const res = await fetch(`${Const.apiurl}/user`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: localStorage.token,
         },
         body: JSON.stringify({
           password: inputData.newPassword,
@@ -102,6 +114,7 @@ function AccountPage() {
   };
 
   const handleCloseModal = () => {
+    setModalChangePassword(false);
     document.querySelector(".alert").classList.replace("flex", "hidden");
     resetPw();
   };
@@ -110,19 +123,20 @@ function AccountPage() {
 
   const handleUpgradeAccount = (data) => {
     mutate(data);
-    document.getElementById("modal-upgrade-account").checked = false;
+    setModalUpgradeAccount(false);
     resetUpgrade();
   };
 
   const handleDeleteAccount = () => {
-    document.getElementById("modal-delete-account").checked = false;
+    setModalDeleteAccount(false);
     deleteAccount();
   };
   async function deleteAccount() {
-    const res = await fetch(`${Const.apiurl}/user/${userID}`, {
+    const res = await fetch(`${Const.apiurl}/user`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.token,
       },
     });
     const ret = await res.json();
@@ -131,18 +145,20 @@ function AccountPage() {
   }
 
   const handlechooseManager = (data) => {
+    setModalManager(false);
     mutateManager(data);
     resetManager();
-    document.getElementById("modal-smm").checked = false;
   };
   const chooseManager = async (inputData) => {
     const managerId = inputData.managerId;
-    const res = await fetch(`${Const.apiurl}/user/${managerId}`, {
+    const res = await fetch(`${Const.apiurl}/userVip/manager`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.token,
       },
       body: JSON.stringify({
+        managerId: managerId,
         managing: userID,
       }),
     });
@@ -152,15 +168,19 @@ function AccountPage() {
   };
 
   const fetchAvailableManagers = async () => {
-    const res = await fetch(`${Const.apiurl}/users/managers`);
+    const res = await fetch(`${Const.apiurl}/userVip/managers`, {
+      headers: { Authorization: localStorage.token },
+    });
     const ret = await res.json();
-    //console.log("return managers:",ret);
+    //console.log("managers:",ret);
     //setManagers(ret);
     return ret;
   };
 
   const fetchManager = async () => {
-    const res = await fetch(`${Const.apiurl}/user/manager/${userID}`);
+    const res = await fetch(`${Const.apiurl}/userVip/manager`, {
+      headers: { Authorization: localStorage.token },
+    });
     const ret = await res.json();
     //console.log("manager:",ret);
     return ret;
@@ -168,12 +188,14 @@ function AccountPage() {
 
   const removeManager = async () => {
     const managerId = manager._id;
-    const res = await fetch(`${Const.apiurl}/user/${managerId}`, {
+    const res = await fetch(`${Const.apiurl}/userVip/manager`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.token,
       },
       body: JSON.stringify({
+        managerId: managerId,
         managing: null,
       }),
     });
@@ -182,8 +204,17 @@ function AccountPage() {
     return ret;
   };
 
+  const fetchVipManaged = async () => {
+    const res = await fetch(`${Const.apiurl}/userManager/vip`, {
+      headers: { Authorization: localStorage.token },
+    });
+    const ret = await res.json();
+    //console.log("vip:",ret);
+    return ret;
+  };
+
   const { data: manager, status: statusManager } = useQuery(
-    ["managerByUser", userID],
+    ["managerByUser"],
     fetchManager,
     { enabled: !!user && user.type === "vip" }
   );
@@ -194,6 +225,7 @@ function AccountPage() {
   });
   const { mutate: mutateRemoveManager } = useMutation(removeManager, {
     onSuccess: () => {
+      queryClient.invalidateQueries("availableManagers");
       queryClient.invalidateQueries("managerByUser", userID);
     },
   });
@@ -204,8 +236,8 @@ function AccountPage() {
   );
   const userManaged = user?.managing;
   const { data: userVip, status: statusUserVip } = useQuery(
-    ["userManaged", userManaged],
-    () => fetchUser(userManaged),
+    ["userManaged"],
+    fetchVipManaged,
     { enabled: !!user && !!userManaged && user.type === "manager" }
   );
 
@@ -224,12 +256,18 @@ function AccountPage() {
     }
     if (statusManager === "success") {
       //console.log("success manager:",manager);
-      if (manager === null) {
-        return (
-          <label htmlFor="modal-smm" className="btn btn-primary">
-            Choose Manager
-          </label>
-        );
+      if (manager == null) {
+        if (statusAvailableManagers === "success") {
+          return (
+            <button
+              htmlFor="modal-smm"
+              className="btn btn-primary"
+              onClick={() => setModalManager(true)}
+            >
+              Choose Manager
+            </button>
+          );
+        }
       } else {
         return (
           <div className="flex flex-col items-center">
@@ -237,6 +275,7 @@ function AccountPage() {
             <p className="text-xl font-medium">{manager.name}</p>
             <button
               className="btn btn-error  btn-xs mt-2"
+              aria-label="Remove choosed manager"
               onClick={handleRemoveManager}
             >
               Remove
@@ -288,19 +327,23 @@ function AccountPage() {
   }
   if (status === "success") {
     return (
-      <div className="flex flex-col justify-center content-center items-center w-full">
+      <div
+        className="flex flex-col justify-center content-center items-center w-full"
+        lang="en"
+      >
+        <h1 className="text-4xl font-bold text-center hidden">Profile Page</h1>
         <div className="flex card shadow-lg compact bg-base-100 w-full mb-12 bg-teal-50">
           <div className="mt-4 ml-4">
-            {user.type == "normal" ? (
+            {user.type === "normal" ? (
               <div className="badge ml-2">Normal</div>
             ) : null}
-            {user.type == "vip" ? (
+            {user.type === "vip" ? (
               <div className="badge badge-primary ml-2">Vip</div>
             ) : null}
-            {user.type == "manager" ? (
+            {user.type === "manager" ? (
               <div className="badge badge-primary ml-2">Manager</div>
             ) : null}
-            {user.type == "admin" ? (
+            {user.type === "admin" ? (
               <div className="badge badge-secondary ml-2">Moderator</div>
             ) : null}
           </div>
@@ -314,12 +357,16 @@ function AccountPage() {
 
             <div className="flex justify-around items-center w-full">
               {user.type == "normal" ? (
-                <label
+                <button
                   htmlFor="modal-upgrade-account"
                   className="btn btn-primary"
+                  aria-label="upgrade accoutn to vip"
+                  onClick={() => {
+                    setModalUpgradeAccount(true);
+                  }}
                 >
                   Updrade
-                </label>
+                </button>
               ) : null}
               {user.type == "vip" ? printVipView() : null}
               {user.type == "manager" ? printManagerView() : null}
@@ -331,22 +378,33 @@ function AccountPage() {
           </div>
         </div>
         <div className=" flex flex-col items-center content-end">
-          <label htmlFor="modal-change-password" className=" btn btn-info mb-6">
+          <button
+            htmlFor="modal-change-password"
+            className=" btn btn-info mb-6"
+            onClick={() => {
+              setModalChangePassword(true);
+            }}
+          >
             Change password
-          </label>
+          </button>
 
-          <label
+          <button
             htmlFor="modal-delete-account"
             className=" btn btn-outline btn-error btn-sm"
+            onClick={() => setModalDeleteAccount(true)}
           >
             Delete account
-          </label>
+          </button>
         </div>
         {/*Modal for password change*/}
         <input
           type="checkbox"
           id="modal-change-password"
           className="modal-toggle"
+          checked={modalChangePassword}
+          onChange={() => {
+            setModalChangePassword(false);
+          }}
         />
         <div className="modal modal-bottom sm:modal-middle cursor-pointer">
           <div className="modal-box">
@@ -399,13 +457,13 @@ function AccountPage() {
                 </div>
               </div>
               <div className="modal-action">
-                <label
+                <button
                   htmlFor="modal-change-password"
                   className="btn btn-outline"
                   onClick={handleCloseModal}
                 >
                   Cancel
-                </label>
+                </button>
                 <label htmlFor="modal-change-password ">
                   <button className="btn btn-info modal-open" type="submit">
                     Change
@@ -431,6 +489,10 @@ function AccountPage() {
           type="checkbox"
           id="modal-delete-account"
           className="modal-toggle"
+          checked={modalDeleteAccount}
+          onChange={() => {
+            setModalDeleteAccount(false);
+          }}
         />
         <label htmlFor="modal-delete-account" className="modal cursor-pointer">
           <div className="modal-box">
@@ -456,15 +518,23 @@ function AccountPage() {
               type="checkbox"
               id="modal-upgrade-account"
               className="modal-toggle"
+              checked={modalUpgradeAccount}
+              onChange={() => {
+                setModalUpgradeAccount(false);
+              }}
             />
             <div className="modal">
               <div className="modal-box relative">
-                <label
+                <button
                   htmlFor="modal-upgrade-account"
                   className="btn btn-sm btn-circle absolute right-2 top-2"
+                  aria-label="close modal upgrade account"
+                  onClick={() => {
+                    setModalUpgradeAccount(false);
+                  }}
                 >
                   ✕
-                </label>
+                </button>
                 <h3 className="text-lg font-bold mb-6">Upgrade to Pro</h3>
                 <form
                   className="flex flex-col"
@@ -528,15 +598,27 @@ function AccountPage() {
         {/* Modal for chosing Social Media Manager */}
         {user.type === "vip" && (
           <>
-            <input type="checkbox" id="modal-smm" className="modal-toggle" />
+            <input
+              type="checkbox"
+              id="modal-smm"
+              className="modal-toggle"
+              checked={modalManager}
+              onChange={() => {
+                setModalManager(false);
+              }}
+            />
             <div className="modal">
               <div className="modal-box relative">
-                <label
+                <button
                   htmlFor="modal-smm"
                   className="btn btn-sm btn-circle absolute right-2 top-2"
+                  aria-label="close modal upgrade account"
+                  onClick={() => {
+                    setModalManager(false);
+                  }}
                 >
                   ✕
-                </label>
+                </button>
                 <h3 className="text-lg font-bold mb-6">Choose your Manager</h3>
                 <form
                   className="flex flex-col"

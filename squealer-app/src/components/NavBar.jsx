@@ -19,7 +19,9 @@ function NavBar() {
     const userID = localStorage.getItem("userID").toString();
 
     const fetchUser = async () => {
-      const res = await fetch(`${Const.apiurl}/user/${userID}`);
+      const res = await fetch(`${Const.apiurl}/user/${userID}`, {
+        headers: { Authorization: localStorage.token },
+      });
 
       return await res.json();
     };
@@ -30,9 +32,9 @@ function NavBar() {
       if (user) {
         if (user.propic_path !== "") {
           setAvatarPath(user.propic_path);
-        } 
+        }
         setLeftoverChars(user.leftovers_chars);
-        console.log("User Leftover Chars:", user.leftovers_chars)
+        console.log("User Leftover Chars:", user.leftovers_chars);
       }
     }, [user]);
   }
@@ -106,8 +108,9 @@ function NavBar() {
                   <img src={avatarPath} />
                 </div>
               </div>
-                <div className="ml-2 font-bold">
-                D: {leftoverChars?.day || 0} W: {leftoverChars?.week || 0} M: {leftoverChars?.month || 0}
+              <div className="ml-2 font-bold">
+                D: {leftoverChars?.day || 0} W: {leftoverChars?.week || 0} M:{" "}
+                {leftoverChars?.month || 0}
               </div>
             </Link>
           ) : (

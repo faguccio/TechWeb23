@@ -40,11 +40,30 @@ export const verifyLogin = async (name, password) => {
     };
   else {
     //console.log("result ",result);
-    return {
-      valid_credentials: true,
-      //username: result[0].username,
-      id: result[0]._id.toString(),
-    };
+    if(result[0].type == "manager" || result[0].type == "vip"){
+      return {
+        valid_credentials: true,
+        id: result[0]._id.toString(),
+        isPro: true,
+        isAdmin: false,
+      };
+    }else{
+      if(result[0].type == "admin"){
+        return {
+          valid_credentials: true,
+          id: result[0]._id.toString(),
+          isPro: false,
+          isAdmin: true,
+        };
+      }else{
+        return {
+          valid_credentials: true,
+          id: result[0]._id.toString(),
+          isPro: false,
+          isAdmin: false,
+        };
+      }
+    }
   }
 };
 

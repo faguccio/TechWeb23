@@ -12,7 +12,7 @@
     />
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <title>Squealer - Admin Only - users</title>
+    <title>Squealer - Admin Only</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="../const.js"></script>
   </head>
@@ -89,5 +89,21 @@
         </div>
       </div>
     </main>
+    <footer class="flex justify-center mt-32">
+      <button id="logout" class="btn btn-outline">Log Out</button>
+    </footer>
+
+    <script>
+      $(document).ready(function () {
+        if(!document.cookie) {
+          window.location.href = `login.html`;
+        }
+
+        $('#logout').click(function () {
+          document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          window.location.href = `login.html`;
+        })
+      });
+    </script>
   </body>
 </html>

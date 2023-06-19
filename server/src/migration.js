@@ -96,6 +96,12 @@ export const migration = async () => {
       propic_path:
         "https://this-person-does-not-exist.com/img/avatar-gena379629b770580ab53d90cc61d84c43b.jpg",
     },
+    {
+      _id: new Types.ObjectId("64569d259d19f7f3611babe4"),
+      name: "admin",
+      password: "admin",
+      type: "admin",
+    },
   ];
 
   userList.map((item) => {

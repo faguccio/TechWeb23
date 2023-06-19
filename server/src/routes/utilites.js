@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import * as Const from "../const.js";
+import { User } from "../models/User.js";
+
 
 export const verifyToken = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -38,6 +40,33 @@ export const pagination = async (req, res) => {
   }
 };
 
+export const verifyVip = async (req, res, next) => {
+  const user = await User.findOne({ _id: req.authData.id});
+  if (user.type === "vip") {
+    return next();
+  }else{
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: "Operation only for Vip user" });
+  }
+};
+
+export const verifyManager = async (req, res, next) => {
+  const user = await User.findOne({ _id: req.authData.id});
+  if (user.type === "manager") {
+    return next();
+  }else{
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: "Operation only for Manager user" });
+  }
+}
+
+export const verifyAdmin = async (req, res, next) => {
+  const user = await User.findOne({ _id: req.authData.id});
+  if (user.type === "admin") {
+    return next();
+  }else{
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: "Operation only for Admin user" });
+  }
+}
+
 export const verifyTokenAndPass = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   if (authHeader) {
@@ -53,3 +82,4 @@ export const verifyTokenAndPass = async (req, res, next) => {
     return next();
   }
 };
+

@@ -30,7 +30,9 @@ function PostCard({ id }) {
   };
 
   const fetchUser = async () => {
-    const res = await fetch(`${Const.apiurl}/user/${data.sender}`);
+    const res = await fetch(`${Const.apiurl}/user/${data.sender}`, {
+      headers: { Authorization: localStorage.token },
+    });
     const ret = await res.json();
     return ret;
     // setUser(ret);
