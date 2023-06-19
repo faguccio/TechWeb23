@@ -16,6 +16,11 @@ const router = createRouter({
       name: "account",
       component: AccountPage,
     },
+    {
+      path: "/newpost",
+      name: "newpost",
+      component: NewPost,
+    },
   ],
 });
 
