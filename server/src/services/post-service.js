@@ -56,3 +56,35 @@ export const createPost = async (post) => {
     return { status: "failure" };
   }
 };
+
+export const filterAllPosts = async (sender, recipients, start_time, end_time) => {
+  try {
+    //console.log(sender, recipients, start_time, end_time);
+    let query = {};
+    if (sender) query.sender = sender;
+    if (recipients && recipients?.length > 0) query.recipients = { $in: recipients };
+    if (!!start_time && !!end_time) query.timestamp = { $gte: start_time, $lte: end_time };
+    else if (end_time) query.timestamp = { $lte: end_time };
+    else if (start_time) query.timestamp = { $gte: start_time };
+    console.log("recipients:",recipients);
+    console.log("query:",query);
+
+    const posts = await Post.find(query).sort({ timestamp: -1 });
+    return posts;
+  } catch (err) {
+    console.log(`filter all posts service, (${err.message})`);
+    return { status: "failure" };
+  }
+};
+
+export const removeRecipient = async (postId, recipient) => {
+  try {
+    const post = await Post.findOne({ _id: postId });
+    post.recipients = post.recipients.filter((r) => r !== recipient);
+    post.save();
+    return { status: "success" };
+  } catch (err) {
+    console.log(`remove recipient service, (${err.message})`);
+    return { status: "failure" };
+  }
+}

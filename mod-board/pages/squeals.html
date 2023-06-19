@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/daisyui@3.1.0/dist/full.css"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <title>Squealer - Admin Only - Squeals</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <script src="../const.js"></script>
+        <script src="../scripts.js"></script>
+    </head>
+    <body class="flex flex-col items-center">
+        <div>
+            <a href="./home.html" class="btn btn-neutral fixed top-5 left-5 ">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                    <path fill-rule="evenodd" d="M20.25 12a.75.75 0 01-.75.75H6.31l5.47 5.47a.75.75 0 11-1.06 1.06l-6.75-6.75a.75.75 0 010-1.06l6.75-6.75a.75.75 0 111.06 1.06l-5.47 5.47H19.5a.75.75 0 01.75.75z" clip-rule="evenodd" />
+                  </svg> 
+                Back to home
+            </a>
+        </div>
+        <header class="flex justify-center my-5">
+            <h1 class="text-4xl font-bold">Squeals management</h1>
+        </header>
+        <h2 class="font-semibold text-2xl mb-3">Filtering options</h2>
+        <form class="flex flex-col items-center">
+            
+            <div class="flex flex-row justify-evenly mb-3 items-center">
+                <label for="filter-sender">Sender</label>
+                <select name="filter-sender" id="filter-sender" class="select select-bordered select-secondary w-fit max-w-96 w-1/3 ml-2 mr-4">
+                    <option selected value="all">ALL</option>
+                </select>
+                <label for="filter-recipients">Recipients</label>
+                <div class="tooltip tooltip-right" data-tip="recipient1, recipient2, ...">
+                    <input
+                        id="filter-recipients"
+                        class="input input-bordered input-secondary ml-2"
+                        type="text"
+                    />
+                </div>
+            </div>
+            <div class="flex flex-row justify-evenly mb-2 items-center">
+                <label for="filter-start-time">Date from</label>
+                <input
+                    id="filter-start-time"
+                    class="input input-bordered input-secondary ml-2 mr-4"
+                    type="date"
+                />
+                <label for="filter-end-time">to</label>
+                <input
+                    id="filter-end-time"
+                    class="input input-bordered input-secondary ml-2 mr-4"
+                    type="date"
+                />
+                <button class="btn btn-secondary" id="filter-button">FILTER</button>
+            </div>
+        </form>
+
+        <div id="posts" class="mt-8 w-3/4"></div>
+
+        <template id="post-template">
+            <div class="flex flex-col rounded-lg bg-zinc-50 shadow-md shadow-zinc-300 h-fit p-5 mb-4">
+                <div class="flex flex-row justify-around items-center mb-2">
+                    <div class="flex flex-col items-center"> 
+                        <img
+                            id="sender-propic"
+                            class="mask mask-squircle object-scale-down h-20 mx-2"
+                            src=""
+                            alt="Sender Profile Picture"
+                        />
+                        <h2 class="font-medium mt-1" id="sender-name"></h2>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <h3 class="font-semibold mb-1">Recipients</h2>
+                        <div class="flex flex-row justify-center">
+                            <input
+                                id="recipients"
+                                class="input input-bordered input-primary w-full mr-4"
+                                type="text"
+                                value=""
+                            />
+                            <button class="btn btn-primary" id="edit-recipients">EDIT</button>
+                        </div>
+                    </div>
+                    <div>
+                        <p id="date" class="font-medium text-lg"></p>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center items-center mb-4">
+                    <p id="text" class="font-semibold text-xl mx-5"></p>
+                </div>
+                <div class="flex flex-row justify-evenly">
+                    <img
+                        id="image"
+                        class="rounded-xl w-1/2 h-fit"
+                        src=""
+                        alt="Post Image"
+                    />
+                    <div id="coordinates" class="flex flex-col justify-center items-center">
+                        <p class="text-lg font-medium">Map Coordinates</p>
+                        <div class="flex flex-row items-center">
+                            <div class="flex flex-col items-center">
+                                <p class="font-semibold">Latitude</p>
+                                <p id="latitude" class="font-medium text-lg"></p>
+                            </div>
+                            <div class="flex flex-col items-center ml-6">
+                                <p class="font-semibold">Longitude</p>
+                                <p id="longitude" class="font-medium text-lg"></p>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row items-center justify-center mt-4">
+                    <button class="btn btn-square btn-outline btn-disabled mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 fill-green-500">
+                            <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777zM2.331 10.977a11.969 11.969 0 00-.831 4.398 12 12 0 00.52 3.507c.26.85 1.084 1.368 1.973 1.368H4.9c.445 0 .72-.498.523-.898a8.963 8.963 0 01-.924-3.977c0-1.708.476-3.305 1.302-4.666.245-.403-.028-.959-.5-.959H4.25c-.832 0-1.612.453-1.918 1.227z" />
+                        </svg>                           
+                    </button>
+                    <input type="number" id="reactions-positive" class="input input-ghost input-primary w-32  font-semibold" />
+                    <button class="btn btn-square btn-outline btn-disabled ml-6 mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 fill-red-500">
+                            <path d="M15.73 5.25h1.035A7.465 7.465 0 0118 9.375a7.465 7.465 0 01-1.235 4.125h-.148c-.806 0-1.534.446-2.031 1.08a9.04 9.04 0 01-2.861 2.4c-.723.384-1.35.956-1.653 1.715a4.498 4.498 0 00-.322 1.672V21a.75.75 0 01-.75.75 2.25 2.25 0 01-2.25-2.25c0-1.152.26-2.243.723-3.218C7.74 15.724 7.366 15 6.748 15H3.622c-1.026 0-1.945-.694-2.054-1.715A12.134 12.134 0 011.5 12c0-2.848.992-5.464 2.649-7.521.388-.482.987-.729 1.605-.729H9.77a4.5 4.5 0 011.423.23l3.114 1.04a4.5 4.5 0 001.423.23zM21.669 13.773c.536-1.362.831-2.845.831-4.398 0-1.22-.182-2.398-.52-3.507-.26-.85-1.084-1.368-1.973-1.368H19.1c-.445 0-.72.498-.523.898.591 1.2.924 2.55.924 3.977a8.959 8.959 0 01-1.302 4.666c-.245.403.028.959.5.959h1.053c.832 0 1.612-.453 1.918-1.227z" />
+                        </svg>                           
+                    </button>
+                    <input type="number" id="reactions-negative" class="input input-ghost input-primary w-32 font-semibold" />
+                    <button class="btn btn-primary ml-4" id="edit-reactions">EDIT</button>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div id="success" class="mt-4 alert alert-success w-96 ">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="stroke-current shrink-0 h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <span id="success-msg"></span>
+                    </div>
+                    <div id="error" class="alert alert-error mt-4 w-96 ">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span id="error-msg"></span>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <script>
+            function populate(posts){
+                $("#posts").empty();
+                if(posts.length == 0){
+                    $("#posts").append("<p class='text-center text-3xl font-medium mt-8'>No posts to show</p>");
+                    return;
+                }else{
+                    posts.map( async (post) =>{
+                        let postTemplate = $($('#post-template').html());
+                        let user = await fetchUser(post.sender);
+                        
+                        postTemplate.find("#sender-name").text(user.name);
+                        postTemplate.find("#sender-propic").attr("src", user.propic_path);
+                        let recipientsString = post.recipients.map((recipient) => recipient).join(", ");
+                        //recipientsString = recipientsString.slice(0, -2);
+                        const recipients = postTemplate.find("#recipients");
+                        recipients.val(recipientsString);
+                        postTemplate.find("#date").text(formatDate(post.timestamp));
+                        postTemplate.find("#text").text(post.text);
+                        if(post?.geolocation){
+                            postTemplate.find("#latitude").text(post.geolocation.lat);
+                            postTemplate.find("#longitude").text(post.geolocation.lon);
+                        }
+                        else
+                            postTemplate.find("#coordinates").remove();
+    
+                        if(post?.image_path)
+                            postTemplate.find("#image").attr("src", post.image_path);
+                        else
+                            postTemplate.find("#image").remove();
+                        
+                        postTemplate.find("#reactions-positive").val(post.reactions.positive);
+                        postTemplate.find("#reactions-negative").val(post.reactions.negative);
+    
+                        const successAlert = postTemplate.find("#success");
+                        successAlert.hide();
+    
+                        const errorAlert = postTemplate.find("#error");
+                        errorAlert.hide();
+    
+                        postTemplate.find("#edit-recipients").click(async (e) => {
+                            e.preventDefault();
+                            let recipientsArray = recipients.val().split(",").map((recipient) => recipient.trim());
+                            let response = await fetch(`${apiurl}/post/update/${post._id}`, {
+                                method: "PATCH",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    recipients: recipientsArray
+                                })
+                            });
+                            response = await response.json();
+                            if(response.status == "success"){
+                                successAlert.show();
+                                successAlert.find("#success-msg").text(response.message);
+                                setInterval(() => {
+                                    successAlert.hide(1000);
+                                }, 2000);
+                            }
+                        })
+    
+                        postTemplate.find("#edit-reactions").click(async (e) => {
+                            e.preventDefault();
+                            const positive = postTemplate.find("#reactions-positive").val();
+                            const negative = postTemplate.find("#reactions-negative").val();
+    
+                            if(positive < 0 || negative < 0){
+                                errorAlert.show();
+                                errorAlert.find("#error-msg").text("Reactions cannot be negative");
+                                setInterval(() => {
+                                    errorAlert.hide(1000);
+                                }, 2000);
+                                return;
+                            }else{
+                                let response = await fetch(`${apiurl}/post/update/${post._id}`, {
+                                    method: "PATCH",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                        reactions: {
+                                            positive: positive,
+                                            negative: negative
+                                        }
+                                    })
+                                });
+                                response = await response.json();
+                                if(response.status == "success"){
+                                    successAlert.show();
+                                    successAlert.find("#success-msg").text(response.message);
+                                    setInterval(() => {
+                                        successAlert.hide(1000);
+                                    }, 2000);
+                                }
+                            }
+                        })
+    
+                        $("#posts").append(postTemplate);                      
+                    });
+                }
+            }
+
+            async function fetchUser(id){
+                let response = await fetch(`${apiurl}/user/info/${id}`);
+                let user = await response.json();
+                return user;
+            }
+            async function fetchAllUsers(){
+                let response = await fetch(`${apiurl}/users`);
+                let users = await response.json();
+                return users;
+            }
+
+            function setUpFiltering(){
+                $("#filter-button").click((e) => {
+                    e.preventDefault();
+                    const sender = $("#filter-sender").val();
+                    //console.log(sender);
+                    let recipients = $("#filter-recipients").val().trim();
+                    recipients = encodeURIComponent(recipients);
+                    //recipients = recipients.split(",").map((recipient) => recipient.trim());
+                    //console.log(recipients);
+                    const start_time = $("#filter-start-time").val();
+                    //console.log(start_time);
+                    const end_time = $("#filter-end-time").val();
+                    //console.log(end_time);
+
+                    const filter1 = sender == "all" ? "" : `sender=${sender}&`;
+                    const filter2 = recipients == "" ? "" : `recipients=${recipients}&`;
+                    const filter3 = start_time == "" ? "" : `start_time=${start_time}&`;
+                    const filter4 = end_time == "" ? "" : `end_time=${end_time}&`;
+
+                    console.log(`${apiurl}/posts?${filter1}${filter2}${filter3}${filter4}`);
+                    makeRequest(`${apiurl}/posts?${filter1}${filter2}${filter3}${filter4}`);
+                })
+            }
+
+            async function popolateSenderFilter(){
+                const users = await fetchAllUsers();
+                const senderSelect = $("#filter-sender");
+                users.map((user) => {
+                    senderSelect.append(`<option value="${user._id}">${user.name}</option>`);
+                });
+            }
+
+            async function makeRequest(req) {
+                let res = await fetch(req);
+                res = await res.json();
+                console.log(res);
+                populate(res);
+            }
+
+            $(document).ready(async () => {
+                if(!document.cookie) {
+                    window.location.href = `login.html`
+                }
+                await popolateSenderFilter();
+                setUpFiltering();
+                await makeRequest(`${apiurl}/posts`);
+            });
+
+        
+        </script>
+    </body>
+
+</html>

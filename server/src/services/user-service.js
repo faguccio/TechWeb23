@@ -45,13 +45,24 @@ export const verifyLogin = async (name, password) => {
         valid_credentials: true,
         id: result[0]._id.toString(),
         isPro: true,
+        isAdmin: false,
       };
     }else{
-      return {
-        valid_credentials: true,
-        id: result[0]._id.toString(),
-        isPro: false,
-      };
+      if(result[0].type == "admin"){
+        return {
+          valid_credentials: true,
+          id: result[0]._id.toString(),
+          isPro: false,
+          isAdmin: true,
+        };
+      }else{
+        return {
+          valid_credentials: true,
+          id: result[0]._id.toString(),
+          isPro: false,
+          isAdmin: false,
+        };
+      }
     }
   }
 };

@@ -57,6 +57,16 @@ export const verifyManager = async (req, res, next) => {
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: "Operation only for Manager user" });
   }
 }
+
+export const verifyAdmin = async (req, res, next) => {
+  const user = await User.findOne({ _id: req.authData.id});
+  if (user.type === "admin") {
+    return next();
+  }else{
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: "Operation only for Admin user" });
+  }
+}
+
 export const verifyTokenAndPass = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   console.log(authHeader);
@@ -73,3 +83,4 @@ export const verifyTokenAndPass = async (req, res, next) => {
     return next();
   }
 };
+

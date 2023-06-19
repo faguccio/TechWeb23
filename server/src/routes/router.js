@@ -24,13 +24,16 @@ const getPost = async (req, res) => {
 //routes
 appRouter.get("/post/:id", getPost);
 appRouter.patch("/post/:id", useLike);
+appRouter.patch("/post/update/:id", postRoutes.updatePostById);
 //appRouter.get("/home/post/:id", getHomePagePosts);
 appRouter.get("/search/posts", postRoutes.searchPostBody);
 appRouter.post("/post", verifyToken, postRoutes.createPost);
+appRouter.get("/posts", postRoutes.getAllPostFiltered);
 
 appRouter.get("/user/:id", userRoutes.getUserById);
 appRouter.patch("/user/:id", userRoutes.updateUserById);
 appRouter.delete("/user/:id", userRoutes.deleteUserById);
+appRouter.get("/user/info/:id", userRoutes.getUserInfoById);
 //appRouter.get("/user/manager/:id", userRoutes.getManager);
 appRouter.get("/user", verifyToken, userRoutes.getUser);
 appRouter.patch("/user", verifyToken, userRoutes.updateUser);
@@ -51,7 +54,9 @@ appRouter.get("/user/channels/all", verifyToken, userRoutes.getUserChannelList);
 appRouter.post("/users/register", userRoutes.register);
 appRouter.post("/users/login", userRoutes.login);
 appRouter.post("/users/loginPro", userRoutes.loginPro);
+appRouter.post("/users/loginAdmin", userRoutes.loginAdmin);
 
+appRouter.get("/channels/all", channelRoutes.getAllChannels);
 appRouter.get(
   "/channels/:name",
   verifyTokenAndPass,
@@ -59,8 +64,12 @@ appRouter.get(
   pagination
 );
 appRouter.post("/channels/:name/posts", channelRoutes.addPostToChannel);
+appRouter.patch("/channels/:name/post", channelRoutes.removePostFromChannel);
 appRouter.post("/channels/create", verifyToken, channelRoutes.createChannel);
 appRouter.get("/channels/:name/available", channelRoutes.isNameAvailable);
+appRouter.get("/channel/:id/posts", channelRoutes.getChannelPostsById);
+appRouter.patch("/channel/:id", channelRoutes.updateChannelById);
+appRouter.delete("/channel/:id", channelRoutes.deleteChannelById);
 
 appRouter.get("/personal", verifyToken, (req, res) => {
   console.log("1 req");

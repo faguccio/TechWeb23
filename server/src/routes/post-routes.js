@@ -3,6 +3,7 @@ import * as Const from "../const.js";
 import * as postService from "../services/post-service.js";
 import * as userService from "../services/user-service.js";
 import * as channelService from "../services/channel-service.js";
+import { Post } from "../models/Post.js";
 
 export const useLike = async (req, res) => {
   try {
@@ -83,3 +84,35 @@ export const createPost = async (req, res) => {
     console.log(`createPost route, (${err.message})`);
   }
 };
+
+export const updatePostById = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const newPost = req.body;
+    const updatedPost = await Post.findByIdAndUpdate(postId, newPost);
+    res.status(Const.STATUS_OK).json({message: "Post updated successfully", status: "success"});
+  } catch (err) {
+    console.log(`updatePostById route, (${err.message})`);
+  }
+};
+
+export const getAllPostFiltered = async (req, res) => {
+  try {
+    let sender = req.query?.sender;  // sender = ObjectId(...) || null/undefined
+    let recipients = req.query?.recipients; // recipients = 'a, b, c, ...' || null/undefined
+    if(recipients) {
+      console.log("getAllPost - recipients: ", recipients);
+      //recipients = decodeURIComponent(recipients);
+      recipients = recipients.split(",").map((recipient) => recipient.trim())
+    };
+    let start_time = req.query?.start_time; // start_time = ISODate(...) || null/undefined
+    let end_time = req.query?.end_time; // end_time = ISODate(...) || null/undefined
+
+    
+    const posts = await postService.filterAllPosts(sender, recipients, start_time, end_time);
+    res.status(Const.STATUS_OK).json(posts);
+  } catch (err) {
+    console.log(`getAllPostFiltered route, (${err.message})`);
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
+  }
+}; 

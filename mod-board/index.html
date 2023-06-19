@@ -19,12 +19,15 @@
 
     <script>
       $(document).ready(() => {
+        if (localStorage.getItem("token") == null) {
+          window.location.href = "pages/login.html";
+        }
         window.location.href = "pages/home.html";
       });
     </script>
   </head>
 
   <body>
-    <h1>Menu</h1>
+    
   </body>
 </html>

@@ -32,6 +32,17 @@ export const addPostToChannel = async (channel_ID, post_ID, timestamp) => {
   }
 };
 
+export const removePostFromChannel = async (channel_ID, post_ID) => {
+  try {
+    //const channel = await Channel.find({ _id: channel_ID, posts: { content: post_ID } });
+    const updatedChannel = await Channel.findOneAndUpdate({ _id: channel_ID },{ $pull: { posts: { content: post_ID } } }); 
+    //console.log(updatedChannel);
+    return updatedChannel;
+  } catch (err) {
+    console.log(`removePostFromChannel, ${id} (${err.message})`);
+  }
+};
+
 export const channelNameToId = async (channelName) => {
   try {
     console.log(channelName);

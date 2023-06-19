@@ -96,6 +96,12 @@ export const migration = async () => {
       propic_path:
         "https://this-person-does-not-exist.com/img/avatar-gena379629b770580ab53d90cc61d84c43b.jpg",
     },
+    {
+      _id: new Types.ObjectId("64569d259d19f7f3611babe4"),
+      name: "admin",
+      password: "admin",
+      type: "admin",
+    },
   ];
 
   userList.map((item) => {
@@ -133,7 +139,10 @@ export const migration = async () => {
       allowed_readers: [],
       allowed_writers: [],
 
-      posts: [new Types.ObjectId("64565a05867620df0ef89f50")],
+      posts: [
+        {content: new Types.ObjectId("64565a05867620df0ef89f50"),
+        timestamp: "2022-10-10T14:48:00"}
+      ],
     },
     {
       _id: new Types.ObjectId("6459038a3a8419267a26f5c0"),

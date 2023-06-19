@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="flex justify-center mt-6">
-                    <button class="btn btn-sm btn-warning btn-outline" @click="logoutHandler">Log out</button>
+                    <button class="btn btn-sm btn-outline" @click="logoutHandler">Log out</button>
                 </div>
             </div>
             <div v-else-if="statusUserManaged==='loading'"><LoadingSpinner /></div>
@@ -67,7 +67,7 @@
                     </div>
                 </div>
                 <div class="flex justify-center mt-6">
-                    <button class="btn btn-sm btn-warning btn-outline" @click="logoutHandler">Log out</button>
+                    <button class="btn btn-sm btn-outline" @click="logoutHandler">Log out</button>
                 </div>
             </div>
             

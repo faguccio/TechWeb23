@@ -64,9 +64,52 @@ export const loginPro = async (req, res) => {
   }
 };
 
+export const loginAdmin = async (req, res) => {
+  try {
+    const authData = await userService.verifyLogin(
+      req.body.name,
+      req.body.password
+    );
+    if (!authData.valid_credentials) {
+      return res
+        .status(Const.STATUS_UNAUTHORIZED)
+        .json({ message: authData.message });
+    }else{
+      //console.log("authData: ",authData);
+      if(!authData.isAdmin)
+        return res.status(Const.STATUS_UNAUTHORIZED).json({ message: "User is not Admin" });
+      else{
+        const userID = authData.id;
+        const token = jwt.sign({ authData: authData }, Const.SECRET);
+        return res.status(Const.STATUS_OK).json({ userID, token });
+      }
+    }   
+  }catch (err) {
+    console.log(`login admin user route,(${err.message})`);
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
+  }
+};
+
 export const getUserById = async (req, res) => {
+  const user = await User.findOne({ _id: req.params.id});
+  return res.status(200).json(user);
+};
+
+export const getUser = async (req, res) => {
   const user = await User.findOne({ _id: req.authData.id});
   return res.status(200).json(user);
+};
+
+export const getUserInfoById = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+    return res.status(Const.STATUS_OK).json({
+      name: user.name,
+      propic_path: user.propic_path,
+    });
+  } catch (err) {
+    console.log(`Get user info by id service, ${id} (${err.message})`);
+  }
 };
 
 export const updateUserById = async (req, res) => {
