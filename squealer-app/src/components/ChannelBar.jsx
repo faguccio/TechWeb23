@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Route, Link } from "react-router-dom";
+import { Const } from "../utils";
 
 function ChannelBar({ ccopy, setSub }) {
   const [channel, setChannel] = useState([]);
@@ -24,7 +25,7 @@ function ChannelBar({ ccopy, setSub }) {
   }
 
   const getChannelList = async () => {
-    const res = await fetch(`http://localhost:3000/user/channels/all`, {
+    const res = await fetch(`${Const.apiurl}/user/channels/all`, {
       headers: { Authorization: localStorage.token },
     });
     const ret = await res.json();
@@ -56,20 +57,12 @@ function ChannelBar({ ccopy, setSub }) {
             onClick={() => {
               window.scrollTo(0, 0);
             }}
-            key={crypto.randomUUID()}
+            key={String(crypto.getRandomValues(new Uint32Array(10)))}
           >
             {name}
           </Link>
         );
-      })}{" "}
-      <a className="btn m-5">sium</a>
-      <a className="btn m-5">sium</a>
-      <a className="btn m-5">sium</a>
-      <a className="btn m-5">sium</a>
-      <a className="btn m-5">sium</a>
-      <a className="btn m-5">sium</a>
-      <a className="btn m-5">sium</a>
-      <a className="btn m-5">sium</a>
+      })}
     </div>
   );
 }

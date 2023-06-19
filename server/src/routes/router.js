@@ -16,35 +16,44 @@ const getUser = async (req, res) => {
 };
 
 //routes
-appRouter.get("/post/:id", postRoutes.getPost);
-appRouter.patch("/post/:id/likes", verifyToken, postRoutes.useLike);
+appRouter.get("/api/post/:id", postRoutes.getPost);
+appRouter.patch("/api/post/:id/likes", verifyToken, postRoutes.useLike);
+appRouter.post("/api/post/:id/comments", verifyToken, postRoutes.createComment);
 //appRouter.get("/home/post/:id", getHomePagePosts);
-appRouter.get("/search/posts", postRoutes.searchPostBody);
-appRouter.post("/post", verifyToken, postRoutes.createPost);
+appRouter.get("/api/search/posts", postRoutes.searchPostBody);
+appRouter.post("/api/post", verifyToken, postRoutes.createPost);
 
-appRouter.get("/user/:id", getUser);
-appRouter.get("/users", userRoutes.getAllUsersFiltered);
-appRouter.patch("/user/:id", userRoutes.updateUser);
-appRouter.patch("/user/:id/chars", userRoutes.updateUserChars);
-appRouter.delete("/user/:id", userRoutes.deleteUser);
-appRouter.get("/user/manager/:id", userRoutes.getManager);
+appRouter.get("/api/user/:id", getUser);
+appRouter.get("/api/users", userRoutes.getAllUsersFiltered);
+appRouter.patch("/api/user/:id", userRoutes.updateUser);
+appRouter.patch("/api/user/:id/chars", userRoutes.updateUserChars);
+appRouter.delete("/api/user/:id", userRoutes.deleteUser);
+appRouter.get("/api/user/manager/:id", userRoutes.getManager);
 
-appRouter.get("/users/managers/", userRoutes.getManagers);
-appRouter.get("/user/channels/all", verifyToken, userRoutes.getUserChannelList);
-appRouter.post("/users/register", userRoutes.register);
-appRouter.post("/users/login", userRoutes.login);
+appRouter.get("/api/users/managers/", userRoutes.getManagers);
+appRouter.get(
+  "/api/user/channels/all",
+  verifyToken,
+  userRoutes.getUserChannelList
+);
+appRouter.post("/api/users/register", userRoutes.register);
+appRouter.post("/api/users/login", userRoutes.login);
 
 appRouter.get(
-  "/channels/:name",
+  "/api/channels/:name",
   verifyTokenAndPass,
   channelRoutes.getChannelPosts,
   pagination
 );
-appRouter.post("/channels/:name/posts", channelRoutes.addPostToChannel);
-appRouter.post("/channels/create", verifyToken, channelRoutes.createChannel);
-appRouter.get("/channels/:name/available", channelRoutes.isNameAvailable);
+appRouter.post("/api/channels/:name/posts", channelRoutes.addPostToChannel);
+appRouter.post(
+  "/api/channels/create",
+  verifyToken,
+  channelRoutes.createChannel
+);
+appRouter.get("/api/channels/:name/available", channelRoutes.isNameAvailable);
 
-appRouter.get("/personal", verifyToken, (req, res) => {
+appRouter.get("/api/personal", verifyToken, (req, res) => {
   console.log("1 req");
   res.json(`verificato: ${JSON.stringify(req.authData)}`);
 });

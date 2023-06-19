@@ -23,4 +23,5 @@
 - while a timer is set for automatic sending, show some colored stuff to attest that
 - during channel creation, validation of user names and channel name availability
   - showing error
-- se l'utente non e' loggato ritornare solo canali squeal
+- se l'utente non e' loggato ritornare solo canali squea
+- visualizzare DM

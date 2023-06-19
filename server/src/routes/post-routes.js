@@ -83,6 +83,22 @@ export const createPost = async (req, res) => {
   }
 };
 
+export const createComment = async (req, res) => {
+  try {
+    const userId = req.authData.id;
+    const postId = req.params.id;
+    const comment = req.body.text;
+    const userName = await userService.userIdToName(userId);
+
+    await postService.createComment(comment, postId, userName);
+    res
+      .status(Const.STATUS_OK)
+      .json({ status: "success", msg: "Comment created successfully" });
+  } catch (err) {
+    console.log(`createComment route, (${err.message})`);
+  }
+};
+
 export const getPost = async (req, res) => {
   try {
     const sessionId = req.headers["my-unique-session"];

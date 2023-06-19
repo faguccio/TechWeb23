@@ -93,6 +93,16 @@ export const userNameToId = async (name) => {
   }
 };
 
+export const userIdToName = async (id) => {
+  try {
+    const user = await User.findOne({ _id: id });
+    if (!user) return null;
+    return user.name;
+  } catch (err) {
+    console.log(`userIdToName, service ${id} (${err.message})`);
+  }
+};
+
 export const usersContainingName = async (str) => {
   try {
     const users = await User.find({ name: { $regex: str, $options: "i" } });

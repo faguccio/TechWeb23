@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Const } from "../utils";
 
 function CreateChannelPage() {
   const [readerList, setReaderList] = useState([]);
@@ -29,7 +30,7 @@ function CreateChannelPage() {
       allowed_writers: writerList,
     };
     console.log(newChannel);
-    let res = await fetch(`http://localhost:3000/channels/create`, {
+    let res = await fetch(`${Const.apiurl}/channels/create`, {
       method: "POST",
       headers: {
         Accept: "application/json",

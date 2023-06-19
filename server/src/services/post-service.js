@@ -1,5 +1,7 @@
 import { Post } from "../models/Post.js";
 import { User } from "../models/User.js";
+import * as Const from "../const.js";
+import * as channelService from "./channel-service.js";
 
 export const updateLike = async (id, userId, type) => {
   try {
@@ -59,13 +61,38 @@ async function addNegative(postId, userId) {
       return myid != postId;
     });
   }
-  const updatedUser = await user.save();
+  await user.save();
   const updatedPost = await post.save();
-  calculatePostStatus(updatedPost, updatedUser);
+  calculatePostStatus(updatedPost);
 }
 
-async function calculatePostStatus(post, user) {
-  //here i should calculate the gaining or losing of characters
+async function calculatePostStatus(post) {
+  const user = await User.findOne({ _id: post.sender });
+  const upvotes = post.reactions.positive;
+  const downvotes = post.reactions.negative;
+  const MC = post.impressions * Const.critic_mass_index;
+
+  user.popularPosts = user.popularPosts.filter((id) => {
+    return String(id) != String(post._id);
+  });
+  user.unpopularPosts = user.unpopularPosts.filter((id) => {
+    return String(id) != String(post._id);
+  });
+  user.controversialPosts = user.controversialPosts.filter((id) => {
+    return String(id) != String(post._id);
+  });
+
+  if (upvotes > MC && downvotes > MC) {
+    user.controversialPosts.push(post._id);
+    const channel_ID = await channelService.channelNameToId("§CONTROVERSIAL");
+    await channelService.addPostToChannel(channel_ID, post._id, post.timestamp);
+  } else if (upvotes > MC) {
+    user.popularPosts.push(post._id);
+  } else if (downvotes > MC) {
+    user.unpopularPosts.push(post._id);
+  }
+
+  await user.save();
 }
 
 /*
@@ -125,8 +152,23 @@ export const getPost = async (postId, sessionId) => {
     }
     delete post.impressionsIds;
     return post;
-  } catch {
+  } catch (err) {
     console.log(`getPost service, (${err.message})`);
+    return { status: "failure" };
+  }
+};
+
+export const createComment = async (comment, postId, userName) => {
+  try {
+    const updatedPost = await Post.findOne({ _id: postId });
+    const newComment = userName + "\n" + comment;
+    if (!updatedPost.comments.includes(newComment)) {
+      updatedPost.comments.push(newComment);
+    }
+    await updatedPost.save();
+    return { status: "success" };
+  } catch (err) {
+    console.log(`create post service, (${err.message})`);
     return { status: "failure" };
   }
 };

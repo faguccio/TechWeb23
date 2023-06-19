@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { Const } from "../utils";
 
 function AutoPage() {
   const {
@@ -24,7 +25,7 @@ function AutoPage() {
   };
 
   const createChannel = async (name) => {
-    const res = await fetch(`http://localhost:3000/channels/create`, {
+    const res = await fetch(`${Const.apiurl}/channels/create`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -70,7 +71,7 @@ function AutoPage() {
       geolocation: await getLongAndLat(),
     };
 
-    fetch(`http://localhost:3000/post`, {
+    fetch(`${Const.apiurl}/post`, {
       method: "POST",
       headers: {
         Accept: "application/json",

@@ -14,6 +14,7 @@ const postSchema = new Schema({
   },
   impressions: { type: Number, default: 0 },
   impressionsIds: { type: [String], default: [] },
+  comments: { type: [String], default: [] },
 });
 
 //postSchema.index({ text: "text" });

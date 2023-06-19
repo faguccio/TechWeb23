@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { Const } from "../utils";
 
 import GeoMap from "./GeoMap";
 import LoadingSpinner from "./LoadingSpinner";
@@ -9,9 +11,16 @@ function PostCard({ id }) {
   const queryClient = useQueryClient();
   const [liked, setLiked] = useState([false, false]);
   const navigate = useNavigate();
+  const [showComments, setShowComments] = useState(false);
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm();
 
   const fetchData = async () => {
-    const res = await fetch(`http://localhost:3000/post/${id}`, {
+    const res = await fetch(`${Const.apiurl}/post/${id}`, {
       headers: {
         "my-unique-session": localStorage.getItem("sessionUUID"),
       },
@@ -21,7 +30,7 @@ function PostCard({ id }) {
   };
 
   const fetchUser = async () => {
-    const res = await fetch(`http://localhost:3000/user/${data.sender}`);
+    const res = await fetch(`${Const.apiurl}/user/${data.sender}`);
     const ret = await res.json();
     return ret;
     // setUser(ret);
@@ -32,7 +41,6 @@ function PostCard({ id }) {
   const { data: user, status2 } = useQuery(["user", id], fetchUser, {
     enabled: !!data,
     onSuccess: (data) => {
-      console.log("richiedo user");
       if (data.postsLiked.includes(id)) setLiked([true, false]);
       if (data.postsDisliked.includes(id)) setLiked([false, true]);
     },
@@ -41,7 +49,7 @@ function PostCard({ id }) {
   const addLike = useMutation({
     mutationFn: async (rtype) => {
       const data = { type: rtype };
-      const res = await fetch(`http://localhost:3000/post/${id}/likes`, {
+      const res = await fetch(`${Const.apiurl}/post/${id}/likes`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -54,6 +62,22 @@ function PostCard({ id }) {
       queryClient.invalidateQueries({ queryKey: ["post-card", id] });
     },
   });
+
+  async function sendComment(data) {
+    if (!localStorage.token) {
+      navigate("/login");
+    } else {
+      const res = await fetch(`${Const.apiurl}/post/${id}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.token,
+        },
+        body: JSON.stringify({ text: data.newComment }),
+      });
+      queryClient.invalidateQueries({ queryKey: ["post-card", id] });
+    }
+  }
 
   if (status !== "success")
     return (
@@ -91,7 +115,10 @@ function PostCard({ id }) {
           <div className="flex flex-wrap">
             {data.recipients.map((rec) => {
               return (
-                <a key={crypto.randomUUID()} className="mr-4">
+                <a
+                  key={String(crypto.getRandomValues(new Uint32Array(10)))}
+                  className="mr-4"
+                >
                   {rec}
                 </a>
               );
@@ -114,14 +141,6 @@ function PostCard({ id }) {
           ) : null}
           <div className="flex justify-end">
             <div className="mt-4 flex flex-wrap items-center">
-              {/*
-    const negativeR = {
-      emoji: "",
-      type: "negative",
-      alt: "Dislike Button",
-      amount: 0,
-    }; */}
-
               <div className="flex mx-2 items-center text-gray-700 text-sm">
                 <button
                   className={`btn btn-sm btn-outline text-lg px-2 mr-1 ${
@@ -161,7 +180,65 @@ function PostCard({ id }) {
                 </button>
                 <span>{data.reactions.negative}</span>
               </div>
+
+              <div className="flex mx-2 items-center text-gray-700 text-sm">
+                <button
+                  aria-label="Show comments button"
+                  className={`btn btn-sm btn-outline text-lg px-2 mr-1 ${
+                    showComments ? "bg-primary" : ""
+                  }`}
+                  onClick={() => {
+                    setShowComments(!showComments);
+                  }}
+                >
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/3193/3193015.png"
+                    className="w-5"
+                  />
+                </button>
+                <span>{data.comments.length}</span>
+              </div>
             </div>
+          </div>
+          <div className={`${showComments ? "" : "hidden"}`}>
+            <form
+              className="flex flex-col"
+              onSubmit={handleSubmit(sendComment)}
+            >
+              <label htmlFor="newComment">Write a comment</label>
+              <input
+                type="text"
+                id="newComment"
+                className="input input-text"
+                {...register("newComment", {
+                  required: "Comment cannot be empty",
+                  minLength: 1,
+                })}
+              />
+              {(errors.newComment?.type === "required" ||
+                errors.newComment?.type === "pattern") && (
+                <p role="alert">{errors.newComment?.message}</p>
+              )}
+              <input
+                className="btn self-center mt-2 w-fit"
+                type="submit"
+                value="Send!"
+              />
+            </form>
+
+            {data.comments.map((comm) => {
+              const [name, comment] = comm.split("\n");
+
+              return (
+                <div
+                  key={String(crypto.getRandomValues(new Uint32Array(10)))}
+                  className="flex flex-col items-start shadow-lg rounded-lg p-4 my-4 text-slate-600"
+                >
+                  <h5 className="text-xl">@{name}</h5>
+                  <p className="ml-2">{comment}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

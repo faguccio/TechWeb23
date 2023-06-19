@@ -129,7 +129,16 @@ export const migration = async () => {
       allowed_readers: [],
       allowed_writers: [],
 
-      posts: [new Types.ObjectId("64565a05867620df0ef89f50")],
+      posts: [
+        {
+          content: new Types.ObjectId("64565a05867620df0ef89f66"),
+          timestamp: "2011-10-10T14:48:00",
+        },
+        {
+          content: new Types.ObjectId("64565a05867620df0ef89f50"),
+          timestamp: "2021-10-10T14:48:00",
+        },
+      ],
     },
     {
       _id: new Types.ObjectId("6459038a3a8419267a26f5c0"),

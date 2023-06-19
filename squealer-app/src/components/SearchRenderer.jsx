@@ -5,7 +5,7 @@ function PostRenderer({ params }) {
   const [postList, setPostList] = useState([]);
 
   const fetchPost = async () => {
-    const uri = `http://localhost:3000/search/posts?kw=${params.get("kw")}`;
+    const uri = `${Const.apiurl}/search/posts?kw=${params.get("kw")}`;
     console.log(uri);
     const res = await fetch(uri);
     const ret = await res.json();
@@ -20,7 +20,10 @@ function PostRenderer({ params }) {
   return (
     <div className="md:mx-4">
       {postList.map((page) => (
-        <PostCard id={page} key={crypto.randomUUID()} />
+        <PostCard
+          id={page}
+          key={String(crypto.getRandomValues(new Uint32Array(10)))}
+        />
       ))}
     </div>
   );

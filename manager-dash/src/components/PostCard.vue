@@ -165,7 +165,7 @@ function PostCard({ id }) {
   const reactionsUI = reactions.map((reaction) => (
     <div
       class="flex mx-2 items-center text-gray-700 text-sm"
-      key={crypto.randomUUID()}
+      key={String(crypto.getRandomValues(new Uint32Array(10)))}
     >
       <button
         class="btn btn-sm btn-outline text-lg px-2 mr-1"

@@ -3,13 +3,15 @@ import { automatic } from "./services/automatic-service.js";
 
 import express from "express";
 import mongoose from "mongoose";
-import swaggerJsdoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
 import { appRouter } from "./routes/router.js";
 import cors from "cors";
 import { migration } from "./migration.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import { promises as fs } from "fs";
 
 //constants
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = Const.SERVER_PORT;
 //const specs = swaggerJsdoc(Const.SWAGGER_OPTION);
@@ -17,6 +19,31 @@ const port = Const.SERVER_PORT;
 // App initialization
 app.use(cors());
 app.use(express.json());
+
+app.use("/mod", express.static(path.join(__dirname, "../../mod-board")));
+app.use(
+  "/app/",
+  express.static(path.join(__dirname, "../../squealer-app/dist"))
+);
+app.get("/app/*", async (_, res) =>
+  res.end(
+    await fs.readFile(
+      path.join(__dirname, "../../squealer-app/dist/index.html")
+    )
+  )
+);
+app.use(
+  "/man/",
+  express.static(path.join(__dirname, "../../manager-dash/dist"))
+);
+app.get("/man/*", async (_, res) =>
+  res.end(
+    await fs.readFile(
+      path.join(__dirname, "../../manager-dash/dist/index.html")
+    )
+  )
+);
+
 app.use(appRouter);
 
 app.listen(port, () => {
@@ -34,5 +61,3 @@ async function connectDB() {
 setInterval(automatic, Const.AUTOMATIC_POST_TIME);
 
 connectDB().catch((err) => console.log(err));
-
-//app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));

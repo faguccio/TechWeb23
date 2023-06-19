@@ -27,6 +27,10 @@ const userSchema = new Schema({
   postsLiked: { type: [mongoose.Types.ObjectId], default: [] },
   postsDisliked: { type: [mongoose.Types.ObjectId], default: [] },
 
+  popularPosts: { type: [mongoose.Types.ObjectId], default: [] },
+  unpopularPosts: { type: [mongoose.Types.ObjectId], default: [] },
+  controversialPosts: { type: [mongoose.Types.ObjectId], default: [] },
+
   leftovers_chars: {
     type: {
       day: Number,

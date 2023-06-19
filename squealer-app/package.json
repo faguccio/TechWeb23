@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --base=/app/",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "homepage": "/app/",
   "dependencies": {
     "@tanstack/react-query-devtools": "4.0.11-beta.0",
     "autoprefixer": "^10.4.14",

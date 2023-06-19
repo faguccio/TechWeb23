@@ -2,6 +2,7 @@ import { linkList } from "../router";
 import { Link, Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
+import { Const } from "../utils";
 
 function NavBar() {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
@@ -17,7 +18,7 @@ function NavBar() {
     const userID = localStorage.getItem("userID").toString();
 
     const fetchUser = async () => {
-      const res = await fetch(`http://localhost:3000/user/${userID}`);
+      const res = await fetch(`${Const.apiurl}/user/${userID}`);
 
       return await res.json();
     };

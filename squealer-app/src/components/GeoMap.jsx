@@ -14,7 +14,10 @@ function GeoMap({ geolocation }) {
       />
       {geolocation.map((geo) => {
         return (
-          <Marker position={[geo.lat, geo.lon]} key={crypto.randomUUID()}>
+          <Marker
+            position={[geo.lat, geo.lon]}
+            key={String(crypto.getRandomValues(new Uint32Array(10)))}
+          >
             <Popup>
               {geo.timestamp
                 ? `Post made at ${geo.timestamp}`

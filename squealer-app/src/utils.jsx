@@ -3,11 +3,12 @@ import { pages } from "./router.jsx";
 export const Const = {
   STATUS_OK: 200,
   STATUS_UNAUTHORIZED: 401,
-  apiurl: `http://localhost:3000`,
+  //apiurl: `/api`,
+  apiurl: `http://localhost:3000/api`,
 };
 
 const loginRequest = async (username, password) => {
-  const res = await fetch(`http://localhost:3000/users/login`, {
+  const res = await fetch(`${Const.apiurl}/users/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,7 +26,7 @@ const loginRequest = async (username, password) => {
   return ret;
 };
 
-export function loginUser(inputData) {
+export function loginUser(inputData, redirectFun) {
   loginRequest(inputData.username, inputData.password).then((res) => {
     if (res.status === Const.STATUS_OK) {
       //document.querySelector(".alert").classList.replace("flex", "hidden")
@@ -35,7 +36,7 @@ export function loginUser(inputData) {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userID", res.data.userID);
       //redirect to home page
-      window.location.href = pages[0].path; //pages[0] = home page
+      redirectFun(pages[0].path); //pages[0] = home page
     } else if (res.status === Const.STATUS_UNAUTHORIZED) {
       document.querySelector(".alert").classList.replace("hidden", "flex");
       document.querySelector("#error_message").innerHTML = res.data.message;

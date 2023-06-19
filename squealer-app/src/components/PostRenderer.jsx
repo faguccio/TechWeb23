@@ -1,5 +1,6 @@
 import PostCard from "../components/PostCard";
 import { useEffect, useState, useRef } from "react";
+import { Const } from "../utils";
 
 function PostRenderer({ params }) {
   const [postList, setPostList] = useState([]);
@@ -10,7 +11,7 @@ function PostRenderer({ params }) {
   const fetching = useRef(false);
 
   const fetchPost = async (page) => {
-    const uri = `http://localhost:3000/channels/${params.name}?page=${page}&limit=${limit}`;
+    const uri = `${Const.apiurl}/channels/${params.name}?page=${page}&limit=${limit}`;
 
     console.log(uri);
     const res = await fetch(uri, {
@@ -26,7 +27,7 @@ function PostRenderer({ params }) {
 
     fetching.current = true;
     const res = await fetchPost(pageN.current);
-    if (res.length > 1) {
+    if (res.length >= 1) {
       setPostList((postList) => [
         ...new Set(postList.concat(res).filter((post) => post != null)),
       ]);
@@ -55,7 +56,10 @@ function PostRenderer({ params }) {
   return (
     <div className="flex flex-col items-center  md:mx-4">
       {postList.map((page) => (
-        <PostCard id={page} key={crypto.randomUUID()} />
+        <PostCard
+          id={page}
+          key={String(crypto.getRandomValues(new Uint32Array(10)))}
+        />
       ))}
       <div className="flex justify-center">
         <button
