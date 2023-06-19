@@ -8,6 +8,8 @@ function NewPostPage() {
   const [imagePath, setImagePath] = useState("");
   const [imageLoaded, setImageLoaded] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
 
   const userID = localStorage.getItem("userID")?.toString();
 
@@ -16,7 +18,43 @@ function NewPostPage() {
     return await res.json();
   };
 
+  
+
   const { data: user } = useQuery(["user", userID], fetchUser);
+
+    useEffect(() => {
+    // Resetta i leftovers_chars.day a 500 all'inizio di ogni giorno
+    const resetDailyChars = () => {
+      const now = new Date();
+      const nextDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      const timeToReset = nextDay.getTime() - now.getTime();
+      setTimeout(() => {
+        // Effettua la chiamata PATCH per reimpostare i leftovers_chars.day a 500
+        const updatedChars = { ...user.leftovers_chars, day: 500 };
+        fetch(`http://localhost:3000/user/${localStorage.getItem("userID")}`, {
+          method: "PATCH",
+          headers: {
+            Accept: "application/json",
+            Authorization: localStorage.token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ leftovers_chars: updatedChars }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              console.log("Reset giornaliero completato");
+            } else {
+              throw new Error("Errore nel reset giornaliero");
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }, timeToReset);
+    };
+
+    resetDailyChars();
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -27,40 +65,99 @@ function NewPostPage() {
   }, [user]);
 
   function handlePublishClick() {
-    const newPost = {
-      sender: localStorage.getItem("userID"),
-      recipients: [],
-      text: postContent,
-      timestamp: new Date(),
-      image_path: imagePath,
-      geolocation: { lat: 0, lon: 0 },
-      reactions: { positive: 0, negative: 0 },
-    };
-
-    fetch(`http://localhost:3000/post`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Authorization: localStorage.token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newPost),
-    })
-      .then((response) => {
-        if (response.ok) {
-          setPostContent("");
-          setImagePath("");
-          setImageLoaded(false);
-          setNotification("Post inviato con successo");
-        } else {
-          throw new Error("Errore nell'invio del post");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setNotification("Errore nell'invio del post");
-      });
+  // Verifica se il numero di caratteri nel post supera i caratteri rimanenti
+  if (letterCount > user.leftovers_chars.day) {
+    setNotification("Non hai caratteri sufficienti per pubblicare");
+    return;
   }
+
+    const regexRecipients = /§(\w+)/g; // Regex per identificare i canali (§nomeutente)
+    const regexHashtags = /#(\w+)/g; // Regex per identificare gli hashtags (#esempio)
+    const regexMentions = /@(\w+)/g; // Regex per identificare le menzioni (@nomeutente)
+
+    const recipients = [];
+    const hashtags = [];
+    const mentions = [];
+
+    let match;
+    while ((match = regexRecipients.exec(postContent))) {
+      recipients.push(match[1]);
+    }
+
+    while ((match = regexHashtags.exec(postContent))) {
+      hashtags.push(match[1]);
+    }
+
+    while ((match = regexMentions.exec(postContent))) {
+      mentions.push(match[1]);
+    }
+
+    recipients.push(...hashtags, ...mentions); // Aggiungi gli hashtags e le menzioni ai destinatari
+    console.log({recipients});
+
+  const newPost = {
+    sender: localStorage.getItem("userID"),
+    recipients: recipients,
+    text: postContent,
+    timestamp: new Date(),
+    image_path: imagePath,
+    geolocation: { lat: latitude, lon: longitude },
+    reactions: { positive: 0, negative: 0 },
+  };
+
+  fetch(`http://localhost:3000/post`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      Authorization: localStorage.token,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newPost),
+  })
+    .then((response) => {
+      if (response.ok) {
+        setPostContent("");
+        setImagePath("");
+        setImageLoaded(false);
+        setLatitude(0);
+        setLongitude(0);
+        setNotification("Post inviato con successo");
+        // Decrementa il numero di caratteri giornalieri utilizzati
+        const updatedChars = { ...user.leftovers_chars };
+        updatedChars.day -= letterCount;
+        updatedChars.week -= letterCount;
+        updatedChars.month -= letterCount;
+        // Effettua la chiamata PATCH per aggiornare i leftovers_chars dell'utente
+        fetch(`http://localhost:3000/user/${localStorage.getItem("userID")}`, {
+          method: "PATCH",
+          headers: {
+            Accept: "application/json",
+            Authorization: localStorage.token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ leftovers_chars: updatedChars }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              console.log("Numero di caratteri giornalieri aggiornato con successo");
+            } else {
+              throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        throw new Error("Errore nell'invio del post");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      setNotification("Errore nell'invio del post");
+    });
+}
+  
+
 
   useEffect(() => {
     let count = postContent.replace(/\s/g, "").length;
@@ -103,6 +200,26 @@ function NewPostPage() {
         <div className="text-right mb-2">
           <span>Conteggio lettere: {letterCount}</span>
         </div>
+        <div className="flex justify-between items-center mb-2">
+          <label htmlFor="latitude-input">Latitudine:</label>
+          <input
+            id="latitude-input"
+            type="number"
+            step="0.000001"
+            value={latitude}
+            onChange={(e) => setLatitude(parseFloat(e.target.value))}
+          />
+        </div>
+        <div className="flex justify-between items-center mb-4">
+          <label htmlFor="longitude-input">Longitudine:</label>
+          <input
+            id="longitude-input"
+            type="number"
+            step="0.000001"
+            value={longitude}
+            onChange={(e) => setLongitude(parseFloat(e.target.value))}
+          />
+        </div>
         <div className="flex justify-between items-center">
           <div>
             <label htmlFor="image-upload" className="cursor-pointer">
@@ -137,6 +254,7 @@ function NewPostPage() {
       </div>
     </div>
   );
+  
 }
 
 export default NewPostPage;

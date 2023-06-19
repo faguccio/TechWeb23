@@ -5,6 +5,7 @@ import { useQuery } from "react-query";
 
 function NavBar() {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const [leftoverChars, setLeftoverChars] = useState(null);
   const [avatarPath, setAvatarPath] = useState(
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
   );
@@ -28,7 +29,9 @@ function NavBar() {
       if (user) {
         if (user.propic_path !== "") {
           setAvatarPath(user.propic_path);
-        }
+        } 
+        setLeftoverChars(user.leftovers_chars);
+        console.log("User Leftover Chars:", user.leftovers_chars)
       }
     }, [user]);
   }
@@ -101,6 +104,9 @@ function NavBar() {
                 <div className="w-14 rounded-full ring ring-primary ring-offset-base-100 ring-offset-0">
                   <img src={avatarPath} />
                 </div>
+              </div>
+                <div className="ml-2 font-bold">
+                D: {leftoverChars?.day || 0} W: {leftoverChars?.week || 0} M: {leftoverChars?.month || 0}
               </div>
             </Link>
           ) : (
