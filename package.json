@@ -11,6 +11,7 @@
   "author": "Fabio <faga2703@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@tanstack/react-query": "^4.29.14",
     "@vue-leaflet/vue-leaflet": "^0.9.0",
     "leaflet": "^1.9.4",
     "vue2-leaflet": "^2.7.1"

@@ -3,8 +3,8 @@ import { pages } from "./router.jsx";
 export const Const = {
   STATUS_OK: 200,
   STATUS_UNAUTHORIZED: 401,
-  apiurl: `/api`,
-  //apiurl: `http://localhost:3000/api`,
+  //apiurl: `/api`,
+  apiurl: `http://localhost:3000/api`,
 };
 
 const loginRequest = async (username, password) => {

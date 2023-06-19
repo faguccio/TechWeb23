@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import AccountPage from "./pages/AccountPage";
 import ChannelPage from "./pages/ChannelPage";
 import SearchPage from "./pages/SearchPage";
+import NewPostPage from "./pages/NewPostPage";
 import AutoFunction from "./pages/AutoFunction";
 import CreateChannelPage from "./pages/CreateChannelPage";
 import VisualizeMap from "./pages/VisualizeMap";
@@ -33,11 +34,19 @@ export const pages = [
     id: 2,
   },
   {
+    path: "/newpost",
+    name: "new post",
+    element: <NewPostPage />,
+    displayNav: true,
+    id: 3,
+    class: "btn btn-info",
+  },
+  {
     path: "/account",
     name: "account",
     element: <AccountPage />,
     displayNav: false,
-    id: 3,
+    id: 4,
   },
   {
     path: "/channels/:name",
@@ -45,14 +54,14 @@ export const pages = [
     name: "channel",
     element: <ChannelPage />,
     displayNav: true,
-    id: 4,
+    id: 5,
   },
   {
     path: "/search/posts",
     name: "search",
     element: <SearchPage />,
     displayNav: false,
-    id: 5,
+    id: 6,
   },
   {
     path: "/post/automatic",
