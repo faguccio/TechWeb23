@@ -26,3 +26,4 @@
 - se l'utente non e' loggato ritornare solo canali squeals
 - visualizzare DM
 - controllare diritto di post in un canale
+- credo che il local storage sia condiviso fra le tre app (e del browser) per cui sarebbe meglio avere un prefisso (tokenApp o tokenMan)
