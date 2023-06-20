@@ -1,7 +1,6 @@
 <template>
-  <p>{{ lat }} {{ lon }}</p>
   <div style="height: 100%; width: 100%">
-    <l-map ref="map" v-model:zoom="zoom" :center="[lat, lon]">
+    <l-map ref="map" v-model:zoom="zoom" :center="[lat, lon]" class="z-0">
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         layer-type="base"

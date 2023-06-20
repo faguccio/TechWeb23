@@ -25,15 +25,19 @@ const router = createRouter({
       component: LoginPage,
     },
     {
-      path: "/posts",
-      name: "posts",
+      path: "/post/:id",
+      name: "Managing",
       component: PostsPage,
+      props:true,
+      
+
     },
      {
       path: "/newpost",
       name: "newpost",
       component: NewPost,
-    }
+      
+    },
   ],
 });
 
