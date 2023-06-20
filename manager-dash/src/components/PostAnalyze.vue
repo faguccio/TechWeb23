@@ -6,7 +6,8 @@ import { Const } from "../utils.js";
 const postData = ref(false);
 const userData = ref(false);
 const props = defineProps({ id: String });
-const postPage = `/post/${props.id}`;
+
+const reactionEngagement = ref(0);
 
 const fetchData = async () => {
   console.log(`${Const.apiurl}/post/${props.id}`);
@@ -23,6 +24,11 @@ const fetchUser = async () => {
 onMounted(() => {
   fetchData().then((pd) => {
     postData.value = pd;
+    reactionEngagement.value = (
+      (pd.reactions.positive /
+        (pd.reactions.positive + pd.reactions.negative)) *
+      100
+    ).toFixed(1);
     fetchUser(postData.value.sender).then((ud) => {
       userData.value = ud;
     });
@@ -62,20 +68,7 @@ onMounted(() => {
           <p>Destinatari</p>
         </div>
         <p class="mt-3 text-gray-700 text-xs md:text-sm">{{ postData.text }}</p>
-        <img
-          v-if="postData.image_path"
-          class="my-5 rounded-lg"
-          :src="postData.image_path"
-        />
-        <div
-          v-if="postData.geolocation"
-          className="h-52 md:h-96 z-0 w-auto  shadow-lg  shadow-gray-500"
-        >
-          <GeoMap
-            :lat="postData.geolocation.lat"
-            :lon="postData.geolocation.lon"
-          />
-        </div>
+
         <div class="flex justify-end mt-4">
           <div
             className="flex mx-2 items-center text-gray-700 text-sm"
@@ -103,10 +96,12 @@ onMounted(() => {
             <span>{{ postData.comments.length }}</span>
           </div>
         </div>
-        <div>
-          <router-link :to="postPage">
-            <button class="btn btn-primary">ANALYZE</button>
-          </router-link>
+
+        <div
+          class="radial-progress text-primary"
+          :style="{ '--value': reactionEngagement }"
+        >
+          {{ reactionEngagement }}%
         </div>
       </div>
     </div>

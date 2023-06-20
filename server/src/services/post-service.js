@@ -168,6 +168,17 @@ export const getPost = async (postId, sessionId) => {
   }
 };
 
+export const getAllPostOfManaged = async (userId) => {
+  try {
+    const manager = await User.findOne({ _id: userId });
+    const managed = await User.findOne({ _id: manager.managing });
+    return managed.posts;
+  } catch (err) {
+    console.log(`getAllPostOfManaged service, (${err.message})`);
+    return { status: "failure" };
+  }
+};
+
 export const createComment = async (comment, postId, userName) => {
   try {
     const updatedPost = await Post.findOne({ _id: postId });
@@ -178,7 +189,7 @@ export const createComment = async (comment, postId, userName) => {
     await updatedPost.save();
     return { status: "success" };
   } catch (err) {
-    console.log(`create post service, (${err.message})`);
+    console.log(`createComment service, (${err.message})`);
     return { status: "failure" };
   }
 };
@@ -231,4 +242,4 @@ export const addRecipient = async (postId, recipient) => {
     console.log(`add recipient service, (${err.message})`);
     return { status: "failure" };
   }
-}
+};

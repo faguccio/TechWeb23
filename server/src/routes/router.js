@@ -24,6 +24,11 @@ appRouter.post("/api/post", verifyToken, postRoutes.createPost);
 appRouter.patch("/api/post/update/:id", postRoutes.updatePostById);
 appRouter.get("/api/posts", postRoutes.getAllPostFiltered);
 appRouter.get("/api/posts/:userId", postRoutes.getAllPostByUserId);
+appRouter.get(
+  "/api/posts/managed/all",
+  verifyToken,
+  postRoutes.getAllPostOfManaged
+);
 
 appRouter.get("/api/users", userRoutes.getAllUsersFiltered);
 appRouter.patch("/api/user/:id", userRoutes.updateUser);
@@ -89,7 +94,10 @@ appRouter.get(
   pagination
 );
 appRouter.post("/api/channels/:name/posts", channelRoutes.addPostToChannel);
-appRouter.patch("/api/channels/:name/posts", channelRoutes.addPostToChannel_Admin);
+appRouter.patch(
+  "/api/channels/:name/posts",
+  channelRoutes.addPostToChannel_Admin
+);
 appRouter.post(
   "/api/channels/create",
   verifyToken,

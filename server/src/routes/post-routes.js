@@ -150,9 +150,19 @@ export const getAllPostFiltered = async (req, res) => {
 export const getAllPostByUserId = async (req, res) => {
   try {
     const userId = req.params.userId;
-    const posts = await Post.find({ sender: userId } ).sort({ timestamp: -1 });
+    const posts = await Post.find({ sender: userId }).sort({ timestamp: -1 });
     res.status(Const.STATUS_OK).json(posts);
   } catch (err) {
     console.log(`getAllPostByUserId route, (${err.message})`);
   }
-}
+};
+
+export const getAllPostOfManaged = async (req, res) => {
+  try {
+    const userId = req.authData.id;
+    const posts = await postService.getAllPostOfManaged(userId);
+    res.status(Const.STATUS_OK).json(posts);
+  } catch (err) {
+    console.log(`getAllPostOfManaged route, (${err.message})`);
+  }
+};
