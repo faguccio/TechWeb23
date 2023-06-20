@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage.vue";
 import AccountPage from "./pages/AccountPage.vue";
 import LoginPage from "./pages/LoginPage.vue";
 import PostsPage from "./pages/PostsPage.vue";
+import NewPost from "./pages/NewPost.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,11 @@ const router = createRouter({
       path: "/posts",
       name: "posts",
       component: PostsPage,
+    },
+     {
+      path: "/newpost",
+      name: "newpost",
+      component: NewPost,
     }
   ],
 });
