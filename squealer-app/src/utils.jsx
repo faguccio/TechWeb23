@@ -26,7 +26,7 @@ const loginRequest = async (username, password) => {
   return ret;
 };
 
-export function loginUser(inputData, redirectFun) {
+export function loginUser(inputData, redirectFun, setLoggedIn) {
   loginRequest(inputData.username, inputData.password).then((res) => {
     if (res.status === Const.STATUS_OK) {
       //document.querySelector(".alert").classList.replace("flex", "hidden")
@@ -42,6 +42,7 @@ export function loginUser(inputData, redirectFun) {
       document.querySelector("#error_message").innerHTML = res.data.message;
     }
   });
+  setLoggedIn(true);
 }
 
 export function kmToCal(km) {
