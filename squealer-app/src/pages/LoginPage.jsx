@@ -1,13 +1,17 @@
 import { useForm } from "react-hook-form";
 import { loginUser } from "../utils";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { loggedInContext } from "../App";
 
 function LoginPage() {
+  const [loggedIn, setLoggedIn] = useContext(loggedInContext);
+
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
   const onSubmit = (inputData) => {
     //console.log(data);
-    loginUser(inputData, navigate);
+    loginUser(inputData, navigate, setLoggedIn);
   };
 
   return (
