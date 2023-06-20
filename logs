@@ -1,0 +1,3 @@
+yarn run v1.22.19
+$ footclient yarn --cwd ./squealer-app dev & yarn srv
+$ docker-compose up > /dev/null 2> /dev/null & yarn --cwd ./server dev

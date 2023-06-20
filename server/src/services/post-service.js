@@ -88,8 +88,18 @@ async function calculatePostStatus(post) {
     await channelService.addPostToChannel(channel_ID, post._id, post.timestamp);
   } else if (upvotes > MC) {
     user.popularPosts.push(post._id);
+    if (user.popularPosts.length >= 10) {
+      ["day", "week", "month"].map((field) => {
+        user.leftovers_chars[field] += Const.standard_chars[field] * 0.05;
+      });
+    }
   } else if (downvotes > MC) {
     user.unpopularPosts.push(post._id);
+    if (user.unpopularPosts.length >= 3) {
+      ["day", "week", "month"].map((field) => {
+        user.leftovers_chars[field] -= Const.standard_chars[field] * 0.05;
+      });
+    }
   }
 
   await user.save();
