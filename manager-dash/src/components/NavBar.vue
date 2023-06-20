@@ -123,7 +123,7 @@ const toggleMenu = () => {
     console.log(userID);
 
     const fetchUser = async () => {
-      const res = await fetch(`http://localhost:3000/user/${userID}`);
+      const res = await fetch(`${Const.apiurl}/user/${userID}`);
 
       return await res.json();
     };

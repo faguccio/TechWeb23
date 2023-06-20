@@ -9,7 +9,7 @@ const userSchema = new Schema({
   type: {
     type: String,
     default: "normal",
-    enum: ["normal", "pro", "manager", "admin"],
+    enum: ["normal", "vip", "manager", "admin"],
   }, //Normal, Pro, Manager, Moderator
   blocked_flag: { type: Boolean, default: false }, //true if user is blocked
   managing: { type: mongoose.Types.ObjectId, default: null }, //account which I'm managing, ignore if type not manager
