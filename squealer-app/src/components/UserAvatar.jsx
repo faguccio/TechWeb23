@@ -39,7 +39,7 @@ function UserAvatar() {
   }, [loggedIn]);
 */
   return (
-    <div className="flex items-center">
+    <div className="flex items-center" id="user-avatar">
       {loggedIn ? (
         <Link to="/account">
           <div className="avatar">
