@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Const } from "../utils";
+import UserChars from "../components/UserChars";
 
 function AccountPage() {
   const navigate = useNavigate();
@@ -332,30 +333,33 @@ function AccountPage() {
         lang="en"
       >
         <h1 className="text-4xl font-bold text-center hidden">Profile Page</h1>
-        <div className="flex card shadow-lg compact bg-base-100 w-full mb-12 bg-teal-50">
-          <div className="mt-4 ml-4">
-            {user.type === "normal" ? (
-              <div className="badge ml-2">Normal</div>
-            ) : null}
-            {user.type === "vip" ? (
-              <div className="badge badge-primary ml-2">Vip</div>
-            ) : null}
-            {user.type === "manager" ? (
-              <div className="badge badge-primary ml-2">Manager</div>
-            ) : null}
-            {user.type === "admin" ? (
-              <div className="badge badge-secondary ml-2">Moderator</div>
-            ) : null}
-          </div>
-          <div className="avatar px-10 py-2">
-            <div className="w-96 mask mask-squircle">
-              <img src={user.propic_path} alt="Profile Picture" />
+        <div className="flex card shadow-lg compact w-full mb-12 bg-teal-50 shadow-zinc-300 md:mt-4 md:items-center md:flex-row md:w-2/3">
+          <div className="flex flex-col md:mb-4">
+            <div className="mt-4 ml-4">
+              {user.type === "normal" ? (
+                <div className="badge ml-2">Normal</div>
+              ) : null}
+              {user.type === "vip" ? (
+                <div className="badge badge-primary ml-2">Vip</div>
+              ) : null}
+              {user.type === "manager" ? (
+                <div className="badge badge-primary ml-2">Manager</div>
+              ) : null}
+              {user.type === "admin" ? (
+                <div className="badge badge-secondary ml-2">Moderator</div>
+              ) : null}
+            </div>
+            <div className="avatar px-10 py-2">
+              <div className="w-96 mask mask-squircle">
+                <img src={user.propic_path} alt="Profile Picture" />
+              </div>
             </div>
           </div>
-          <div className="flex items-center card-body">
-            <h2 className="card-title text-2xl mb-4">{user.name}</h2>
 
-            <div className="flex justify-around items-center w-full">
+          <div className="flex items-center card-body h-full">
+            <h2 className="card-title text-2xl md:text-4xl mb-4">{user.name}</h2>
+            <UserChars user={user} />
+            <div className="flex justify-around items-center w-full mt-4">
               {user.type == "normal" ? (
                 <button
                   htmlFor="modal-upgrade-account"
@@ -377,10 +381,10 @@ function AccountPage() {
             </div>
           </div>
         </div>
-        <div className=" flex flex-col items-center content-end">
+        <div className=" flex flex-col md:flex-row items-center">
           <button
             htmlFor="modal-change-password"
-            className=" btn btn-info mb-6"
+            className=" btn btn-info mb-6 md:m-0 md:mr-8 "
             onClick={() => {
               setModalChangePassword(true);
             }}
