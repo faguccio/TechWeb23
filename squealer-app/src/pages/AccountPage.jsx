@@ -8,7 +8,7 @@ import UserChars from "../components/UserChars";
 
 function AccountPage() {
   const navigate = useNavigate();
-  if (!localStorage.getItem("token") && !localStorage.getItem("userID")) {
+  if (!localStorage.token) {
     navigate("/login");
     return;
   }
