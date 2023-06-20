@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import {Const} from '../utils.js';
     export default {
         data() {
             return {
@@ -46,7 +47,7 @@
         methods: {
             async loginRequest() {
                 if(this.username !== "" && this.password !== ""){
-                    const response = await fetch('http://localhost:3000/users/loginPro', {
+                    const response = await fetch(`${Const.apiurl}/users/loginPro`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

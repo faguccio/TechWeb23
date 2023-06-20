@@ -1,20 +1,21 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import GeoMap from "./GeoMap.vue";
+import { Const } from '../utils.js';
 
 const postData = ref(false);
 const userData = ref(false);
 const props = defineProps({ id: String });
 
 const fetchData = async () => {
-  console.log(`http://localhost:3000/post/${props.id}`);
-  const res = await fetch(`http://localhost:3000/post/${props.id}`);
+  console.log(`${Const.apiurl}/post/${props.id}`);
+  const res = await fetch(`${Const.apiurl}/post/${props.id}`);
   return await res.json();
 };
 
 const fetchUser = async () => {
   const res = await fetch(
-    `http://localhost:3000/user/${postData.value.sender}`
+    `${Const.apiurl}/user/${postData.value.sender}`
   );
   const ret = await res.json();
   return ret;
@@ -115,13 +116,13 @@ function PostCard({ id }) {
   const reactions = [positiveR, negativeR];
 
   const fetchData = async () => {
-    const res = await fetch(`http://localhost:3000/post/${id}`);
+    const res = await fetch(`${Const.apiurl}/post/${id}`);
     return res.json();
     //setData(ret);
   };
 
   const fetchUser = async () => {
-    const res = await fetch(`http://localhost:3000/user/${data.sender}`);
+    const res = await fetch(`${Const.apiurl}/user/${data.sender}`);
     const ret = await res.json();
     return ret;
     // setUser(ret);
@@ -142,7 +143,7 @@ function PostCard({ id }) {
   const addLike = useMutation({
     mutationFn: async (rtype) => {
       const data = { type: rtype, increase: true };
-      const res = await fetch(`http://localhost:3000/post/${id}`, {
+      const res = await fetch(`${Const.apiurl}/post/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

@@ -146,3 +146,13 @@ export const getAllPostFiltered = async (req, res) => {
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
   }
 };
+
+export const getAllPostByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const posts = await Post.find({ sender: userId } ).sort({ timestamp: -1 });
+    res.status(Const.STATUS_OK).json(posts);
+  } catch (err) {
+    console.log(`getAllPostByUserId route, (${err.message})`);
+  }
+}
