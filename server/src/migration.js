@@ -81,9 +81,6 @@ export const migration = async () => {
         week: 500,
         month: 1800,
       },
-      standard_chars: {
-        ...Const.standard_chars,
-      },
       propic_path:
         "https://this-person-does-not-exist.com/img/avatar-genbe010322231cb9e777078e4195e87c79.jpg",
     },
@@ -179,4 +176,62 @@ export const migration = async () => {
     item = new Channel(item);
     item.save();
   });
+
+  const userNomeBuffo1 = {
+    _id: new Types.ObjectId(),
+    name: "FunnyName1",
+    password: "easy",
+    leftovers_chars: {
+      day: 50,
+      week: 50,
+      month: 50,
+    },
+    posts: [],
+  };
+
+  const postOfNomeBuffo = [
+    {
+      _id: new Types.ObjectId(),
+      recipients: ["§channel1"],
+      text: "Testo random di un post ecco tutto qui",
+      timestamp: "2021-10-10T14:48:00",
+      reactions: { positive: 15, negative: 400 },
+      impressions: 500,
+    },
+    {
+      _id: new Types.ObjectId(),
+      recipients: ["§channel1"],
+      text: Const.lorem,
+      timestamp: "2021-10-10T14:48:00",
+      reactions: { positive: 2, negative: 25 },
+      impressions: 30,
+    },
+    {
+      _id: new Types.ObjectId(),
+      recipients: ["§channel1"],
+      text: Const.lorem,
+      timestamp: "2021-10-10T14:48:00",
+      reactions: { positive: 4, negative: 51 },
+      impressions: 50,
+    },
+  ];
+
+  const channel1 = {
+    _id: new Types.ObjectId(),
+    name: "§channel1",
+    posts: [],
+  };
+
+  postOfNomeBuffo.map(async (post) => {
+    channel1.posts.push({ content: post._id, timestamp: post.timestamp });
+    userNomeBuffo1.posts.push(post._id);
+    post.sender = userNomeBuffo1._id;
+    let item = new Post(post);
+    await item.save();
+  });
+
+  let item = new Channel(channel1);
+  await item.save();
+  item = new User(userNomeBuffo1);
+  await item.save();
 };

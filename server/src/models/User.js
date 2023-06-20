@@ -39,15 +39,6 @@ const userSchema = new Schema({
     },
     default: { ...Const.standard_chars },
   },
-
-  standard_chars: {
-    type: {
-      day: Number,
-      week: Number,
-      month: Number,
-    },
-    default: { ...Const.standard_chars },
-  },
 });
 
 export const User = mongoose.model("User", userSchema);

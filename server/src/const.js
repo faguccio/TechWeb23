@@ -48,3 +48,6 @@ export const standard_chars = {
 export const SECRET = "adorousarejavascript";
 export const AUTOMATIC_POST_TIME = 1000 * 60 * 15;
 export const ninja_api_key = "ll0U185qnJvIwusy3ldNXw==CJaCR8zTdl5AxiGQ";
+
+export const lorem =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat";
