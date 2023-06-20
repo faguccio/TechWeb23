@@ -160,6 +160,7 @@ export const getAllPostByUserId = async (req, res) => {
 export const getAllPostOfManaged = async (req, res) => {
   try {
     const userId = req.authData.id;
+    console.log(userId);
     const posts = await postService.getAllPostOfManaged(userId);
     res.status(Const.STATUS_OK).json(posts);
   } catch (err) {

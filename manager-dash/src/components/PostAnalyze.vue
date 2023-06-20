@@ -7,7 +7,12 @@ const postData = ref(false);
 const userData = ref(false);
 const props = defineProps({ id: String });
 
+const reactionRatio = ref(0);
+const commentEngagement = ref(0);
 const reactionEngagement = ref(0);
+const progressToPopular = ref(0);
+const progressToUnpopular = ref(0);
+const comments = ref([]);
 
 const fetchData = async () => {
   console.log(`${Const.apiurl}/post/${props.id}`);
@@ -24,11 +29,38 @@ const fetchUser = async () => {
 onMounted(() => {
   fetchData().then((pd) => {
     postData.value = pd;
-    reactionEngagement.value = (
-      (pd.reactions.positive /
-        (pd.reactions.positive + pd.reactions.negative)) *
-      100
-    ).toFixed(1);
+    comments.value = pd.comments.map((comm) => {
+      const [name, comment] = comm.split("\n");
+      return { name: name, comment: comment };
+    });
+
+    if (pd.reactions.positive + pd.reactions.negative > 0) {
+      reactionRatio.value = (
+        (pd.reactions.positive /
+          (pd.reactions.positive + pd.reactions.negative)) *
+        100
+      ).toFixed(1);
+    }
+
+    if (pd.impressions > 0) {
+      commentEngagement.value = (pd.comments.length / pd.impressions).toFixed(
+        1
+      );
+      reactionEngagement.value = (
+        ((pd.reactions.positive + pd.reactions.negative) / pd.impressions) *
+        100
+      ).toFixed(1);
+
+      progressToPopular.value = (
+        (pd.reactions.positive * 100) /
+        (0.2 * pd.impressions)
+      ).toFixed(1);
+
+      progressToUnpopular.value = (
+        (pd.reactions.negative * 100) /
+        (0.2 * pd.impressions)
+      ).toFixed(1);
+    }
     fetchUser(postData.value.sender).then((ud) => {
       userData.value = ud;
     });
@@ -64,8 +96,10 @@ onMounted(() => {
             {{ postData.timestamp.split("T")[0] }}
           </small>
         </div>
-        <div>
-          <p>Destinatari</p>
+        <div class="flex flex-wrap">
+          <p v-for="dest in postData.recipients" class="px-2">
+            {{ dest }}
+          </p>
         </div>
         <p class="mt-3 text-gray-700 text-xs md:text-sm">{{ postData.text }}</p>
 
@@ -96,14 +130,133 @@ onMounted(() => {
             <span>{{ postData.comments.length }}</span>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
 
+  <div
+    v-if="postData"
+    class="flex flex-col bg-white shadow-lg rounded-lg mx-4 md:mx-auto mb-8 md:max-w-2xl md:w-8/12"
+  >
+    <h2 class="text-2xl text-slate-700 font-semibold self-center m-4">
+      Few Stats
+    </h2>
+    <div class="flex justify-around">
+      <div class="flex flex-col items-center m-4">
         <div
-          class="radial-progress text-primary"
-          :style="{ '--value': reactionEngagement }"
+          class="radial-progress text-primary bg-slate-200 border-4"
+          :style="{
+            '--value': reactionRatio,
+            '--size': 7 + 'rem',
+            '--thickness': '6px',
+          }"
+        >
+          {{ reactionRatio }}%
+        </div>
+        <p class="w-min text-center text-black">Like to reactions</p>
+      </div>
+
+      <div class="flex flex-col items-center m-4">
+        <div
+          class="radial-progress text-success bg-slate-200 border-4"
+          :style="{
+            '--value': commentEngagement,
+            '--size': 7 + 'rem',
+            '--thickness': '6px',
+          }"
+        >
+          {{ commentEngagement }}%
+        </div>
+        <p class="w-min text-center text-black">Comment engagement</p>
+      </div>
+
+      <div class="flex flex-col items-center m-4">
+        <div
+          class="radial-progress text-orange-600 bg-slate-200 border-4"
+          :style="{
+            '--value': reactionEngagement,
+            '--size': 7 + 'rem',
+            '--thickness': '6px',
+          }"
         >
           {{ reactionEngagement }}%
         </div>
+        <p class="w-min text-center text-black">Reaction engagement</p>
       </div>
+    </div>
+
+    <div class="stats shadow m-4">
+      <div class="stat">
+        <div class="stat-figure text-primary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            class="inline-block w-8 h-8 stroke-current"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            ></path>
+          </svg>
+        </div>
+        <div class="stat-title">Total Likes</div>
+        <div class="stat-value text-primary">
+          {{ postData.reactions.positive }}
+        </div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-figure text-secondary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            class="inline-block w-8 h-8 stroke-current"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            ></path>
+          </svg>
+        </div>
+        <div class="stat-title">Views</div>
+        <div class="stat-value text-secondary">{{ postData.impressions }}</div>
+      </div>
+    </div>
+
+    <h3 class="mx-2 mt-4 text-black text-lg ml-4">Progress to popular</h3>
+    <progress
+      className="mx-2 rounded-lg mb-4 h-4 bg-success"
+      :value="progressToPopular"
+      max="100"
+    ></progress>
+
+    <h3 class="mx-2 mt-4 text-black text-lg ml-4">Progress to unpopular</h3>
+    <progress
+      className="mx-2 rounded-lg mb-4 h-4 bg-warning"
+      :value="progressToUnpopular"
+      max="100"
+    ></progress>
+  </div>
+
+  <div
+    v-if="postData"
+    class="flex flex-col bg-white shadow-lg rounded-lg mx-4 md:mx-auto mb-16 md:max-w-2xl md:w-8/12"
+  >
+    <h2 class="text-2xl text-slate-700 font-semibold self-center m-4">
+      Comments
+    </h2>
+    <div
+      v-for="comment in comments"
+      class="flex flex-col mx-5 items-start shadow-lg rounded-lg p-4 my-4 text-slate-600"
+    >
+      <h5 class="text-xl">@{{ comment.name }}</h5>
+      <p class="ml-2">{{ comment.comment }}</p>
     </div>
   </div>
 

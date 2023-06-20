@@ -172,6 +172,7 @@ export const getAllPostOfManaged = async (userId) => {
   try {
     const manager = await User.findOne({ _id: userId });
     const managed = await User.findOne({ _id: manager.managing });
+
     return managed.posts;
   } catch (err) {
     console.log(`getAllPostOfManaged service, (${err.message})`);
