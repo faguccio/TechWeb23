@@ -79,6 +79,7 @@
 import LoadingSpinner from '../components/LoadingSpinner.vue'
 import { computed, ref, onMounted, watch, onBeforeMount} from 'vue';
 import  router  from '../router';
+import {Const} from '../utils.js';
 
 export default {
     setup(){
@@ -94,7 +95,7 @@ export default {
     
         // Functions
         async function fetchUser() {
-            const response = await fetch('http://localhost:3000/user', {
+            const response = await fetch(`${Const.apiurl}/user`, {
                 method: 'GET',
                 headers: {
                     Authorization: localStorage.token
@@ -104,7 +105,7 @@ export default {
         }
 
         async function fetchUserManaged() {
-            const response = await fetch('http://localhost:3000/userManager/vip', {
+            const response = await fetch(`${Const.apiurl}/userManager/vip`, {
                 method: 'GET',
                 headers: {
                     Authorization: localStorage.token
@@ -114,7 +115,7 @@ export default {
         }    
         
         async function changeProfilePic() {
-            const response = await fetch('http://localhost:3000/user', {
+            const response = await fetch(`${Const.apiurl}/user`, {
                 method: 'PATCH',
                 headers: {
                     Authorization: localStorage.token,
@@ -128,7 +129,7 @@ export default {
         }
         
         async function changeUserManagedProfilePic() {
-            const response = await fetch('http://localhost:3000/userManager/vip', {
+            const response = await fetch(`${Const.apiurl}/userManager/vip`, {
                 method: 'PATCH',
                 headers: {
                     Authorization: localStorage.token,

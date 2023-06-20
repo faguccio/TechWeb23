@@ -63,6 +63,7 @@
 <script>
 import { reactive, ref, onMounted } from "vue";
 import { useQuery } from "react-query";
+import {Const} from '../utils.js';
 
 export default {
     name: "NewPostPage",
@@ -79,7 +80,7 @@ export default {
         const userID = localStorage.getItem("userID")?.toString();
 
         const fetchUser = async () => {
-            const res = await fetch(`http://localhost:3000/user/${userID}`);
+            const res = await fetch(`${Const.apiurl}/user/${userID}`);
             return await res.json();
         };
 
@@ -92,7 +93,7 @@ export default {
                 const timeToReset = nextDay.getTime() - now.getTime();
                 setTimeout(() => {
                     const updatedChars = { ...user.leftovers_chars, day: 500 };
-                    fetch(`http://localhost:3000/user/${localStorage.getItem("userID")}`, {
+                    fetch(`${Const.apiurl}/user/${localStorage.getItem("userID")}`, {
                         method: "PATCH",
                         headers: {
                             Accept: "application/json",
@@ -165,7 +166,7 @@ export default {
                 reactions: { positive: 0, negative: 0 },
             };
 
-            fetch(`http://localhost:3000/post`, {
+            fetch(`${Const.apiurl}/post`, {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -186,7 +187,7 @@ export default {
                         updatedChars.day -= letterCount.value;
                         updatedChars.week -= letterCount.value;
                         updatedChars.month -= letterCount.value;
-                        fetch(`http://localhost:3000/user/${localStorage.getItem("userID")}`, {
+                        fetch(`${Const.apiurl}/user/${localStorage.getItem("userID")}`, {
                             method: "PATCH",
                             headers: {
                                 Accept: "application/json",

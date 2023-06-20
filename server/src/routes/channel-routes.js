@@ -168,3 +168,25 @@ export const removePostFromChannel = async (req, res) => {
     console.log(`removePostFromChannel, channel routes, (${err.message})`);
   }
 }
+
+export const addPostToChannel_Admin = async (req, res) => {
+  try {
+    const channelName = req.params.name;
+    const post_ID = req.body.post_ID;
+    const timestamp = req.body.timestamp;
+    const channel_ID = await channelService.channelNameToId(channelName);
+
+    if(await channelService.isPostInChannel(channel_ID, post_ID)) return res.status(Const.STATUS_OK).json({ status: "success", msg: "Post already in channel" });
+    else{
+      const updatedChannel = await channelService.addPostToChannel(channel_ID, post_ID, timestamp);
+      if (!updatedChannel) return res.status(Const.STATUS_NOT_FOUND).json({ status: "error", msg: "Channel to update not found" });
+
+      const response = await postService.addRecipient(post_ID, channelName)
+      if (response.status != "success") return res.status(Const.STATUS_NOT_FOUND).json({ status: "error", msg: "Post to update not found" });
+
+      return res.status(Const.STATUS_OK).json({ status: "success", message: "Post added to Channel successfully" });
+    }
+  } catch (err) {
+    console.log(`addPostToChannelById, channel routes, (${err.message})`);
+  }
+}

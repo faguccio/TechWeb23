@@ -24,14 +24,18 @@ function PostRenderer({ params }) {
 
   const handleMorePost = async () => {
     if (fetching.current || !hasMorePages.current) return;
-
+    const wasIscrewdOver = pageN.current;
     fetching.current = true;
+    //console.log(pageN.current);
     const res = await fetchPost(pageN.current);
     if (res.length >= 1) {
       setPostList((postList) => [
         ...new Set(postList.concat(res).filter((post) => post != null)),
       ]);
-      pageN.current += 1;
+      if (pageN.current == wasIscrewdOver) {
+        pageN.current += 1;
+      }
+      //console.log(pageN.current);
     } else {
       console.log("No more posts to load!");
       hasMorePages.current = false;
@@ -49,7 +53,6 @@ function PostRenderer({ params }) {
   };
 
   useEffect(() => {
-    //console.log(params.name);
     setupProtocol();
   }, [params]);
 

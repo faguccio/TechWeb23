@@ -30,18 +30,18 @@
 
         <button class="btn btn-accent mb-4" onclick="modal_create_channel.showModal()">CREATE CHANNEL</button>
         <dialog id="modal_create_channel" class="modal">
-        <form method="dialog" class="modal-box flex flex-col items-center">
-            <h3 class="font-bold text-lg mb-4">Create a Channel</h3>
-            <label for="channel-name">Channel Name</label>
-            <input id="channel-name" type="text" class="input input-bordered input-accent mt-2 mb-4" placeholder="Channel name" />
-            <label for="channel-description">Channel Description</label>
-            <textarea id="channel-description" class="textarea textarea-bordered textarea-accent w-full mt-2 mb-4 text-base" placeholder="Channel description"></textarea>
-            <div class="modal-action">
-                <!-- if there is a button in form, it will close the modal -->
-                <button class="btn btn-outline">Close</button>
-                <button id="create-channel" class="btn btn-accent">Create Channel</button>
-            </div>
-        </form>
+            <form method="dialog" class="modal-box flex flex-col items-center">
+                <h3 class="font-bold text-lg mb-4">Create a Channel</h3>
+                <label for="channel-name">Channel Name</label>
+                <input id="channel-name" type="text" class="input input-bordered input-accent mt-2 mb-4" placeholder="Channel name" />
+                <label for="channel-description">Channel Description</label>
+                <textarea id="channel-description" class="textarea textarea-bordered textarea-accent w-full mt-2 mb-4 text-base" placeholder="Channel description"></textarea>
+                <div class="modal-action">
+                    <!-- if there is a button in form, it will close the modal -->
+                    <button class="btn btn-outline">Close</button>
+                    <button id="create-channel" class="btn btn-accent">Create Channel</button>
+                </div>
+            </form>
         </dialog>
 
         <div id="channels" class="mt-8 w-3/4"></div>

@@ -88,8 +88,18 @@ async function calculatePostStatus(post) {
     await channelService.addPostToChannel(channel_ID, post._id, post.timestamp);
   } else if (upvotes > MC) {
     user.popularPosts.push(post._id);
+    if (user.popularPosts.length >= 10) {
+      ["day", "week", "month"].map((field) => {
+        user.leftovers_chars[field] += Const.standard_chars[field] * 0.05;
+      });
+    }
   } else if (downvotes > MC) {
     user.unpopularPosts.push(post._id);
+    if (user.unpopularPosts.length >= 3) {
+      ["day", "week", "month"].map((field) => {
+        user.leftovers_chars[field] -= Const.standard_chars[field] * 0.05;
+      });
+    }
   }
 
   await user.save();
@@ -188,8 +198,8 @@ export const filterAllPosts = async (
       query.timestamp = { $gte: start_time, $lte: end_time };
     else if (end_time) query.timestamp = { $lte: end_time };
     else if (start_time) query.timestamp = { $gte: start_time };
-    console.log("recipients:", recipients);
-    console.log("query:", query);
+    //console.log("recipients:", recipients);
+    //console.log("query:", query);
 
     const posts = await Post.find(query).sort({ timestamp: -1 });
     return posts;
@@ -202,7 +212,7 @@ export const filterAllPosts = async (
 export const removeRecipient = async (postId, recipient) => {
   try {
     const post = await Post.findOne({ _id: postId });
-    post.recipients = post.recipients.filter((r) => r !== recipient);
+    post.recipients.pull(recipient);
     post.save();
     return { status: "success" };
   } catch (err) {
@@ -210,3 +220,15 @@ export const removeRecipient = async (postId, recipient) => {
     return { status: "failure" };
   }
 };
+
+export const addRecipient = async (postId, recipient) => {
+  try {
+    const post = await Post.findOne({ _id: postId });
+    post.recipients.push(recipient);
+    post.save();
+    return { status: "success" };
+  } catch (err) {
+    console.log(`add recipient service, (${err.message})`);
+    return { status: "failure" };
+  }
+}
