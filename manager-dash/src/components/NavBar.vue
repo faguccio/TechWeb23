@@ -10,7 +10,6 @@ const navItems = [
 ];
 
 const scrollTop = () => {
-  2;
   window.scrollTo(0, 0);
 };
 

@@ -1,10 +1,26 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import PostCard from "../components/PostCard.vue";
+import { Const } from "../utils.js";
 
-const count = ref(0);
+const posts = ref([]);
+
+const fetchPosts = async () => {
+  let res = await fetch(`${Const.apiurl}/posts/managed/all`, {
+    headers: {
+      Authorization: localStorage.token,
+    },
+  });
+  res = await res.json();
+  console.log(res);
+  posts.value = res;
+};
+
+onMounted(() => {
+  fetchPosts();
+});
 </script>
 
 <template>
-  <PostCard id="64565a05867620df0ef89f50" />
+  <PostCard v-for="post in posts" :id="post" />
 </template>
