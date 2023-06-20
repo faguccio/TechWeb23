@@ -1,11 +1,15 @@
 import { useForm } from "react-hook-form";
 import { loginUser, Const } from "../utils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useContext } from "react";
+import { loggedInContext } from "../App";
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const { register, handleSubmit } = useForm();
 
+  const [loggedIn, setLoggedIn] = useContext(loggedInContext);
+
+  const { register, handleSubmit } = useForm();
   const registerUser = async (username, password, propic) => {
     let user = {
       name: username,
@@ -32,7 +36,7 @@ function RegisterPage() {
     registerUser(data.username, data.password, data.propic).then((res) => {
       //console.log("res", res);
       if (res.status === "success") {
-        loginUser(data, navigate);
+        loginUser(data, navigate, setLoggedIn);
       }
     });
   };
@@ -85,20 +89,16 @@ function RegisterPage() {
             {...register("propic")}
           />
           <button
-            className="w-full mb-4 p-2 rounded-md bg-blue-500 text-white font-bold"
+            className="w-full mb-4 p-2 rounded-md bg-blue-800 text-white font-semibold"
             type="submit"
           >
             Sign up
           </button>
           <p className="text-sm">
             Already have an account?{" "}
-            <a
-              className="text-blue-500"
-              aria-label="go to login page"
-              onClick={navigate("/login")}
-            >
+            <Link className="text-blue-500" aria-label="go to login page" to="/login">
               Sign in
-            </a>
+            </Link>
           </p>
         </form>
       </div>

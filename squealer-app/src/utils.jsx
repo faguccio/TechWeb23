@@ -35,6 +35,7 @@ export function loginUser(inputData, redirectFun, setLoggedIn) {
       localStorage.removeItem("userID");
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userID", res.data.userID);
+      setLoggedIn(true);
       //redirect to home page
       redirectFun(pages[0].path); //pages[0] = home page
     } else if (res.status === Const.STATUS_UNAUTHORIZED) {
@@ -42,7 +43,6 @@ export function loginUser(inputData, redirectFun, setLoggedIn) {
       document.querySelector("#error_message").innerHTML = res.data.message;
     }
   });
-  setLoggedIn(true);
 }
 
 export function kmToCal(km) {
