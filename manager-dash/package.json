@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^4.29.14",
+    "@tanstack/vue-query": "^4.29.14",
     "daisyui": "^2.51.6",
     "leaflet": "^1.9.4",
     "vue": "^3.2.47",
