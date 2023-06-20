@@ -26,7 +26,7 @@ function PostRenderer({ params }) {
     if (fetching.current || !hasMorePages.current) return;
     const wasIscrewdOver = pageN.current;
     fetching.current = true;
-    console.log(pageN.current);
+    //console.log(pageN.current);
     const res = await fetchPost(pageN.current);
     if (res.length >= 1) {
       setPostList((postList) => [
@@ -35,7 +35,7 @@ function PostRenderer({ params }) {
       if (pageN.current == wasIscrewdOver) {
         pageN.current += 1;
       }
-      console.log(pageN.current);
+      //console.log(pageN.current);
     } else {
       console.log("No more posts to load!");
       hasMorePages.current = false;
