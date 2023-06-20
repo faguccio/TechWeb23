@@ -127,7 +127,7 @@ export const getAllPostFiltered = async (req, res) => {
     let sender = req.query?.sender; // sender = ObjectId(...) || null/undefined
     let recipients = req.query?.recipients; // recipients = 'a, b, c, ...' || null/undefined
     if (recipients) {
-      console.log("getAllPost - recipients: ", recipients);
+      //console.log("getAllPost - recipients: ", recipients);
       //recipients = decodeURIComponent(recipients);
       recipients = recipients.split(",").map((recipient) => recipient.trim());
     }

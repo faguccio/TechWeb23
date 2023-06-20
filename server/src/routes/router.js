@@ -88,6 +88,7 @@ appRouter.get(
   pagination
 );
 appRouter.post("/api/channels/:name/posts", channelRoutes.addPostToChannel);
+appRouter.patch("/api/channels/:name/posts", channelRoutes.addPostToChannel_Admin);
 appRouter.post(
   "/api/channels/create",
   verifyToken,

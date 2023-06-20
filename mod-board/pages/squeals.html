@@ -18,8 +18,20 @@
         <script src="../scripts.js"></script>
     </head>
     <body class="flex flex-col items-center">
+        <dialog id="modal_addToChannel" class="modal" data-post-id="">
+            <form method="dialog" class="modal-box flex flex-col items-center">
+                <h3 class="font-bold text-lg mb-4">Add Post to a Channel</h3>
+                <label for="channel-name">Channel Name</label>
+                <select id="channel-name" class="select select-bordered select-accent mt-2 mb-4" placeholder="Channel name" ></select>
+                <div class="modal-action">
+                    <!-- if there is a button in form, it will close the modal -->
+                    <button class="btn btn-outline">Close</button>
+                    <button id="add-post" class="btn btn-accent">Add to channel</button>
+                </div>
+            </form>
+        </dialog>
         <div>
-            <a href="./home.html" class="btn btn-neutral fixed top-5 left-5 ">
+            <a href="./home.html" class="btn btn-neutral fixed top-5 left-5 z-10">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                     <path fill-rule="evenodd" d="M20.25 12a.75.75 0 01-.75.75H6.31l5.47 5.47a.75.75 0 11-1.06 1.06l-6.75-6.75a.75.75 0 010-1.06l6.75-6.75a.75.75 0 111.06 1.06l-5.47 5.47H19.5a.75.75 0 01.75.75z" clip-rule="evenodd" />
                   </svg> 
@@ -66,7 +78,7 @@
         <div id="posts" class="mt-8 w-3/4"></div>
 
         <template id="post-template">
-            <div class="flex flex-col rounded-lg bg-zinc-50 shadow-md shadow-zinc-300 h-fit p-5 mb-4">
+            <div class="flex flex-col rounded-lg bg-zinc-50 shadow-md shadow-zinc-300 h-fit p-5 mb-4 relative">
                 <div class="flex flex-row justify-around items-center mb-2">
                     <div class="flex flex-col items-center"> 
                         <img
@@ -154,6 +166,7 @@
                         <span id="error-msg"></span>
                     </div>
                 </div>
+                <button class="btn btn-accent absolute right-2 bottom-2" id="open-modal" >Add to channel</button>
             </div>
         </template>
         <script>
@@ -189,6 +202,7 @@
                         
                         postTemplate.find("#reactions-positive").val(post.reactions.positive);
                         postTemplate.find("#reactions-negative").val(post.reactions.negative);
+                        postTemplate.find("#open-modal").attr("data-post-id", post._id);
     
                         const successAlert = postTemplate.find("#success");
                         successAlert.hide();
@@ -253,6 +267,14 @@
                                 }
                             }
                         })
+
+                        postTemplate.find("#open-modal").click((e) => {
+                            //e.preventDefault();
+                            //console.log(postTemplate.find("#open-modal").data("post-id"));
+                            $("#modal_addToChannel").data("post-id", post._id);
+                            modal_addToChannel.showModal();
+                            //console.log("modal opened: ",$("#modal_addToChannel").data("post-id"));
+                        })
     
                         $("#posts").append(postTemplate);                      
                     });
@@ -269,6 +291,12 @@
                 let users = await response.json();
                 return users;
             }
+            async function fetchAllChannels(){
+                let response = await fetch(`${apiurl}/channels/all`);
+                let channels = await response.json();
+                return channels;
+            }
+            
 
             function setUpFiltering(){
                 $("#filter-button").click((e) => {
@@ -301,6 +329,13 @@
                     senderSelect.append(`<option value="${user._id}">${user.name}</option>`);
                 });
             }
+            async function popolateChannelSelect(){
+                const channels = await fetchAllChannels();
+                const channelSelect = $("#channel-name");
+                channels.map((channel) => {
+                    channelSelect.append(`<option value="${channel.name}">${channel.name}</option>`);
+                });
+            }
 
             async function makeRequest(req) {
                 let res = await fetch(req);
@@ -314,8 +349,29 @@
                     window.location.href = `login.html`
                 }
                 await popolateSenderFilter();
+                await popolateChannelSelect();
                 setUpFiltering();
                 await makeRequest(`${apiurl}/posts`);
+
+                $("#add-post").click(async (e) => {
+                    //console.log("add post:",$("#modal_addToChannel").data("post-id"));
+                    const channelName = encodeURIComponent($("#channel-name").val());
+                    console.log(channelName);
+                    const post_id = $("#modal_addToChannel").data("post-id");
+                    let response = await fetch(`${apiurl}/channels/${channelName}/posts`, {
+                        method: "PATCH",
+                        headers:{
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            post_ID: post_id,
+                            timestamp: Date.now()
+                        })
+                    });
+                    response = await response.json();
+                    console.log(response);
+                    makeRequest(`${apiurl}/posts`);
+                });
             });
 
         

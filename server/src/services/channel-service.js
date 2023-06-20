@@ -109,3 +109,13 @@ export const createChannel = async (newChannel) => {
     console.log(`createChannel service, ${newChannel} (${err.message})`);
   }
 };
+
+export const isPostInChannel = async (channel_ID, post_ID) => {
+  try {
+    const channel = await Channel.findOne({ _id: channel_ID });
+    const post = channel.posts.find((post) => post.content == post_ID);
+    return post;
+  } catch (err) {
+    console.log(`isPostInChannel service, ${channel_ID} (${err.message})`);
+  }
+}
