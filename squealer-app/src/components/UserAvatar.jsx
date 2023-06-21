@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useQuery } from "react-query";
 import { Const } from "../utils";
 import { Link } from "react-router-dom";
-//import { loggedInContext } from "../App";
+import { loggedInContext } from "../App";
 
 function UserAvatar() {
   const [loggedIn, setLoggedIn] = useContext(loggedInContext);

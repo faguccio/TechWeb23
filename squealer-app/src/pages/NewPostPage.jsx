@@ -1,38 +1,34 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "react-query";
-import { Const } from "../utils";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useQuery } from 'react-query';
+import { Const } from '../utils';
 
 function NewPostPage() {
-  const navigate = useNavigate();
-  if (!localStorage.token) {
-    navigate("/login");
-    return;
-  }
-  const [avatarPath, setAvatarPath] = useState(
-    "https://placekitten.com/100/100"
-  );
-  const [postContent, setPostContent] = useState("");
+  const token = localStorage.token;
+  const [avatarPath, setAvatarPath] = useState('https://placekitten.com/100/100');
+  const [postContent, setPostContent] = useState('');
   const [letterCount, setLetterCount] = useState(0);
-  const [imageURL, setImageURL] = useState("");
-  const [recipients, setRecipients] = useState("");
+  const [imageURL, setImageURL] = useState('');
+  const [recipients, setRecipients] = useState('');
   const [notification, setNotification] = useState(null);
   const [geoCheck, setGeoCheck] = useState(false);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
-
-  const userID = localStorage.getItem("userID")?.toString();
+  const [leftoverChars, setLeftoverChars] = useState({ day: 0, week: 0, month: 0 });
 
   const fetchUser = async () => {
-    const res = await fetch(`${Const.apiurl}/user/${userID}`);
-    return await res.json();
+    const res = await fetch(`${Const.apiurl}/user`, {
+      headers: { Authorization: token },
+    });
+    const userData = await res.json();
+    setLeftoverChars(userData.leftovers_chars);
+    return userData;
   };
 
-  const { data: user } = useQuery(["user", userID], fetchUser);
+  const { data: user } = useQuery('user', fetchUser);
 
   useEffect(() => {
     if (user) {
-      if (user.propic_path !== "") {
+      if (user.propic_path !== '') {
         setAvatarPath(user.propic_path);
       }
     }
@@ -50,8 +46,8 @@ function NewPostPage() {
   }
 
   function handlePublishClick() {
-    if (letterCount > user.leftovers_chars.day) {
-      setNotification("Non hai caratteri sufficienti per pubblicare");
+    if (letterCount > leftoverChars.day) {
+      setNotification('Non hai caratteri sufficienti per pubblicare');
       return;
     }
 
@@ -61,8 +57,8 @@ function NewPostPage() {
       setLongitude(geo.lon);
 
       const newPost = {
-        sender: localStorage.getItem("userID"),
-        recipients: recipients.split(","),
+        sender: user._id,
+        recipients: recipients.split(','),
         text: postContent,
         timestamp: new Date(),
         image_path: imageURL,
@@ -71,56 +67,53 @@ function NewPostPage() {
       };
 
       fetch(`${Const.apiurl}/post`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          Accept: "application/json",
-          Authorization: localStorage.token,
-          "Content-Type": "application/json",
+          Accept: 'application/json',
+          Authorization: token,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(newPost),
       })
         .then((response) => {
           if (response.ok) {
-            setPostContent("");
-            setImageURL("");
+            setPostContent('');
+            setImageURL('');
             setLatitude(0);
             setLongitude(0);
-            setRecipients("");
-            setNotification("Post inviato con successo");
-            const updatedChars = { ...user.leftovers_chars };
+            setRecipients('');
+            setNotification('Post inviato con successo');
+            const updatedChars = { ...leftoverChars };
             updatedChars.day -= letterCount;
             updatedChars.week -= letterCount;
             updatedChars.month -= letterCount;
-            fetch(`${Const.apiurl}/user/${localStorage.getItem("userID")}`, {
-              method: "PATCH",
+            setLeftoverChars(updatedChars);
+            fetch(`${Const.apiurl}/user/${user._id}`, {
+              method: 'PATCH',
               headers: {
-                Accept: "application/json",
-                Authorization: localStorage.token,
-                "Content-Type": "application/json",
+                Accept: 'application/json',
+                Authorization: token,
+                'Content-Type': 'application/json',
               },
               body: JSON.stringify({ leftovers_chars: updatedChars }),
             })
               .then((response) => {
                 if (response.ok) {
-                  console.log(
-                    "Numero di caratteri giornalieri aggiornato con successo"
-                  );
+                  console.log('Numero di caratteri giornalieri aggiornato con successo');
                 } else {
-                  throw new Error(
-                    "Errore nell'aggiornamento del numero di caratteri giornalieri"
-                  );
+                  throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
                 }
               })
               .catch((error) => {
                 console.error(error);
               });
           } else {
-            throw new Error("Errore nell'invio del post");
+            throw new Error('Errore nell\'invio del post');
           }
         })
         .catch((error) => {
           console.error(error);
-          setNotification("Errore nell'invio del post");
+          setNotification('Errore nell\'invio del post');
         });
     }
 
@@ -128,7 +121,7 @@ function NewPostPage() {
   }
 
   useEffect(() => {
-    let count = postContent.replace(/\s/g, "").length;
+    let count = postContent.replace(/\s/g, '').length;
     setLetterCount(count);
   }, [postContent]);
 
@@ -175,6 +168,9 @@ function NewPostPage() {
               />
               Includi geolocalizzazione
             </label>
+            <div className="ml-2 font-bold">
+              D: {leftoverChars.day} W: {leftoverChars.week} M: {leftoverChars.month}
+            </div>
           </div>
         </div>
         <div className="text-right mb-2">
@@ -187,7 +183,7 @@ function NewPostPage() {
         </div>
         {notification && (
           <div className="text-center mt-4">
-            {notification.includes("success") ? (
+            {notification.includes('success') ? (
               <p className="text-green-500">{notification}</p>
             ) : (
               <p className="text-red-500">{notification}</p>

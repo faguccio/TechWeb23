@@ -51,15 +51,18 @@ export default {
       const geoCheck = ref(false);
       const latitude = ref(0);
       const longitude = ref(0);
+      
 
-      const userID = localStorage.getItem('userID')?.toString();
+        const fetchUser = async () => {
+    const res = await fetch(`${Const.apiurl}/user`, {
+      headers: { Authorization: localStorage.token },
+    });
+    //console.log(res);
+    return await res.json();
+  };
 
-      const fetchUser = async () => {
-         const res = await fetch(`${Const.apiurl}/user/${userID}`);
-         return await res.json();
-      };
 
-      const { data: user } = useQuery(['user', userID], fetchUser);
+      const { data: user } = useQuery(['user', localStorage.getItem('userID')], fetchUser);
 
       onMounted(() => {
          if (user) {
@@ -92,7 +95,7 @@ export default {
             longitude.value = geo.lon;
 
             const newPost = {
-               sender: localStorage.getItem('userID'),
+               sender: user?.id,
                recipients: recipients.value.split(','),
                text: postContent.value,
                timestamp: new Date(),
@@ -105,7 +108,7 @@ export default {
                method: 'POST',
                headers: {
                   Accept: 'application/json',
-                  Authorization: localStorage.token,
+                  Authorization: localStorage.getItem('token'),
                   'Content-Type': 'application/json',
                },
                body: JSON.stringify(newPost),
@@ -126,7 +129,7 @@ export default {
                         method: 'PATCH',
                         headers: {
                            Accept: 'application/json',
-                           Authorization: localStorage.token,
+                           Authorization: localStorage.getItem('token'),
                            'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({ leftovers_chars: updatedChars }),
