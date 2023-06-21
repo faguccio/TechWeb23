@@ -26,7 +26,7 @@ const loginRequest = async (username, password) => {
   return ret;
 };
 
-export function loginUser(inputData, redirectFun) {
+export function loginUser(inputData, redirectFun, setLoggedIn) {
   loginRequest(inputData.username, inputData.password).then((res) => {
     if (res.status === Const.STATUS_OK) {
       //document.querySelector(".alert").classList.replace("flex", "hidden")
@@ -35,6 +35,7 @@ export function loginUser(inputData, redirectFun) {
       localStorage.removeItem("userID");
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userID", res.data.userID);
+      setLoggedIn(true);
       //redirect to home page
       redirectFun(pages[0].path); //pages[0] = home page
     } else if (res.status === Const.STATUS_UNAUTHORIZED) {

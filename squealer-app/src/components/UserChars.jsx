@@ -1,6 +1,6 @@
 function UserChars(props) {
   const { user } = props;
-  console.log(user);
+  //console.log(user);
 
   const nAum = user.popularPosts.length / 10;
   const nDim = user.unpopularPosts.length / 3;
@@ -10,7 +10,7 @@ function UserChars(props) {
       <div className="flex gap-4">
         {["day", "week", "month"].map((field) => {
           return (
-            <p className="text-black p-2 text-center rounded-lg bg-secondary">
+            <p className="text-black p-2 text-center rounded-lg bg-secondary" key={field}>
               {field} {user.leftovers_chars[field]}
             </p>
           );

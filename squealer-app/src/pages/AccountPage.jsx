@@ -1,18 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Const } from "../utils";
 import UserChars from "../components/UserChars";
+import { loggedInContext } from "../App";
 
 function AccountPage() {
   const navigate = useNavigate();
-  if (!localStorage.getItem("token") && !localStorage.getItem("userID")) {
+  if (!localStorage.token) {
     navigate("/login");
     return;
   }
 
+  const [loggedIn, setLoggedIn] = useContext(loggedInContext);  
   const userID = localStorage.userID;
 
   const fetchUser = async () => {
@@ -75,6 +77,7 @@ function AccountPage() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userID");
+    setLoggedIn(false);
     navigate("/");
   };
 

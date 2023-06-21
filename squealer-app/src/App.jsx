@@ -1,4 +1,4 @@
-import { createContext, useRef } from "react";
+import { createContext, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
@@ -6,6 +6,7 @@ import { pages } from "./router";
 import NavBar from "./components/NavBar";
 
 const queryClient = new QueryClient({});
+export const loggedInContext = createContext(null);
 
 function App() {
   //console.log("ciaoooo");
@@ -26,12 +27,10 @@ function App() {
     { basename: "/app" }
   );
 
-
-  //const loggedIn = useRef(!!localStorage.token);
-  //const loggedInContext = createContext(loggedIn.current);
+  const loggedState = useState(!!localStorage.token);
 
   return (
-   // <loggedInContext.Provider value={loggedIn.current}> 
+    <loggedInContext.Provider value={loggedState}>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
         <ReactQueryDevtools />

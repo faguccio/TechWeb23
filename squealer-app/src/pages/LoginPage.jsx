@@ -1,13 +1,17 @@
 import { useForm } from "react-hook-form";
 import { loginUser } from "../utils";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { loggedInContext } from "../App";
 
 function LoginPage() {
+  const [loggedIn, setLoggedIn] = useContext(loggedInContext);
+
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
   const onSubmit = (inputData) => {
     //console.log(data);
-    loginUser(inputData, navigate);
+    loginUser(inputData, navigate, setLoggedIn);
   };
 
   return (
@@ -65,20 +69,16 @@ function LoginPage() {
             {...register("password", { required: true })}
           />
           <button
-            className="w-full mb-4 p-2 rounded-md bg-blue-800 text-white"
+            className="w-full mb-4 p-2 rounded-md bg-blue-800 text-white font-semibold"
             type="submit"
           >
             Sign in
           </button>
           <p className="text-sm">
             Don't have an account?{" "}
-            <a
-              className="text-blue-500"
-              aria-label="go to register page"
-              onClick={navigate("/register")}
-            >
+            <Link className="text-blue-500" aria-label="go to register page" to="/register">
               Sign up
-            </a>
+            </Link>
           </p>
         </form>
       </div>

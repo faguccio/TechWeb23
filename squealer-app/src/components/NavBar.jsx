@@ -37,10 +37,9 @@ function NavBar() {
         </div>
 
           <div className="flex items-center">
-            <UserAvatar />
-
+            {!isNavExpanded ? (<UserAvatar />) : null}
             <button
-              className="btn btn-square btn-ghost scale-125 mr-8 ml-4 md:hidden"
+              className="btn btn-square btn-ghost scale-125 mr-4 ml-4 md:hidden"
               onClick={handleClick}
             >
               <svg
