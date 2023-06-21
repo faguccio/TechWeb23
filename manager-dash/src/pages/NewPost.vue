@@ -32,8 +32,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
    data() {
       return {
@@ -48,16 +46,17 @@ export default {
          longitude: 0,
          leftoverChars: { day: 0, week: 0, month: 0 },
          user: null,
-         token: localStorage.token
+         token: localStorage.tokenPro
       };
    },
    methods: {
       async fetchUser() {
          try {
-            const response = await axios.get(`${Const.apiurl}/user/${this.user.managing}`, {
+            const response = await fetch(`${Const.apiurl}/user/${this.user.managing}`, {
                headers: { Authorization: this.token },
             });
-            this.user = response.data;
+            const userData = await response.json();
+            this.user = userData;
             this.leftoverChars = this.user.leftovers_chars;
             if (this.user.propic_path !== '') {
                this.avatarPath = this.user.propic_path;
@@ -89,12 +88,14 @@ export default {
             reactions: { positive: 0, negative: 0 },
          };
          try {
-            let response = await axios.post(`${Const.apiurl}/post`, newPost, {
+            const response = await fetch(`${Const.apiurl}/post`, {
+               method: 'POST',
                headers: {
                   Accept: 'application/json',
                   Authorization: this.token,
                   'Content-Type': 'application/json',
                },
+               body: JSON.stringify(newPost),
             });
             if (response.ok) {
                this.postContent = '';
@@ -108,14 +109,16 @@ export default {
                updatedChars.week -= this.letterCount;
                updatedChars.month -= this.letterCount;
                this.leftoverChars = updatedChars;
-               response = await axios.patch(`${Const.apiurl}/user`, { leftovers_chars: updatedChars }, {
+               const patchResponse = await fetch(`${Const.apiurl}/user`, {
+                  method: 'PATCH',
                   headers: {
                      Accept: 'application/json',
                      Authorization: this.token,
                      'Content-Type': 'application/json',
                   },
+                  body: JSON.stringify({ leftovers_chars: updatedChars }),
                });
-               if (response.ok) {
+               if (patchResponse.ok) {
                   console.log('Numero di caratteri giornalieri aggiornato con successo');
                } else {
                   throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
