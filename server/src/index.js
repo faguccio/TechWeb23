@@ -18,8 +18,8 @@ const port = Const.SERVER_PORT;
 
 //CORS Options
 const corsOptions = {
-  origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 };
 
 // App initialization
@@ -38,6 +38,7 @@ app.get("/app/*", async (_, res) =>
     )
   )
 );
+
 app.use(
   "/man/",
   express.static(path.join(__dirname, "../../manager-dash/dist"))

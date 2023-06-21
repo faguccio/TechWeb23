@@ -8,9 +8,10 @@
     "build": "vite build --base=/man/",
     "preview": "vite preview"
   },
+  "homepage": "/man/",
   "dependencies": {
     "daisyui": "^2.51.6",
-    "leaflet": "^1.9.4",
+    "package.json": "^2.0.1",
     "vue": "^3.2.47",
     "vue-router": "4",
     "vue2-leaflet": "^2.7.1"

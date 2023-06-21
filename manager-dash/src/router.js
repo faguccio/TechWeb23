@@ -6,7 +6,8 @@ import LoginPage from "./pages/LoginPage.vue";
 import PostsPage from "./pages/PostsPage.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  base: "/man",
+  history: createWebHistory(),
   routes: [
     {
       path: "/",
