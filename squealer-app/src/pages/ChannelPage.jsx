@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import ChannelBar from "../components/ChannelBar";
 import PostRenderer from "../components/PostRenderer";
 import SearchBar from "../components/SearchBar";
+import { Const } from "../utils";
 
 function ChannelPage() {
   const params = useParams();
@@ -21,9 +22,7 @@ function ChannelPage() {
     setSubbed(channelCopy.current.includes(putHash(params.name)));
   }, [params, subbed]);
 
-  const toggleSubscription = () => {
-    console.log(channelCopy.current);
-
+  const toggleSubscription = async () => {
     const channelName = putHash(params.name);
     if (channelCopy.current.includes(channelName)) {
       channelCopy.current = channelCopy.current.filter((chName) => {
@@ -32,7 +31,15 @@ function ChannelPage() {
     } else {
       channelCopy.current.push(channelName);
     }
-    console.log("Chiamata di patch con");
+    const res = await fetch(`${Const.apiurl}/user`, {
+      method: "PATCH",
+      headers: {
+        Authorization: localStorage.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ channels: channelCopy.current }),
+    });
+    console.log(res);
     console.log(channelCopy.current);
     setSubbed(!subbed);
   };

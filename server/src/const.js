@@ -1,4 +1,4 @@
-export const SERVER_PORT = 3000;
+export const SERVER_PORT = 8000;
 export const BAD_REQUEST = 400;
 export const STATUS_CONFLICT = 409;
 export const STATUS_OK = 200;

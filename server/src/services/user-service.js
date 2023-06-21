@@ -16,7 +16,22 @@ export const getUserHome = async (id) => {
     );
     return posts.flat();
   } catch (err) {
-    console.log(`Update likes service, ${id} (${err.message})`);
+    console.log(`getUserHome service, ${id} (${err.message})`);
+  }
+};
+
+export const getStandardHome = async () => {
+  try {
+    const posts = await Promise.all(
+      ["§JOKESQUEAL", "§FACTSQUEAL", "§CONTROVERSIAL"].map(async (item) => {
+        const channel = await Channel.findOne({ name: item });
+        const new_posts = await getChannelPosts(channel._id);
+        return new_posts;
+      })
+    );
+    return posts.flat();
+  } catch (err) {
+    console.log(`getStandardHome service, ${id} (${err.message})`);
   }
 };
 
@@ -40,22 +55,22 @@ export const verifyLogin = async (name, password) => {
     };
   else {
     //console.log("result ",result);
-    if(result[0].type == "manager" || result[0].type == "vip"){
+    if (result[0].type == "manager" || result[0].type == "vip") {
       return {
         valid_credentials: true,
         id: result[0]._id.toString(),
         isPro: true,
         isAdmin: false,
       };
-    }else{
-      if(result[0].type == "admin"){
+    } else {
+      if (result[0].type == "admin") {
         return {
           valid_credentials: true,
           id: result[0]._id.toString(),
           isPro: false,
           isAdmin: true,
         };
-      }else{
+      } else {
         return {
           valid_credentials: true,
           id: result[0]._id.toString(),

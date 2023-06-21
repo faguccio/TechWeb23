@@ -45,7 +45,12 @@ export const searchPostBody = async (req, res) => {
     if (keyword) {
       let posts = await postService.searchBody(keyword);
       posts = posts.map((post) => post._id);
-      return res.status(Const.STATUS_OK).json(posts);
+      let channels = await postService.searchChannel(keyword);
+      channels = channels.map((chan) => chan.name);
+
+      return res
+        .status(Const.STATUS_OK)
+        .json({ posts: posts, channels: channels });
     }
   } catch (err) {
     console.log(`search post body, (${err.message})`);
@@ -179,8 +184,13 @@ export const getAllPostByUserId = async (req, res) => {
 export const getAllPostOfManaged = async (req, res) => {
   try {
     const userId = req.authData.id;
-    console.log(userId);
-    const posts = await postService.getAllPostOfManaged(userId);
+    const user = await User.findOne({ _id: userId });
+    let posts = [];
+    if (!!user.managing) {
+      posts = await postService.getAllPostOfManaged(userId);
+    } else {
+      posts = await Post.find({ sender: userId }).sort({ timestamp: -1 });
+    }
     res.status(Const.STATUS_OK).json(posts);
   } catch (err) {
     console.log(`getAllPostOfManaged route, (${err.message})`);
