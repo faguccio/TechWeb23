@@ -15,166 +15,127 @@
                   <input id="geoCheck" type="checkbox" class="mr-1" v-model="geoCheck" />
                   Includi geolocalizzazione
                </label>
+               <div class="ml-2 font-bold">D: {{ leftoverChars.day }} W: {{ leftoverChars.week }} M: {{ leftoverChars.month
+               }}</div>
             </div>
          </div>
-         <div class="text-right mb-2">
-            <span>Conteggio lettere: {{ letterCount }}</span>
-         </div>
+         <div class="text-right mb-2"><span>Conteggio lettere: {{ letterCount }}</span></div>
          <div class="flex justify-end">
-            <button class="btn btn-primary" @click="handlePublishClick">
-               Pubblica
-            </button>
+            <button class="btn btn-primary" @click="handlePublishClick">Pubblica</button>
          </div>
-         <div class="text-center mt-4" v-if="notification">
-            <p :class="notification.includes('success') ? 'text-green-500' : 'text-red-500'">
-               {{ notification }}
-            </p>
+         <div v-if="notification" class="text-center mt-4">
+            <p v-if="notification.includes('success')" class="text-green-500">{{ notification }}</p>
+            <p v-else class="text-red-500">{{ notification }}</p>
          </div>
       </div>
    </div>
 </template>
 
 <script>
-import { reactive, computed, ref, onMounted } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
-import { Const } from '../utils';
+import axios from "axios";
 
 export default {
-   name: 'NewPostPage',
-   setup() {
-      const avatarPath = ref('https://placekitten.com/100/100');
-      const postContent = ref('');
-      const letterCount = ref(0);
-      const imageURL = ref('');
-      const recipients = ref('');
-      const notification = ref(null);
-      const geoCheck = ref(false);
-      const latitude = ref(0);
-      const longitude = ref(0);
-      
-
-        const fetchUser = async () => {
-    const res = await fetch(`${Const.apiurl}/user`, {
-      headers: { Authorization: localStorage.token },
-    });
-    //console.log(res);
-    return await res.json();
-  };
-
-
-      const { data: user } = useQuery(['user', localStorage.getItem('userID')], fetchUser);
-
-      onMounted(() => {
-         if (user) {
-            if (user.propic_path !== '') {
-               avatarPath.value = user.propic_path;
+   data() {
+      return {
+         avatarPath: 'https://placekitten.com/100/100',
+         postContent: '',
+         letterCount: 0,
+         imageURL: '',
+         recipients: '',
+         notification: null,
+         geoCheck: false,
+         latitude: 0,
+         longitude: 0,
+         leftoverChars: { day: 0, week: 0, month: 0 },
+         user: null,
+         token: localStorage.token
+      };
+   },
+   methods: {
+      async fetchUser() {
+         try {
+            const response = await axios.get(`${Const.apiurl}/user/${this.user.managing}`, {
+               headers: { Authorization: this.token },
+            });
+            this.user = response.data;
+            this.leftoverChars = this.user.leftovers_chars;
+            if (this.user.propic_path !== '') {
+               this.avatarPath = this.user.propic_path;
             }
+         } catch (error) {
+            console.error(error);
          }
-      });
-
-      function getGeolocation() {
+      },
+      async getLongAndLat() {
          return new Promise((resolve, reject) =>
             navigator.geolocation.getCurrentPosition(resolve, reject)
-         );
-      }
-
-      async function getLongAndLat() {
-         const { coords } = await getGeolocation();
-         return { lat: coords.latitude, lon: coords.longitude };
-      }
-
-      function handlePublishClick() {
-         if (letterCount.value > user.leftovers_chars.day) {
-            notification.value = "Non hai caratteri sufficienti per pubblicare";
+         ).then(({ coords }) => ({ lat: coords.latitude, lon: coords.longitude }));
+      },
+      async handlePublishClick() {
+         if (this.letterCount > this.leftoverChars.day) {
+            this.notification = 'Non hai caratteri sufficienti per pubblicare';
             return;
          }
-
-         async function publishPost() {
-            let geo = geoCheck.value ? await getLongAndLat() : { lat: 0, lon: 0 };
-            latitude.value = geo.lat;
-            longitude.value = geo.lon;
-
-            const newPost = {
-               sender: user?.id,
-               recipients: recipients.value.split(','),
-               text: postContent.value,
-               timestamp: new Date(),
-               image_path: imageURL.value,
-               geolocation: geo,
-               reactions: { positive: 0, negative: 0 },
-            };
-
-            fetch(`${Const.apiurl}/post`, {
-               method: 'POST',
+         let geo = this.geoCheck ? await this.getLongAndLat() : { lat: 0, lon: 0 };
+         this.latitude = geo.lat;
+         this.longitude = geo.lon;
+         const newPost = {
+            sender: this.user.managing,
+            recipients: this.recipients ? this.recipients.split(',') : [],
+            text: this.postContent,
+            timestamp: new Date(),
+            image_path: this.imageURL ? this.imageURL : [],
+            geolocation: geo,
+            reactions: { positive: 0, negative: 0 },
+         };
+         try {
+            let response = await axios.post(`${Const.apiurl}/post`, newPost, {
                headers: {
                   Accept: 'application/json',
-                  Authorization: localStorage.getItem('token'),
+                  Authorization: this.token,
                   'Content-Type': 'application/json',
                },
-               body: JSON.stringify(newPost),
-            })
-               .then((response) => {
-                  if (response.ok) {
-                     postContent.value = '';
-                     imageURL.value = '';
-                     latitude.value = 0;
-                     longitude.value = 0;
-                     recipients.value = '';
-                     notification.value = 'Post inviato con successo';
-                     const updatedChars = { ...user.leftovers_chars };
-                     updatedChars.day -= letterCount.value;
-                     updatedChars.week -= letterCount.value;
-                     updatedChars.month -= letterCount.value;
-                     fetch(`${Const.apiurl}/user/${localStorage.getItem('userID')}`, {
-                        method: 'PATCH',
-                        headers: {
-                           Accept: 'application/json',
-                           Authorization: localStorage.getItem('token'),
-                           'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ leftovers_chars: updatedChars }),
-                     })
-                        .then((response) => {
-                           if (response.ok) {
-                              console.log('Numero di caratteri giornalieri aggiornato con successo');
-                           } else {
-                              throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
-                           }
-                        })
-                        .catch((error) => {
-                           console.error(error);
-                        });
-                  } else {
-                     throw new Error('Errore nell\'invio del post');
-                  }
-               })
-               .catch((error) => {
-                  console.error(error);
-                  notification.value = 'Errore nell\'invio del post';
+            });
+            if (response.ok) {
+               this.postContent = '';
+               this.imageURL = '';
+               this.latitude = 0;
+               this.longitude = 0;
+               this.recipients = '';
+               this.notification = 'Post inviato con successo';
+               const updatedChars = { ...this.leftoverChars };
+               updatedChars.day -= this.letterCount;
+               updatedChars.week -= this.letterCount;
+               updatedChars.month -= this.letterCount;
+               this.leftoverChars = updatedChars;
+               response = await axios.patch(`${Const.apiurl}/user`, { leftovers_chars: updatedChars }, {
+                  headers: {
+                     Accept: 'application/json',
+                     Authorization: this.token,
+                     'Content-Type': 'application/json',
+                  },
                });
+               if (response.ok) {
+                  console.log('Numero di caratteri giornalieri aggiornato con successo');
+               } else {
+                  throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
+               }
+            } else {
+               throw new Error('Errore nell\'invio del post');
+            }
+         } catch (error) {
+            console.error(error);
+            this.notification = 'Errore nell\'invio del post';
          }
-
-         publishPost();
-      }
-
-      const updateLetterCount = () => {
-         let count = postContent.value.replace(/\s/g, '').length;
-         letterCount.value = count;
-      };
-
-      return {
-         avatarPath,
-         postContent,
-         letterCount,
-         imageURL,
-         recipients,
-         notification,
-         geoCheck,
-         latitude,
-         longitude,
-         handlePublishClick,
-         updateLetterCount
-      };
+      },
+   },
+   watch: {
+      postContent() {
+         this.letterCount = this.postContent.replace(/\s/g, '').length;
+      },
+   },
+   created() {
+      this.fetchUser();
    },
 };
 </script>
