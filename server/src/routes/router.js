@@ -19,6 +19,11 @@ export const appRouter = Router();
 appRouter.get("/api/post/:id", postRoutes.getPost);
 appRouter.patch("/api/post/:id/likes", verifyToken, postRoutes.useLike);
 appRouter.post("/api/post/:id/comments", verifyToken, postRoutes.createComment);
+appRouter.post(
+  "/api/post/:id/comments/manager",
+  verifyToken,
+  postRoutes.createCommentManager
+);
 appRouter.get("/api/search/posts", postRoutes.searchPostBody);
 appRouter.post("/api/post", verifyToken, postRoutes.createPost);
 appRouter.patch("/api/post/update/:id", postRoutes.updatePostById);

@@ -8,6 +8,7 @@ import { addPostToChannel } from "./channel-routes.js";
 
 
 
+import { User } from "../models/User.js";
 
 export const useLike = async (req, res) => {
   try {
@@ -159,6 +160,24 @@ export const createComment = async (req, res) => {
       .json({ status: "success", msg: "Comment created successfully" });
   } catch (err) {
     console.log(`createComment route, (${err.message})`);
+  }
+};
+
+export const createCommentManager = async (req, res) => {
+  try {
+    const userId = req.authData.id;
+    const postId = req.params.id;
+    const comment = req.body.text;
+    const manager = await User.findOne({ _id: userId });
+    const managed = await User.findOne({ _id: manager.managing });
+    const name = managed.name;
+
+    await postService.createComment(comment, postId, name);
+    res
+      .status(Const.STATUS_OK)
+      .json({ status: "success", msg: "Comment created successfully" });
+  } catch (err) {
+    console.log(`createCommentManager route, (${err.message})`);
   }
 };
 
