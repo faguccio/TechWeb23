@@ -32,165 +32,99 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from "vue";
-import { useQuery } from "react-query";
-import {Const} from '../utils.js';
-
 export default {
-    name: "NewPostPage",
-    setup() {
-        const avatarPath = ref("https://placekitten.com/100/100");
-        const postContent = ref("");
-        const letterCount = ref(0);
-        const imagePath = ref("");
-        const imageLoaded = ref(false);
-        const notification = ref(null);
-        const latitude = ref(0);
-        const longitude = ref(0);
-
-        const userID = localStorage.getItem("userID")?.toString();
-
-        const fetchUser = async () => {
-            const res = await fetch(`${Const.apiurl}/user/${userID}`);
-            return await res.json();
-        };
-
-        const { data: user } = useQuery(["user", userID], fetchUser);
-
-        onMounted(() => {
-            const resetDailyChars = () => {
-                const now = new Date();
-                const nextDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-                const timeToReset = nextDay.getTime() - now.getTime();
-                setTimeout(() => {
-                    const updatedChars = { ...user.leftovers_chars, day: 500 };
-                    fetch(`${Const.apiurl}/user/${localStorage.getItem("userID")}`, {
-                        method: "PATCH",
-                        headers: {
-                            Accept: "application/json",
-                            Authorization: localStorage.token,
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ leftovers_chars: updatedChars }),
-                    })
-                        .then((response) => {
-                            if (response.ok) {
-                                console.log("Reset giornaliero completato");
-                            } else {
-                                throw new Error("Errore nel reset giornaliero");
-                            }
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                        });
-                }, timeToReset);
-            };
-
-            resetDailyChars();
-        });
-
-        onMounted(() => {
-            if (user) {
-                if (user.propic_path !== "") {
-                    avatarPath.value = user.propic_path;
-                }
+   data() {
+      return {
+         avatarPath: 'https://placekitten.com/100/100',
+         postContent: '',
+         letterCount: 0,
+         imageURL: '',
+         recipients: '',
+         notification: null,
+         geoCheck: false,
+         latitude: 0,
+         longitude: 0,
+         leftoverChars: { day: 0, week: 0, month: 0 },
+         user: null,
+         token: localStorage.tokenPro
+      };
+   },
+   methods: {
+      async fetchUser() {
+         try {
+            const response = await fetch(`${Const.apiurl}/user/${this.user.managing}`, {
+               headers: { Authorization: this.token },
+            });
+            const userData = await response.json();
+            this.user = userData;
+            this.leftoverChars = this.user.leftovers_chars;
+            if (this.user.propic_path !== '') {
+               this.avatarPath = this.user.propic_path;
             }
-        });
-
-        const handlePublishClick = () => {
-            if (letterCount.value > user.leftovers_chars.day) {
-                notification.value = "Non hai caratteri sufficienti per pubblicare";
-                return;
-            }
-
-            const regexRecipients = /§(\w+)/g;
-            const regexHashtags = /#(\w+)/g;
-            const regexMentions = /@(\w+)/g;
-
-            const recipients = [];
-            const hashtags = [];
-            const mentions = [];
-
-            let match;
-            while ((match = regexRecipients.exec(postContent.value))) {
-                recipients.push(match[1]);
-            }
-
-            while ((match = regexHashtags.exec(postContent.value))) {
-                hashtags.push(match[1]);
-            }
-
-            while ((match = regexMentions.exec(postContent.value))) {
-                mentions.push(match[1]);
-            }
-
-            recipients.push(...hashtags, ...mentions);
-            console.log({ recipients });
-
-            const newPost = {
-                sender: localStorage.getItem("userID"),
-                recipients: recipients,
-                text: postContent.value,
-                timestamp: new Date(),
-                image_path: imagePath.value,
-                geolocation: { lat: latitude.value, lon: longitude.value },
-                reactions: { positive: 0, negative: 0 },
-            };
-
-            fetch(`${Const.apiurl}/post`, {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    Authorization: localStorage.token,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(newPost),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        postContent.value = "";
-                        imagePath.value = "";
-                        imageLoaded.value = false;
-                        latitude.value = 0;
-                        longitude.value = 0;
-                        notification.value = "Post inviato con successo";
-                        const updatedChars = { ...user.leftovers_chars };
-                        updatedChars.day -= letterCount.value;
-                        updatedChars.week -= letterCount.value;
-                        updatedChars.month -= letterCount.value;
-                        fetch(`${Const.apiurl}/user/${localStorage.getItem("userID")}`, {
-                            method: "PATCH",
-                            headers: {
-                                Accept: "application/json",
-                                Authorization: localStorage.token,
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ leftovers_chars: updatedChars }),
-                        })
-                            .then((response) => {
-                                if (response.ok) {
-                                    console.log("Numero di caratteri giornalieri aggiornato con successo");
-                                } else {
-                                    throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
-                                }
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                            });
-                    } else {
-                        throw new Error("Errore nell'invio del post");
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                    notification.value = "Errore nell'invio del post";
-                });
-        };
-
-        watch([postContent, imageLoaded], () => {
-            let count = postContent.value.replace(/\s/g, "").length;
-            if (imageLoaded.value) {
-                count += 125;
+         } catch (error) {
+            console.error(error);
+         }
+      },
+      async getLongAndLat() {
+         return new Promise((resolve, reject) =>
+            navigator.geolocation.getCurrentPosition(resolve, reject)
+         ).then(({ coords }) => ({ lat: coords.latitude, lon: coords.longitude }));
+      },
+      async handlePublishClick() {
+         if (this.letterCount > this.leftoverChars.day) {
+            this.notification = 'Non hai caratteri sufficienti per pubblicare';
+            return;
+         }
+         let geo = this.geoCheck ? await this.getLongAndLat() : { lat: 0, lon: 0 };
+         this.latitude = geo.lat;
+         this.longitude = geo.lon;
+         const newPost = {
+            sender: this.user.managing,
+            recipients: this.recipients ? this.recipients.split(',') : [],
+            text: this.postContent,
+            timestamp: new Date(),
+            image_path: this.imageURL ? this.imageURL : [],
+            geolocation: geo,
+            reactions: { positive: 0, negative: 0 },
+         };
+         try {
+            const response = await fetch(`${Const.apiurl}/post`, {
+               method: 'POST',
+               headers: {
+                  Accept: 'application/json',
+                  Authorization: this.token,
+                  'Content-Type': 'application/json',
+               },
+               body: JSON.stringify(newPost),
+            });
+            if (response.ok) {
+               this.postContent = '';
+               this.imageURL = '';
+               this.latitude = 0;
+               this.longitude = 0;
+               this.recipients = '';
+               this.notification = 'Post inviato con successo';
+               const updatedChars = { ...this.leftoverChars };
+               updatedChars.day -= this.letterCount;
+               updatedChars.week -= this.letterCount;
+               updatedChars.month -= this.letterCount;
+               this.leftoverChars = updatedChars;
+               const patchResponse = await fetch(`${Const.apiurl}/user`, {
+                  method: 'PATCH',
+                  headers: {
+                     Accept: 'application/json',
+                     Authorization: this.token,
+                     'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ leftovers_chars: updatedChars }),
+               });
+               if (patchResponse.ok) {
+                  console.log('Numero di caratteri giornalieri aggiornato con successo');
+               } else {
+                  throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
+               }
+            } else {
+               throw new Error('Errore nell\'invio del post');
             }
          } catch (error) {
             console.error(error);
