@@ -32,6 +32,9 @@
 </template>
 
 <script>
+import { Const } from "../utils.js";
+import  router  from '../router';
+
 export default {
    data() {
       return {
@@ -138,7 +141,10 @@ export default {
       },
    },
    created() {
-      this.fetchUser();
+        if(!localStorage.tokenPro)
+            router.push('/login');
+        else
+            this.fetchUser();
    },
 };
 </script>

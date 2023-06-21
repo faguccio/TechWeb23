@@ -4,6 +4,14 @@ import Humb from "../general/Humb.vue";
 
 const navItems = [
   {
+    title: "Home",
+    destination: "/",
+  },
+  {
+    title: "New Post",
+    destination: "/newpost",
+  },
+  {
     title: "Account",
     destination: "/account",
   },
@@ -57,7 +65,7 @@ const toggleMenu = () => {
         class="mx-4"
       >
         <router-link :to="item.destination">
-          <button class="btn">
+          <button class="btn glass">
             {{ item.title }}
           </button>
         </router-link>
