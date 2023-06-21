@@ -26,16 +26,17 @@ function App() {
     { basename: "/app" }
   );
 
-  const loggedIn = useRef(!!localStorage.token);
-  const loggedInContext = createContext(loggedIn.current);
+
+  //const loggedIn = useRef(!!localStorage.token);
+  //const loggedInContext = createContext(loggedIn.current);
 
   return (
-    <loggedInContext.Provider value={loggedIn.current}> 
+   // <loggedInContext.Provider value={loggedIn.current}> 
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
         <ReactQueryDevtools />
       </QueryClientProvider>
-    </loggedInContext.Provider>
+   // </loggedInContext.Provider>
   );
 }
 

@@ -2,12 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 import { useQuery } from "react-query";
 import { Const } from "../utils";
 import { Link } from "react-router-dom";
-import { loggedInContext } from "../App";
+//import { loggedInContext } from "../App";
 
 
 function UserAvatar() {
-    const loggedIn = useContext(loggedInContext);
-    console.log("loggedIn:", loggedIn);
+    //const loggedIn = useContext(loggedInContext);
+   // console.log("loggedIn:", loggedIn);
 
     const [avatarPath, setAvatarPath] = useState(
         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
