@@ -64,10 +64,14 @@
 import { reactive, ref, onMounted } from "vue";
 import { useQuery } from "react-query";
 import {Const} from '../utils.js';
+import  router  from '../router';
 
 export default {
     name: "NewPostPage",
     setup() {
+        if(!localStorage.tokenPro){
+            router.push('/login')
+        }
         const avatarPath = ref("https://placekitten.com/100/100");
         const postContent = ref("");
         const letterCount = ref(0);
@@ -97,7 +101,7 @@ export default {
                         method: "PATCH",
                         headers: {
                             Accept: "application/json",
-                            Authorization: localStorage.token,
+                            Authorization: localStorage.tokenPro,
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({ leftovers_chars: updatedChars }),
@@ -170,7 +174,7 @@ export default {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
-                    Authorization: localStorage.token,
+                    Authorization: localStorage.tokenPro,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(newPost),
@@ -191,7 +195,7 @@ export default {
                             method: "PATCH",
                             headers: {
                                 Accept: "application/json",
-                                Authorization: localStorage.token,
+                                Authorization: localStorage.tokenPro,
                                 "Content-Type": "application/json",
                             },
                             body: JSON.stringify({ leftovers_chars: updatedChars }),
