@@ -13,6 +13,7 @@ const reactionEngagement = ref(0);
 const progressToPopular = ref(0);
 const progressToUnpopular = ref(0);
 const comments = ref([]);
+const newComment = ref("");
 
 const fetchData = async () => {
   console.log(`${Const.apiurl}/post/${props.id}`);
@@ -24,6 +25,23 @@ const fetchUser = async () => {
   const res = await fetch(`${Const.apiurl}/user/${postData.value.sender}`);
   const ret = await res.json();
   return ret;
+};
+
+const addComment = async (e) => {
+  e.preventDefault();
+  const res = await fetch(`${Const.apiurl}/post/${props.id}/comments/manager`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: localStorage.token,
+    },
+    body: JSON.stringify({ text: newComment.value }),
+  });
+  postData.value = await fetchData();
+  comments.value = postData.value.comments.map((comm) => {
+    const [name, comment] = comm.split("\n");
+    return { name: name, comment: comment };
+  });
 };
 
 onMounted(() => {
@@ -251,6 +269,24 @@ onMounted(() => {
     <h2 class="text-2xl text-slate-700 font-semibold self-center m-4">
       Comments
     </h2>
+
+    <form class="flex flex-col mx-6">
+      <label class="font-lg text-black" for="testo">Add comment</label>
+      <p>Comment text must not be empty</p>
+      <textarea
+        v-model="newComment"
+        id="testo"
+        class="textarea textarea-bordered mt-1"
+      >
+      </textarea>
+      <button
+        class="w-fit self-center my-2 btn btn-primary"
+        @click="addComment"
+      >
+        ADD
+      </button>
+    </form>
+
     <div
       v-for="comment in comments"
       class="flex flex-col mx-5 items-start shadow-lg rounded-lg p-4 my-4 text-slate-600"
