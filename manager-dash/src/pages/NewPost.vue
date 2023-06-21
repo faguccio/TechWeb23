@@ -1,7 +1,9 @@
 <template>
    <div class="flex justify-center">
       <div class="max-w-xl w-full bg-white shadow-md rounded-md p-4">
-         <h1 class="text-2xl font-bold mb-4 text-center">Scrivi un nuovo Squeal!</h1>
+         <h1 class="text-2xl font-bold mb-4 text-center">
+            Scrivi un nuovo Squeal!
+         </h1>
          <div class="flex items-center mb-4">
             <img class="w-10 h-10 rounded-full mr-3" :src="avatarPath" alt="User Avatar" />
             <div class="flex-1 relative">
@@ -15,11 +17,15 @@
                   <input id="geoCheck" type="checkbox" class="mr-1" v-model="geoCheck" />
                   Includi geolocalizzazione
                </label>
-               <div class="ml-2 font-bold">D: {{ leftoverChars.day }} W: {{ leftoverChars.week }} M: {{ leftoverChars.month
-               }}</div>
+               <h2>Caratteri Rimanenti</h2>
+               <div class="ml-2 button teal font-bold">
+                  Giorno: {{ leftoverChars.day }} Settimana: {{ leftoverChars.week }} Mese: {{ leftoverChars.month }}
+               </div>
             </div>
          </div>
-         <div class="text-right mb-2"><span>Conteggio lettere: {{ letterCount }}</span></div>
+         <div class="text-right mb-2">
+            <span>Conteggio lettere: {{ letterCount }}</span>
+         </div>
          <div class="flex justify-end">
             <button class="btn btn-primary" @click="handlePublishClick">Pubblica</button>
          </div>
@@ -32,113 +38,159 @@
 </template>
 
 <script>
+import { ref, reactive, onMounted } from 'vue';
+import { useQuery } from 'vue-query';
+import { Const } from '../utils';
+
 export default {
-   data() {
-      return {
-         avatarPath: 'https://placekitten.com/100/100',
-         postContent: '',
-         letterCount: 0,
-         imageURL: '',
-         recipients: '',
-         notification: null,
-         geoCheck: false,
-         latitude: 0,
-         longitude: 0,
-         leftoverChars: { day: 0, week: 0, month: 0 },
-         user: null,
-         token: localStorage.tokenPro
+   setup() {
+      const token = localStorage.tokenPro;
+      const userManaged = ref(null);
+      const avatarPath = ref('https://placekitten.com/100/100');
+      const postContent = ref('');
+      const letterCount = ref(0);
+      const imageURL = ref('');
+      const recipients = ref('');
+      const notification = ref(null);
+      const geoCheck = ref(false);
+      const latitude = ref(0);
+      const longitude = ref(0);
+      const leftoverChars = reactive({ day: 0, week: 0, month: 0 });
+
+      const fetchUserManaged = async () => {
+         const response = await fetch(`${Const.apiurl}/user/${userManaged.value._id}`, {
+            headers: { Authorization: token },
+         });
+         const userManagedData = await response.json();
+         Object.assign(leftoverChars, userManagedData.leftovers_chars);
+         return userManagedData;
       };
-   },
-   methods: {
-      async fetchUser() {
-         try {
-            const response = await fetch(`${Const.apiurl}/user/${this.user.managing}`, {
-               headers: { Authorization: this.token },
-            });
-            const userData = await response.json();
-            this.user = userData;
-            this.leftoverChars = this.user.leftovers_chars;
-            if (this.user.propic_path !== '') {
-               this.avatarPath = this.user.propic_path;
+      const { data: userManagedData } = useQuery('userManaged', fetchUserManaged);
+
+      onMounted(() => {
+         if (userManagedData) {
+            if (userManagedData.propic_path !== '') {
+               avatarPath.value = userManagedData.propic_path;
             }
-         } catch (error) {
-            console.error(error);
          }
-      },
-      async getLongAndLat() {
+      });
+
+      function getGeolocation() {
          return new Promise((resolve, reject) =>
             navigator.geolocation.getCurrentPosition(resolve, reject)
-         ).then(({ coords }) => ({ lat: coords.latitude, lon: coords.longitude }));
-      },
-      async handlePublishClick() {
-         if (this.letterCount > this.leftoverChars.day) {
-            this.notification = 'Non hai caratteri sufficienti per pubblicare';
+         );
+      }
+
+      async function getLongAndLat() {
+         const { coords } = await getGeolocation();
+         return { lat: coords.latitude, lon: coords.longitude };
+      }
+
+      function handlePublishClick() {
+         if (letterCount.value > leftoverChars.day) {
+            notification.value = 'Non hai caratteri sufficienti per pubblicare';
             return;
          }
-         let geo = this.geoCheck ? await this.getLongAndLat() : { lat: 0, lon: 0 };
-         this.latitude = geo.lat;
-         this.longitude = geo.lon;
-         const newPost = {
-            sender: this.user.managing,
-            recipients: this.recipients ? this.recipients.split(',') : [],
-            text: this.postContent,
-            timestamp: new Date(),
-            image_path: this.imageURL ? this.imageURL : [],
-            geolocation: geo,
-            reactions: { positive: 0, negative: 0 },
-         };
-         try {
-            const response = await fetch(`${Const.apiurl}/post`, {
+
+         async function publishPost() {
+            let geo = geoCheck.value ? await getLongAndLat() : { lat: 0, lon: 0 };
+            latitude.value = geo.lat;
+            longitude.value = geo.lon;
+
+            const newPost = {
+               sender: userManaged.value._id, // Utilizziamo userManaged come sender
+               recipients: recipients.value ? recipients.value.split(',') : [],
+               text: postContent.value,
+               timestamp: new Date(),
+               image_path: imageURL.value ? [imageURL.value] : [],
+               geolocation: geo,
+               reactions: { positive: 0, negative: 0 },
+            };
+
+            fetch(`${Const.apiurl}/post`, {
                method: 'POST',
                headers: {
                   Accept: 'application/json',
-                  Authorization: this.token,
+                  Authorization: token,
                   'Content-Type': 'application/json',
                },
                body: JSON.stringify(newPost),
-            });
-            if (response.ok) {
-               this.postContent = '';
-               this.imageURL = '';
-               this.latitude = 0;
-               this.longitude = 0;
-               this.recipients = '';
-               this.notification = 'Post inviato con successo';
-               const updatedChars = { ...this.leftoverChars };
-               updatedChars.day -= this.letterCount;
-               updatedChars.week -= this.letterCount;
-               updatedChars.month -= this.letterCount;
-               this.leftoverChars = updatedChars;
-               const patchResponse = await fetch(`${Const.apiurl}/user`, {
-                  method: 'PATCH',
-                  headers: {
-                     Accept: 'application/json',
-                     Authorization: this.token,
-                     'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ leftovers_chars: updatedChars }),
+            })
+               .then(async (response) => {
+                  if (response.ok) {
+                     postContent.value = '';
+                     imageURL.value = '';
+                     latitude.value = 0;
+                     longitude.value = 0;
+                     recipients.value = '';
+                     notification.value = 'Post inviato con successo';
+                     const updatedChars = { ...leftoverChars };
+                     updatedChars.day -= letterCount.value;
+                     updatedChars.week -= letterCount.value;
+                     updatedChars.month -= letterCount.value;
+                     Object.assign(leftoverChars, updatedChars);
+                     await fetch(`${Const.apiurl}/user`, {
+                        method: 'PATCH',
+                        headers: {
+                           Accept: 'application/json',
+                           Authorization: token,
+                           'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ leftovers_chars: updatedChars }),
+                     })
+                        .then((response) => {
+                           if (response.ok) {
+                              console.log('Numero di caratteri giornalieri aggiornato con successo');
+                           } else {
+                              throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
+                           }
+                        })
+                        .catch((error) => {
+                           console.error(error);
+                        });
+                  } else {
+                     throw new Error("Errore nell'invio del post");
+                  }
+               })
+               .catch((error) => {
+                  console.error(error);
+                  notification.value = "Errore nell'invio del post";
                });
-               if (patchResponse.ok) {
-                  console.log('Numero di caratteri giornalieri aggiornato con successo');
-               } else {
-                  throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
-               }
-            } else {
-               throw new Error('Errore nell\'invio del post');
-            }
-         } catch (error) {
-            console.error(error);
-            this.notification = 'Errore nell\'invio del post';
          }
-      },
-   },
-   watch: {
-      postContent() {
-         this.letterCount = this.postContent.replace(/\s/g, '').length;
-      },
-   },
-   created() {
-      this.fetchUser();
+
+         publishPost();
+      }
+
+      function handleImageURLChange(event) {
+         imageURL.value = event.target.value;
+         if (event.target.value !== '') {
+            notification.value = 'Immagine aggiunta +125 Caratteri';
+         }
+      }
+
+      function handleGeoCheckChange(event) {
+         geoCheck.value = event.target.checked;
+         if (event.target.checked) {
+            notification.value = 'Geolocalizzazione presa +125 Caratteri';
+         }
+      }
+
+      return {
+         avatarPath,
+         postContent,
+         letterCount,
+         imageURL,
+         recipients,
+         notification,
+         geoCheck,
+         leftoverChars,
+         handlePublishClick,
+         handleImageURLChange,
+         handleGeoCheckChange,
+         userManaged: userManagedData,
+         latitude,
+         longitude,
+      };
    },
 };
 </script>
