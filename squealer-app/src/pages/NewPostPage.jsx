@@ -15,17 +15,17 @@ function NewPostPage() {
   const [longitude, setLongitude] = useState(0);
   const [leftoverChars, setLeftoverChars] = useState({ day: 0, week: 0, month: 0 });
 
+
   const fetchUser = async () => {
-    const res = await fetch(`${Const.apiurl}/user`, {
+  const res = await fetch(`${Const.apiurl}/user/${user._id}`, {
       headers: { Authorization: token },
     });
     const userData = await res.json();
     setLeftoverChars(userData.leftovers_chars);
     return userData;
   };
-
   const { data: user } = useQuery('user', fetchUser);
-
+  
   useEffect(() => {
     if (user) {
       if (user.propic_path !== '') {
@@ -52,16 +52,16 @@ function NewPostPage() {
     }
 
     async function publishPost() {
-      let geo = geoCheck ? await getLongAndLat() : { lat: 0, lon: 0 };
-      setLatitude(geo.lat);
-      setLongitude(geo.lon);
+    let geo = geoCheck ? await getLongAndLat() : { lat: 0, lon: 0 };
+    setLatitude(geo.lat);
+    setLongitude(geo.lon);
 
       const newPost = {
         sender: user._id,
-        recipients: recipients.split(','),
+        recipients: recipients ? recipients.split(',') : [],
         text: postContent,
         timestamp: new Date(),
-        image_path: imageURL,
+        image_path: imageURL ? imageURL : [],
         geolocation: geo,
         reactions: { positive: 0, negative: 0 },
       };
@@ -75,7 +75,7 @@ function NewPostPage() {
         },
         body: JSON.stringify(newPost),
       })
-        .then((response) => {
+        .then(async(response) => {
           if (response.ok) {
             setPostContent('');
             setImageURL('');
@@ -88,7 +88,7 @@ function NewPostPage() {
             updatedChars.week -= letterCount;
             updatedChars.month -= letterCount;
             setLeftoverChars(updatedChars);
-            fetch(`${Const.apiurl}/user/${user._id}`, {
+            await fetch(`${Const.apiurl}/user`, {
               method: 'PATCH',
               headers: {
                 Accept: 'application/json',

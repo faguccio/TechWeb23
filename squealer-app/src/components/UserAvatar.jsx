@@ -47,7 +47,7 @@ function UserAvatar() {
               <img src={avatarPath} />
             </div>
           </div>
-          <div className="ml-2 font-bold">
+          <div className="ml-2 font-bold ">
             D: {leftoverChars?.day || 0} W: {leftoverChars?.week || 0} M:{" "}
             {leftoverChars?.month || 0}
           </div>
