@@ -86,7 +86,9 @@ import {Const} from '../utils.js';
 
 export default {
     setup(){
-        
+        if(!localStorage.tokenPro){
+            router.push('/login')
+        }
         //Refs
         const user = ref(null)
         const statusUser = ref('loading')
@@ -101,7 +103,7 @@ export default {
             const response = await fetch(`${Const.apiurl}/user`, {
                 method: 'GET',
                 headers: {
-                    Authorization: localStorage.token
+                    Authorization: localStorage.tokenPro
                 },
             });
             return await response.json();
@@ -111,7 +113,7 @@ export default {
             const response = await fetch(`${Const.apiurl}/userManager/vip`, {
                 method: 'GET',
                 headers: {
-                    Authorization: localStorage.token
+                    Authorization: localStorage.tokenPro
                 },
             });
             return await response.json();
@@ -121,7 +123,7 @@ export default {
             const response = await fetch(`${Const.apiurl}/user`, {
                 method: 'PATCH',
                 headers: {
-                    Authorization: localStorage.token,
+                    Authorization: localStorage.tokenPro,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -135,7 +137,7 @@ export default {
             const response = await fetch(`${Const.apiurl}/userManager/vip`, {
                 method: 'PATCH',
                 headers: {
-                    Authorization: localStorage.token,
+                    Authorization: localStorage.tokenPro,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -163,7 +165,7 @@ export default {
         }
 
         onMounted(() => {
-            if(!localStorage.token){
+            if(!localStorage.tokenPro){
                 router.push({name: 'login'});
             }else{
                 fetchData();

@@ -14,7 +14,7 @@
         const res = await fetch(`${Const.apiurl}/user/${props.user._id}/stats`, {
             method: "GET",
             headers: {
-                Authorization: localStorage.token
+                Authorization: localStorage.tokenPro
             }
         });
         return await res.json();

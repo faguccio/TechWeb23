@@ -33,7 +33,7 @@ const addComment = async (e) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: localStorage.token,
+      Authorization: localStorage.tokenPro,
     },
     body: JSON.stringify({ text: newComment.value }),
   });
