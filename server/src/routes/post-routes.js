@@ -190,6 +190,9 @@ export const getAllPostOfManaged = async (req, res) => {
       posts = await postService.getAllPostOfManaged(userId);
     } else {
       posts = await Post.find({ sender: userId }).sort({ timestamp: -1 });
+      posts = posts.map((post) => {
+        return post._id;
+      });
     }
     res.status(Const.STATUS_OK).json(posts);
   } catch (err) {
