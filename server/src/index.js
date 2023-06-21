@@ -26,6 +26,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, "./")));
 app.use("/mod", express.static(path.join(__dirname, "../../mod-board")));
 app.use(
   "/app/",
