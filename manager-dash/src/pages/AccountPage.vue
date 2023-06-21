@@ -208,7 +208,7 @@ export default {
             }
         },
         logoutHandler(){
-            localStorage.removeItem('token');
+            localStorage.removeItem('tokenPro');
             this.$router.push({name: 'login'});
         }
     }
