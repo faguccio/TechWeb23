@@ -1,10 +1,10 @@
 
 <template>
-    <div class="flex flex-col items-center justify-center h-full pt-8" lang='en'>
+    <div class="flex flex-col items-center h-full py-8" lang='en'>
         <h1 class="text-4xl font-bold text-center hidden">Profile Page</h1>
         <div v-if="statusUser==='loading'"><LoadingSpinner /></div>
-        <div v-else-if="statusUser==='success'">
-            <div v-if="user.managing===null">
+        <div v-else-if="statusUser==='success'" class="">
+            <div v-if="user.managing===null" class="flex flex-col items-center">
                 <div class="card w-96 bg-emerald-50 shadow-lg">
                     <div class="m-4"> 
                         <div v-if="user.type==='vip'">
@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div v-else-if="statusUserManaged==='loading'"><LoadingSpinner /></div>
-            <div v-else-if="statusUserManaged==='success'">
+            <div v-else-if="statusUserManaged==='success'" class="flex flex-col items-center">
                 <div class="card w-96 bg-emerald-50 shadow-lg">
                     <div class="m-4">
                         <div class="badge badge-accent">Vip Managed</div>

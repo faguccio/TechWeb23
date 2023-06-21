@@ -33,64 +33,73 @@
 
 </script>
 <template>
-    <div class="flex flex-col items-center justify-center w-96 mt-4">
-        <h3 class="text-2xl font-semibold mb-2 hidden">User Stats</h3>
-        <h4 class="text-xl font-semibold mb-2">Total stats</h4>
-        <div class="stats shadow-lg flex flex-wrap mb-4">
-            <div class="stat place-items-center w-1/2">
-                <div class="stat-title">Total Posts</div>
-                <div class="stat-value">{{ stats.totalPosts }}</div>
+    <div class="flex flex-col items-center w-96 md:w-1/2 mt-4 p-6">
+        <h3 class="text-2xl font-semibold mb-2">User Stats</h3>
+        <div class="flex flex-col md:flex-row md:flex-wrap md:justify-evenly md:items-center">
+            <div>
+                <h4 class="text-xl font-semibold mb-2 text-center">Total stats</h4>
+                <div class="stats shadow-lg flex flex-wrap mb-4 bg-sky-100">
+                    <div class="stat place-items-center w-1/2">
+                        <div class="stat-title font-medium">Total Posts</div>
+                        <div class="stat-value">{{ stats.totalPosts }}</div>
+                    </div>
+                    <div class="stat place-items-center w-1/2">
+                        <div class="stat-title font-medium">Total Comments</div>
+                        <div class="stat-value">{{ stats.totalComments }}</div>
+                    </div>
+                    <div class="stat place-items-center w-full">
+                        <div class="stat-title font-medium">Total Impressions</div>
+                        <div class="stat-value text-amber-500">{{ stats.totalImpressions }}</div>
+                    </div>
+                    <div class="stat place-items-center w-1/2">
+                        <div class="stat-title font-medium">Total Likes</div>
+                        <div class="stat-value text-green-600">{{ stats.totalLikes }}</div>
+                    </div>
+                    <div class="stat place-items-center w-1/2">
+                        <div class="stat-title font-medium">Total Dislike</div>
+                        <div class="stat-value text-red-600">{{ stats.totalDislikes }}</div>
+                    </div>
+                </div>
             </div>
-            <div class="stat place-items-center w-1/2">
-                <div class="stat-title">Total Comments</div>
-                <div class="stat-value">{{ stats.totalComments }}</div>
+            <div>
+                <h4 class="text-xl font-semibold mb-2 text-center">Per Post stats</h4>
+                <div class="stats shadow-lg flex flex-wrap mb-4 bg-sky-100">
+                    <div class="stat place-items-center w-1/2">
+                        <div class="stat-title font-medium">Comments / Post</div>
+                        <div class="stat-value">{{ stats.CommentsPerPost }}</div>
+                    </div>
+                    <div class="stat place-items-center w-1/2">
+                        <div class="stat-title font-medium">Impressions / Post</div>
+                        <div class="stat-value text-amber-500">{{ stats.ImpressionsPerPost }}</div>
+                    </div>
+                    <div class="stat place-items-center w-1/2">
+                        <div class="stat-title font-medium">Likes / Post</div>
+                        <div class="stat-value text-green-600">{{ stats.LikesPerPost }}</div>
+                    </div>
+                    <div class="stat place-items-center w-1/2">
+                        <div class="stat-title font-medium">Dislike / Post</div>
+                        <div class="stat-value text-red-600">{{ stats.DislikesPerPost }}</div>
+                    </div>
+                </div>
             </div>
-            <div class="stat place-items-center w-full">
-                <div class="stat-title">Total Impressions</div>
-                <div class="stat-value">{{ stats.totalImpressions }}</div>
-            </div>
-            <div class="stat place-items-center w-1/2">
-                <div class="stat-title">Total Likes</div>
-                <div class="stat-value">{{ stats.totalLikes }}</div>
-            </div>
-            <div class="stat place-items-center w-1/2">
-                <div class="stat-title">Total Dislike</div>
-                <div class="stat-value">{{ stats.totalDislikes }}</div>
+            <div>
+                <h4 class="text-xl font-semibold mb-2 text-center">Max stats</h4>
+                <div class="stats shadow-lg flex flex-wrap mb-4 bg-sky-100">
+                    <div class="stat place-items-center w-full">
+                        <div class="stat-title font-medium">Max Comments</div>
+                        <div class="stat-value">{{ stats.maxComments }}</div>
+                    </div>
+                    <div class="stat place-items-center w-full">
+                        <div class="stat-title font-medium">Max Impressions</div>
+                        <div class="stat-value text-amber-500">{{ stats.maxImpressions }}</div>
+                    </div>
+                    <div class="stat place-items-center w-full">
+                        <div class="stat-title font-medium">Max Likes</div>
+                        <div class="stat-value text-green-600">{{ stats.maxLikes }}</div>
+                    </div>
+                </div>
             </div>
         </div>
-        <h4 class="text-xl font-semibold mb-2">Per Post stats</h4>
-        <div class="stats shadow-lg flex flex-wrap mb-4">
-            <div class="stat place-items-center w-1/2">
-                <div class="stat-title">Comments / Post</div>
-                <div class="stat-value">{{ stats.CommentsPerPost }}</div>
-            </div>
-            <div class="stat place-items-center w-1/2">
-                <div class="stat-title">Impressions / Post</div>
-                <div class="stat-value">{{ stats.ImpressionsPerPost }}</div>
-            </div>
-            <div class="stat place-items-center w-1/2">
-                <div class="stat-title">Likes / Post</div>
-                <div class="stat-value">{{ stats.LikesPerPost }}</div>
-            </div>
-            <div class="stat place-items-center w-1/2">
-                <div class="stat-title">Dislike / Post</div>
-                <div class="stat-value">{{ stats.DislikesPerPost }}</div>
-            </div>
-        </div>
-        <h4 class="text-xl font-semibold">Max stats</h4>
-        <div class="stats shadow-lg flex flex-wrap mb-4">
-            <div class="stat place-items-center w-full">
-                <div class="stat-title">Max Comments</div>
-                <div class="stat-value">{{ stats.maxComments }}</div>
-            </div>
-            <div class="stat place-items-center w-full">
-                <div class="stat-title">Max Impressions</div>
-                <div class="stat-value">{{ stats.maxImpressions }}</div>
-            </div>
-            <div class="stat place-items-center w-full">
-                <div class="stat-title">Max Likes</div>
-                <div class="stat-value">{{ stats.maxLikes }}</div>
-            </div>
-        </div>
+        
     </div>
 </template>
