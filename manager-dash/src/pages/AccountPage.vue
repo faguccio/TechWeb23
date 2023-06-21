@@ -5,7 +5,7 @@
         <div v-if="statusUser==='loading'"><LoadingSpinner /></div>
         <div v-else-if="statusUser==='success'" class="">
             <div v-if="user.managing===null" class="flex flex-col items-center">
-                <div class="card w-96 bg-emerald-50 shadow-lg">
+                <div class="card w-96 md:w-1/3 bg-emerald-50 shadow-lg">
                     <div class="m-4"> 
                         <div v-if="user.type==='vip'">
                             <div class="badge badge-primary">Vip</div>
@@ -19,19 +19,19 @@
                             <img :src="user.propic_path" alt="Profile Picture" />
                         </div>
                     </div>
-                    <div class="card-body flex items-center">
+                    <div class="card-body flex md items-center">
                         <h2 class="card-title text-2xl mb-4">{{ user.name }}</h2>
                         <div class="card-actions mt-4">
                             <div class="flex flex-col items-center" >
-                                <button class="btn btn-info mb-3" @click="changeProfilePicHandler">Change profile pic</button>
                                 <label for="propic_path" class="hidden">Profile Picture path </label>
                                 <input 
-                                    type="url" 
-                                    id="propic_path" 
-                                    class="w-full mb-4 p-2 rounded-md input input-bordered max-w-xs" 
-                                    placeholder="Profile Picture url"
-                                    v-model="propic_path"
+                                type="url" 
+                                id="propic_path" 
+                                class="w-full mb-4 p-2 rounded-md input input-bordered max-w-xs" 
+                                placeholder="Profile Picture url"
+                                v-model="propic_path"
                                 />
+                                <button class="btn btn-info mb-3" @click="changeProfilePicHandler">Change profile pic</button>
                             </div>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
             </div>
             <div v-else-if="statusUserManaged==='loading'"><LoadingSpinner /></div>
             <div v-else-if="statusUserManaged==='success'" class="flex flex-col items-center">
-                <div class="card w-96 bg-emerald-50 shadow-lg">
+                <div class="card w-96 md:w-1/3 bg-emerald-50 shadow-lg">
                     <div class="m-4">
                         <div class="badge badge-accent">Vip Managed</div>
                     </div>
@@ -55,15 +55,15 @@
                     <div class="card-body flex items-center"> 
                         <h2 class="card-title text-2xl mb-4">{{ userManaged.name }}</h2>
                         <div class="card-actions flex flex-col items-center mt-4">
-                            <button class="btn btn-info mb-2" @click="changeProfilePicHandler">Change profile pic</button>
                             <label for="propic_path" class="hidden">Profile Picture path </label>
                             <input 
-                                type="url" 
-                                id="propic_path" 
-                                class="w-full p-2 rounded-md input input-bordered max-w-xs" 
-                                placeholder="Profile Picture url"
-                                v-model="propic_path"
+                            type="url" 
+                            id="propic_path" 
+                            class="w-full p-2 rounded-md input input-bordered max-w-xs" 
+                            placeholder="Profile Picture url"
+                            v-model="propic_path"
                             />
+                            <button class="btn btn-info mb-2" @click="changeProfilePicHandler">Change profile pic</button>
                         </div>
                     </div>
                 </div>
