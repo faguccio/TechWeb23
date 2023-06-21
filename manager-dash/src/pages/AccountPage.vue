@@ -22,7 +22,7 @@
                     <div class="card-body flex items-center">
                         <h2 class="card-title text-2xl mb-4">{{ user.name }}</h2>
                         <div class="card-actions mt-4">
-                            <div class="flex flex-col items-center" v-if="user.type==='vip'">
+                            <div class="flex flex-col items-center" >
                                 <button class="btn btn-info mb-3" @click="changeProfilePicHandler">Change profile pic</button>
                                 <label for="propic_path" class="hidden">Profile Picture path </label>
                                 <input 
@@ -36,6 +36,7 @@
                         </div>
                     </div>
                 </div>
+                <UserStats :user="user" />
                 <div class="flex justify-center mt-6">
                     <button class="btn btn-sm btn-outline" @click="logoutHandler">Log out</button>
                 </div>
@@ -54,7 +55,7 @@
                     <div class="card-body flex items-center"> 
                         <h2 class="card-title text-2xl mb-4">{{ userManaged.name }}</h2>
                         <div class="card-actions flex flex-col items-center mt-4">
-                            <button class="btn btn-info mb-3" @click="changeProfilePicHandler">Change profile pic</button>
+                            <button class="btn btn-info mb-2" @click="changeProfilePicHandler">Change profile pic</button>
                             <label for="propic_path" class="hidden">Profile Picture path </label>
                             <input 
                                 type="url" 
@@ -66,6 +67,7 @@
                         </div>
                     </div>
                 </div>
+                <UserStats :user="userManaged" />
                 <div class="flex justify-center mt-6">
                     <button class="btn btn-sm btn-outline" @click="logoutHandler">Log out</button>
                 </div>
@@ -77,6 +79,7 @@
 
 <script>
 import LoadingSpinner from '../components/LoadingSpinner.vue'
+import UserStats from '../components/UserStats.vue'
 import { computed, ref, onMounted, watch, onBeforeMount} from 'vue';
 import  router  from '../router';
 import {Const} from '../utils.js';
@@ -185,11 +188,12 @@ export default {
         }
     },
     components: {
-        LoadingSpinner
+        LoadingSpinner,
+        UserStats
     },
     methods: {
         changeProfilePicHandler(){
-            if(this.user.managing === null && this.user.type === 'vip'){
+            if(this.user.managing === null){
                 this.changeProfilePic()
                 .then(()=>{
                     this.fetchData();

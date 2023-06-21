@@ -310,3 +310,13 @@ export const getAllUsersFiltered = async (req, res) => {
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
   }
 };
+
+export const getUserStats = async (req, res) => {
+  try {
+    const stats = await userService.getUserStats(req.params.id);
+    res.status(Const.STATUS_OK).json(stats);
+  } catch (err) {
+    console.log(`getUserStats route, (${err.message})`);
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
+  }
+}
