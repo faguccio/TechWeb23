@@ -36,13 +36,8 @@ appRouter.get(
 );
 
 appRouter.get("/api/users", userRoutes.getAllUsersFiltered);
-appRouter.patch("/api/user/:id", userRoutes.updateUser);
 appRouter.patch("/api/user/:id/chars", userRoutes.updateUserChars);
 appRouter.get("/api/user/:id/stats", userRoutes.getUserStats);
-appRouter.delete("/api/user/:id", userRoutes.deleteUser);
-appRouter.get("/api/user/manager/:id", userRoutes.getManager);
-
-appRouter.get("/api/users/managers", userRoutes.getAvailableManagers);
 appRouter.get(
   "/api/user/channels/all",
   verifyToken,
