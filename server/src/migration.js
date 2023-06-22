@@ -80,6 +80,7 @@ export const migration = async () => {
       _id: new Types.ObjectId("64569d259d19f7f3611babe1"),
       name: "mammalona",
       password: "forza roma",
+      type:"vip",
       posts: [
         new Types.ObjectId("64565a05867620df0ef89f49"),
         new Types.ObjectId("64565a05867620df0ef89f50"),

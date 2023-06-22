@@ -103,6 +103,10 @@ export default {
     //const { data: userManagedData } = useQuery('userManaged', fetchUserManaged);
 
     onMounted(async () => {
+        if (!token) {
+          router.push("/login");
+          return;
+        }
       const response1 = await fetchUser();
       user.value = await response1;
       if (user.value.type === "manager" && user.value.managing !== null) {
@@ -175,6 +179,7 @@ export default {
               imageURL.value = "";
               recipients.value = "";
               isImageCharsAdded = false; // Resetto il flag
+              geoCheck.value = false;
               notification.value = "Post inviato con successo";
               setTimeout(() => {
                 notification.value = "";

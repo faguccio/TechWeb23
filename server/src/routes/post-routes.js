@@ -113,7 +113,7 @@ export const createPost = async (req, res) => {
             name: channelName,
             description: "",
           });
-
+          console.log("canale non esistente creato");
           if (status.status === "success") {
             const channelId = await channelService.channelNameToId(channelName);
             await channelService.addPostToChannel(
