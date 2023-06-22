@@ -73,7 +73,7 @@ import {Const} from '../utils.js';
                 if(response.status === 200){
                     //this.$store.commit('setUser', response.data);
                     this.alert = false;
-                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('tokenPro', response.data.token);
                     this.$router.push({ name: 'home' });
                 }else{
                     console.log(response);

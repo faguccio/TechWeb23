@@ -3,6 +3,7 @@ import { Channel } from "../models/Channel.js";
 import { User } from "../models/User.js";
 import * as Const from "../const.js";
 import * as channelService from "./channel-service.js";
+import mongoose, { Mongoose } from "mongoose";
 
 export const updateLike = async (id, userId, type) => {
   try {
@@ -253,5 +254,60 @@ export const addRecipient = async (postId, recipient) => {
   } catch (err) {
     console.log(`add recipient service, (${err.message})`);
     return { status: "failure" };
+  }
+};
+
+export const getUserPostsStats = async (userId) => {
+  try {
+    const id = new mongoose.Types.ObjectId(userId);
+    
+    const totalLikes = await Post.aggregate([
+      { $match: { sender: id } },
+      { $group: { _id: null, total: { $sum: "$reactions.positive" } } },
+    ]);
+    const totalDislikes = await Post.aggregate([
+      { $match: { sender: id } },
+      { $group: { _id: null, total: { $sum: "$reactions.negative" } } },
+    ]);
+    const totalComments = await Post.aggregate([
+      { $match: { sender: id } },
+      { $group: { _id: null, total: { $sum: { $size: "$comments" } } } },
+    ]);
+    const totalImpressions = await Post.aggregate([
+      { $match: { sender: id } },
+      { $group: { _id: null, total: { $sum: "$impressions" } } },
+    ]);
+    const totalPosts = await Post.aggregate([
+      { $match: { sender: id } },
+      { $group: { _id: null, total: { $sum: 1 } } },
+    ]);
+    const maxValues = await Post.aggregate([
+      { $match: { sender: id } },
+      {
+        $group: {
+          _id: null,
+          maxLikes: { $max: '$reactions.positive' },
+          maxImpressions: { $max: '$impressions' },
+          maxComments: { $max: { $size: '$comments' } }
+        }
+      }
+    ]);
+    const { maxLikes, maxImpressions, maxComments } = maxValues[0];
+
+    //console.log( totalLikes, totalDislikes, totalComments, totalImpressions, totalPosts);
+    
+    return {
+      totalLikes: totalLikes[0]?.total || 0,
+      totalDislikes: totalDislikes[0]?.total || 0,
+      totalComments: totalComments[0]?.total || 0,
+      totalImpressions: totalImpressions[0]?.total || 0,
+      totalPosts: totalPosts[0]?.total || 0,
+      maxLikes: maxLikes || 0,
+      maxImpressions: maxImpressions || 0,
+      maxComments: maxComments || 0
+    };
+  } catch (err) {
+    console.log(`user posts stats service, (${err.message})`);
+
   }
 };

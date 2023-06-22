@@ -111,7 +111,7 @@ export const getUserInfoById = async (req, res) => {
       propic_path: user.propic_path,
     });
   } catch (err) {
-    console.log(`Get user info by id service, ${id} (${err.message})`);
+    console.log(`Get user info by id service, (${err.message})`);
   }
 };
 
@@ -130,7 +130,7 @@ export const updateUserById = async (req, res) => {
         .json({ status: "success", message: "User updated" });
     }
   } catch (err) {
-    console.log(`Update user service, ${id} (${err.message})`);
+    console.log(`Update user service, (${err.message})`);
   }
 };
 
@@ -146,7 +146,7 @@ export const deleteUserById = async (req, res) => {
       return res.status(Const.STATUS_OK).json({ message: "User deleted" });
     }
   } catch (err) {
-    console.log(`Delete user service, ${id} (${err.message})`);
+    console.log(`Delete user service, (${err.message})`);
   }
 };
 
@@ -213,7 +213,7 @@ export const deleteUser = async (req, res) => {
       return res.status(Const.STATUS_OK).json({ message: "User deleted" });
     }
   } catch (err) {
-    console.log(`Delete user service, ${id} (${err.message})`);
+    console.log(`Delete user service, (${err.message})`);
   }
 };
 
@@ -323,3 +323,13 @@ export const getAllUsersFiltered = async (req, res) => {
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
   }
 };
+
+export const getUserStats = async (req, res) => {
+  try {
+    const stats = await userService.getUserStats(req.params.id);
+    res.status(Const.STATUS_OK).json(stats);
+  } catch (err) {
+    console.log(`getUserStats route, (${err.message})`);
+    return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
+  }
+}

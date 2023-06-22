@@ -16,7 +16,7 @@ const postSchema = new Schema({
   impressionsIds: { type: [String], default: [] },
   comments: { type: [String], default: [] },
 });
-
+   
 //postSchema.index({ text: "text" });
 
 export const Post = mongoose.model("Post", postSchema);

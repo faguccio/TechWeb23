@@ -70,6 +70,7 @@ export const createChannel = async (req, res) => {
   try {
     const name = req.body.name;
     const description = req.body.description;
+    console.log(res);
     if (!(await channelService.isNameAvailable(name)))
       return res
         .status(Const.STATUS_CONFLICT)

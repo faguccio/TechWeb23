@@ -2,7 +2,10 @@ import * as Const from "../const.js";
 import * as postService from "../services/post-service.js";
 import * as userService from "../services/user-service.js";
 import * as channelService from "../services/channel-service.js";
+import { Channel } from "../models/Channel.js";
 import { Post } from "../models/Post.js";
+import { addPostToChannel } from "./channel-routes.js";
+
 import { User } from "../models/User.js";
 
 export const useLike = async (req, res) => {
@@ -65,20 +68,74 @@ export const createPost = async (req, res) => {
 
     const postId = await postService.createPost(newPost);
 
-    newPost.recipients.map(async (recipient) => {
-      if (recipient[0] == "@") {
-        //TODO controllare che l'utente esista
-        userService.addPostToRecieved(postId);
-      } else {
-        //TODO controllare che il canale esista
-        //TODO controllare accesso al canale
-        channelService.addPostToChannelByName(
-          recipient,
-          postId,
-          newPost.timestamp
+    for (const recipient of newPost.recipients) {
+      if (recipient[0] === "@") {
+        // Controlla che l'utente esista
+        const recipientUsername = recipient;
+        const recipientId = await userService.getUserIdByUsername(
+          recipientUsername
         );
+
+        if (recipientId) {
+          await userService.addPostToRecieved(postId);
+        } else {
+          // L'utente non esiste, gestisci l'errore di conseguenza
+          console.log(`Utente non trovato: ${recipientUsername}`);
+          // Puoi inviare una risposta di errore al client se necessario
+          return res
+            .status(Const.STATUS_BAD_REQUEST)
+            .json({ error: "L'utente non esiste" });
+        }
+      } else if (recipient[0] === "#") {
+        // Verifica che il canale esista
+        const checkChannelExists = async (channelName) => {
+          const channelProva = await Channel.findOne({ name: channelName });
+          console.log(channelProva);
+          if (channelProva) {
+            return true;
+          } else {
+            return false;
+          }
+        };
+        const channelName = recipient;
+        const channelExists = await checkChannelExists(channelName);
+        console.log(channelExists + "post");
+        if (channelExists) {
+          // TODO: Controlla l'accesso al canale
+          await channelService.addPostToChannelByName(
+            recipient,
+            postId,
+            newPost.timestamp
+          );
+        } else {
+          // Non esiste quindi crealo
+          const status = await channelService.createChannel({
+            name: channelName,
+            description: "",
+          });
+
+          if (status.status === "success") {
+            const channelId = await channelService.channelNameToId(channelName);
+            await channelService.addPostToChannel(
+              channelId,
+              postId,
+              newPost.timestamp
+            );
+          } else {
+            console.log(`Impossibile creare il canale: ${channelName}`);
+            // Puoi inviare una risposta di errore al client se necessario
+            return res
+              .status(Const.STATUS_BAD_REQUEST)
+              .json({ error: "Impossibile creare il canale" });
+          }
+        }
+      } else if (recipient[0] === "§") {
+        console.log(`Canale non trovato: ${recipient}`);
+        return res
+          .status(Const.STATUS_BAD_REQUEST)
+          .json({ error: "Canale non esiste" });
       }
-    });
+    }
 
     console.log(userId, postId);
     userService.addPostToUser(userId, postId);
@@ -87,6 +144,9 @@ export const createPost = async (req, res) => {
       .json({ status: "success", msg: "Post created successfully" });
   } catch (err) {
     console.log(`createPost route, (${err.message})`);
+    return res
+      .status(Const.STATUS_INTERNAL_SERVER_ERROR)
+      .json({ error: "Errore durante la creazione del post" });
   }
 };
 
@@ -111,10 +171,14 @@ export const createCommentManager = async (req, res) => {
     const userId = req.authData.id;
     const postId = req.params.id;
     const comment = req.body.text;
+    let name = "";
     const manager = await User.findOne({ _id: userId });
-    const managed = await User.findOne({ _id: manager.managing });
-    const name = managed.name;
-
+    if (!!manager.managing) {
+      const managed = await User.findOne({ _id: manager.managing });
+      name = managed.name;
+    } else {
+      name = manager.name;
+    }
     await postService.createComment(comment, postId, name);
     res
       .status(Const.STATUS_OK)

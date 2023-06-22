@@ -37,6 +37,10 @@ function UserAvatar() {
     console.log("loggedIn:", loggedIn);
     //console.log("fdsmfaidsonfbiofnaio");
   }, [loggedIn]);
+   <div className="ml-2 font-bold ">
+            D: {leftoverChars?.day || 0} W: {leftoverChars?.week || 0} M:{" "}
+            {leftoverChars?.month || 0}
+          </div>
 */
   return (
     <div className="flex items-center" id="user-avatar">
@@ -47,10 +51,7 @@ function UserAvatar() {
               <img src={avatarPath} />
             </div>
           </div>
-          <div className="ml-2 font-bold">
-            D: {leftoverChars?.day || 0} W: {leftoverChars?.week || 0} M:{" "}
-            {leftoverChars?.month || 0}
-          </div>
+         
         </Link>
       ) : (
         <Link to="/login">

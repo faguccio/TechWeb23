@@ -1,190 +1,129 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "react-query";
-import { Const } from "../utils";
+import React, { useState, useEffect } from 'react';
+import { useQuery } from 'react-query';
+import { Const } from '../utils';
 
 function NewPostPage() {
-  const [avatarPath, setAvatarPath] = useState(
-    "https://placekitten.com/100/100"
-  );
-  const [postContent, setPostContent] = useState("");
+  const token = localStorage.token;
+  const [avatarPath, setAvatarPath] = useState('https://placekitten.com/100/100');
+  const [postContent, setPostContent] = useState('');
   const [letterCount, setLetterCount] = useState(0);
-  const [imagePath, setImagePath] = useState("");
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageURL, setImageURL] = useState('');
+  const [recipients, setRecipients] = useState('');
   const [notification, setNotification] = useState(null);
+  const [geoCheck, setGeoCheck] = useState(false);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
+  const [leftoverChars, setLeftoverChars] = useState({ day: 0, week: 0, month: 0 });
 
-  const userID = localStorage.getItem("userID")?.toString();
 
   const fetchUser = async () => {
-    const res = await fetch(`${Const.apiurl}/user/${userID}`);
-    return await res.json();
+  const res = await fetch(`${Const.apiurl}/user/${user._id}`, {
+      headers: { Authorization: token },
+    });
+    const userData = await res.json();
+    setLeftoverChars(userData.leftovers_chars);
+    return userData;
   };
-
-  const { data: user } = useQuery(["user", userID], fetchUser);
-
-  useEffect(() => {
-    // Resetta i leftovers_chars.day a 500 all'inizio di ogni giorno
-    const resetDailyChars = () => {
-      const now = new Date();
-      const nextDay = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-      );
-      const timeToReset = nextDay.getTime() - now.getTime();
-      setTimeout(() => {
-        // Effettua la chiamata PATCH per reimpostare i leftovers_chars.day a 500
-        const updatedChars = { ...user.leftovers_chars, day: 500 };
-        fetch(`${Const.apiurl}/user/${localStorage.getItem("userID")}`, {
-          method: "PATCH",
-          headers: {
-            Accept: "application/json",
-            Authorization: localStorage.token,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ leftovers_chars: updatedChars }),
-        })
-          .then((response) => {
-            if (response.ok) {
-              console.log("Reset giornaliero completato");
-            } else {
-              throw new Error("Errore nel reset giornaliero");
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }, timeToReset);
-    };
-
-    resetDailyChars();
-  }, [user]);
-
+  const { data: user } = useQuery('user', fetchUser);
+  
   useEffect(() => {
     if (user) {
-      if (user.propic_path !== "") {
+      if (user.propic_path !== '') {
         setAvatarPath(user.propic_path);
       }
     }
   }, [user]);
 
+  function getGeolocation() {
+    return new Promise((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject)
+    );
+  }
+
+  async function getLongAndLat() {
+    const { coords } = await getGeolocation();
+    return { lat: coords.latitude, lon: coords.longitude };
+  }
+
   function handlePublishClick() {
-    // Verifica se il numero di caratteri nel post supera i caratteri rimanenti
-    if (letterCount > user.leftovers_chars.day) {
-      setNotification("Non hai caratteri sufficienti per pubblicare");
+    if (letterCount > leftoverChars.day) {
+      setNotification('Non hai caratteri sufficienti per pubblicare');
       return;
     }
 
-    const regexRecipients = /§(\w+)/g; // Regex per identificare i canali (§nomeutente)
-    const regexHashtags = /#(\w+)/g; // Regex per identificare gli hashtags (#esempio)
-    const regexMentions = /@(\w+)/g; // Regex per identificare le menzioni (@nomeutente)
+    async function publishPost() {
+    let geo = geoCheck ? await getLongAndLat() : { lat: 0, lon: 0 };
+    setLatitude(geo.lat);
+    setLongitude(geo.lon);
 
-    const recipients = [];
-    const hashtags = [];
-    const mentions = [];
+      const newPost = {
+        sender: user._id,
+        recipients: recipients ? recipients.split(',') : [],
+        text: postContent,
+        timestamp: new Date(),
+        image_path: imageURL ? imageURL : [],
+        geolocation: geo,
+        reactions: { positive: 0, negative: 0 },
+      };
 
-    let match;
-    while ((match = regexRecipients.exec(postContent))) {
-      recipients.push(match[1]);
-    }
-
-    while ((match = regexHashtags.exec(postContent))) {
-      hashtags.push(match[1]);
-    }
-
-    while ((match = regexMentions.exec(postContent))) {
-      mentions.push(match[1]);
-    }
-
-    recipients.push(...hashtags, ...mentions); // Aggiungi gli hashtags e le menzioni ai destinatari
-    console.log({ recipients });
-
-    const newPost = {
-      sender: localStorage.getItem("userID"),
-      recipients: recipients,
-      text: postContent,
-      timestamp: new Date(),
-      image_path: imagePath,
-      geolocation: { lat: latitude, lon: longitude },
-      reactions: { positive: 0, negative: 0 },
-    };
-
-    fetch(`${Const.apiurl}/post`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Authorization: localStorage.token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newPost),
-    })
-      .then((response) => {
-        if (response.ok) {
-          setPostContent("");
-          setImagePath("");
-          setImageLoaded(false);
-          setLatitude(0);
-          setLongitude(0);
-          setNotification("Post inviato con successo");
-          // Decrementa il numero di caratteri giornalieri utilizzati
-          const updatedChars = { ...user.leftovers_chars };
-          updatedChars.day -= letterCount;
-          updatedChars.week -= letterCount;
-          updatedChars.month -= letterCount;
-          // Effettua la chiamata PATCH per aggiornare i leftovers_chars dell'utente
-          fetch(`${Const.apiurl}/user/${localStorage.getItem("userID")}`, {
-            method: "PATCH",
-            headers: {
-              Accept: "application/json",
-              Authorization: localStorage.token,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ leftovers_chars: updatedChars }),
-          })
-            .then((response) => {
-              if (response.ok) {
-                console.log(
-                  "Numero di caratteri giornalieri aggiornato con successo"
-                );
-              } else {
-                throw new Error(
-                  "Errore nell'aggiornamento del numero di caratteri giornalieri"
-                );
-              }
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        } else {
-          throw new Error("Errore nell'invio del post");
-        }
+      fetch(`${Const.apiurl}/post`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: token,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newPost),
       })
-      .catch((error) => {
-        console.error(error);
-        setNotification("Errore nell'invio del post");
-      });
+        .then(async(response) => {
+          if (response.ok) {
+            setPostContent('');
+            setImageURL('');
+            setLatitude(0);
+            setLongitude(0);
+            setRecipients('');
+            setNotification('Post inviato con successo');
+            const updatedChars = { ...leftoverChars };
+            updatedChars.day -= letterCount;
+            updatedChars.week -= letterCount;
+            updatedChars.month -= letterCount;
+            setLeftoverChars(updatedChars);
+            await fetch(`${Const.apiurl}/user`, {
+              method: 'PATCH',
+              headers: {
+                Accept: 'application/json',
+                Authorization: token,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ leftovers_chars: updatedChars }),
+            })
+              .then((response) => {
+                if (response.ok) {
+                  console.log('Numero di caratteri giornalieri aggiornato con successo');
+                } else {
+                  throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
+                }
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          } else {
+            throw new Error('Errore nell\'invio del post');
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          setNotification('Errore nell\'invio del post');
+        });
+    }
+
+    publishPost();
   }
 
   useEffect(() => {
-    let count = postContent.replace(/\s/g, "").length;
-    if (imageLoaded) {
-      count += 125;
-    }
+    let count = postContent.replace(/\s/g, '').length;
     setLetterCount(count);
-  }, [postContent, imageLoaded]);
-
-  function handleImageUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePath(reader.result);
-        setImageLoaded(true);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
+  }, [postContent]);
 
   return (
     <div className="flex justify-center">
@@ -199,62 +138,43 @@ function NewPostPage() {
             alt="User Avatar"
           />
           <div className="flex-1 relative">
-            {imageLoaded && (
-              <img
-                className="w-full rounded-md mb-2"
-                src={imagePath}
-                alt="Uploaded Image"
-              />
-            )}
+            <input
+              className="border border-gray-300 outline-none w-full p-2 mb-2"
+              type="text"
+              placeholder="Inserisci URL dell'immagine"
+              value={imageURL}
+              onChange={(e) => setImageURL(e.target.value)}
+            />
+            <input
+              className="border border-gray-300 outline-none w-full p-2 mb-2"
+              type="text"
+              placeholder="Inserisci destinatari (separati da virgole)"
+              value={recipients}
+              onChange={(e) => setRecipients(e.target.value)}
+            />
             <textarea
               className="border border-gray-300 outline-none w-full p-2"
               placeholder="Scrivi un nuovo..."
               value={postContent}
               onChange={(e) => setPostContent(e.target.value)}
             ></textarea>
+            <label htmlFor="geoCheck" className="flex items-center mt-2">
+              <input
+                id="geoCheck"
+                type="checkbox"
+                className="mr-1"
+                checked={geoCheck}
+                onChange={(e) => setGeoCheck(e.target.checked)}
+              />
+              Includi geolocalizzazione
+            </label>
+            <div className="ml-2 font-bold">
+              D: {leftoverChars.day} W: {leftoverChars.week} M: {leftoverChars.month}
+            </div>
           </div>
         </div>
         <div className="text-right mb-2">
           <span>Conteggio lettere: {letterCount}</span>
-        </div>
-        <div className="flex justify-between items-center mb-2">
-          <label htmlFor="latitude-input">Latitudine:</label>
-          <input
-            id="latitude-input"
-            type="number"
-            step="0.000001"
-            value={latitude}
-            onChange={(e) => setLatitude(parseFloat(e.target.value))}
-          />
-        </div>
-        <div className="flex justify-between items-center mb-4">
-          <label htmlFor="longitude-input">Longitudine:</label>
-          <input
-            id="longitude-input"
-            type="number"
-            step="0.000001"
-            value={longitude}
-            onChange={(e) => setLongitude(parseFloat(e.target.value))}
-          />
-        </div>
-        <div className="flex justify-between items-center">
-          <div>
-            <label htmlFor="image-upload" className="cursor-pointer">
-              <span className="text-blue-500">+</span> Carica immagine
-            </label>
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageUpload}
-            />
-          </div>
-          {imageLoaded && (
-            <div className="text-green-500">
-              Immagine caricata (125 caratteri)
-            </div>
-          )}
         </div>
         <div className="flex justify-end">
           <button className="btn btn-primary" onClick={handlePublishClick}>
@@ -263,7 +183,7 @@ function NewPostPage() {
         </div>
         {notification && (
           <div className="text-center mt-4">
-            {notification.includes("success") ? (
+            {notification.includes('success') ? (
               <p className="text-green-500">{notification}</p>
             ) : (
               <p className="text-red-500">{notification}</p>

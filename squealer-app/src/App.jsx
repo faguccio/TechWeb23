@@ -1,6 +1,5 @@
 import { createContext, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { pages } from "./router";
 import NavBar from "./components/NavBar";
@@ -33,7 +32,6 @@ function App() {
     <loggedInContext.Provider value={loggedState}>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-        <ReactQueryDevtools />
       </QueryClientProvider>
     </loggedInContext.Provider>
   );

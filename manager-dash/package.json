@@ -10,9 +10,11 @@
   },
   "homepage": "/man/",
   "dependencies": {
+    "@tanstack/vue-query": "^4.29.14",
     "daisyui": "^2.51.6",
     "package.json": "^2.0.1",
     "vue": "^3.2.47",
+    "vue-query": "^1.26.0",
     "vue-router": "4",
     "vue2-leaflet": "^2.7.1"
   },

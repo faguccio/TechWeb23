@@ -1,9 +1,11 @@
+import { get } from "mongoose";
 import { Channel } from "../models/Channel.js";
 import { User } from "../models/User.js";
 import {
   getChannelPosts,
   channelIdToName,
 } from "../services/channel-service.js";
+import { getUserPostsStats } from "./post-service.js";
 
 export const getUserHome = async (id) => {
   try {
@@ -169,5 +171,12 @@ export const filterAll = async (type, name, popularity) => {
     console.log(`usersContainingName, service ${type} (${err.message})`);
   }
 };
-
 //TODO user is popular
+export const getUserStats = async (id) => {
+  try {
+    const stats = await getUserPostsStats(id);
+    return stats;
+  } catch (err) { 
+    console.log(`getUserStats, service ${id} (${err.message})`);
+  }
+};
