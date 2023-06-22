@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-center">
-    <div class="max-w-xl w-full bg-white shadow-md rounded-md p-4">
+    <div class="max-w-xl w-full bg-zinc-50 shadow-lg shadow-zinc-300 rounded-md p-4 mt-4">
       <h1 class="text-2xl font-bold mb-4 text-center">
         Scrivi un nuovo Squeal!
       </h1>
@@ -11,49 +11,68 @@
           alt="User Avatar"
         />
         <div class="flex-1 relative">
+          <label class="label " for="imageURL">
+            URL Immagine
+          </label>
           <input
-            class="border border-gray-300 outline-none w-full p-2 mb-2"
+            class="input input-bordered input-primary w-full p-2 mb-2"
             type="text"
             placeholder="Inserisci URL dell'immagine"
+            id="imageURL"
             v-model="imageURL"
             @input="handleImageURLChange"
           />
+          <label class="label " for="recipients">
+            Destinatari
+          </label>
           <input
-            class="border border-gray-300 outline-none w-full p-2 mb-2"
+            class="input input-bordered input-primary w-full p-2 mb-2"
             type="text"
             placeholder="Inserisci destinatari (separati da virgole)"
+            id="recipients"
             v-model="recipients"
           />
+          <label class="label " for="postContent">
+            Testo del Post
+          </label>
           <textarea
-            class="border border-gray-300 outline-none w-full p-2"
+            class="textarea textarea-bordered textarea-primary w-full p-2 mb-3"
             placeholder="Scrivi un nuovo..."
             v-model="postContent"
+            id="postContent"
             @input="handleTextChange"
           ></textarea>
-          <label for="geoCheck" class="flex items-center mt-2">
+          <label for="geoCheck" class="flex items-center">
             <input
               id="geoCheck"
               type="checkbox"
-              class="mr-1"
+              class="checkbox checkbox-primary mr-2"
               v-model="geoCheck"
               @input="handleGeoCheckChange"
             />
             Includi geolocalizzazione
           </label>
-          <h2>Caratteri Rimanenti</h2>
-          <div class="ml-2 button teal font-bold">
-            Giorno: {{ leftoverChars.day }} Settimana:
-            {{ leftoverChars.week }} Mese: {{ leftoverChars.month }}
-          </div>
         </div>
       </div>
-      <div class="text-right mb-2">
-        <span>Conteggio lettere: {{ letterCount }}</span>
-      </div>
-      <div class="flex justify-end">
-        <button class="btn btn-primary" @click="handlePublishClick">
-          Pubblica
-        </button>
+      <div class="flex flex-row items-center justify-between px-4">
+        <div class="flex flex-col">
+          <p id="leftovers-chars" class="">Caratteri Rimanenti</p>
+          <div class="text-lg ml-2" aria-labelledby="leftovers-chars">
+            Giorno: <span class="font-semibold">{{ leftoverChars.day }}</span><br/>
+            Settimana: <span class="font-semibold">{{ leftoverChars.week }}</span><br/>
+            Mese: <span class="font-semibold">{{ leftoverChars.month }}</span>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="text-right text-lg mb-2">
+            Conteggio lettere: <span class="font-bold text-primary">{{ letterCount }}</span>
+          </div>
+          <div class="flex justify-end">
+            <button class="btn btn-accent" @click="handlePublishClick">
+              Pubblica
+            </button>
+          </div>
+        </div>
       </div>
       <div v-if="notification" class="text-center mt-4">
         <p v-if="notification.includes('success')" class="text-green-500">
