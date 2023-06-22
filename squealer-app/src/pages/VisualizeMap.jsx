@@ -84,7 +84,7 @@ function VisualizeMap() {
   }
 
   return (
-    <div className="flex flex-col items-center mt-8 mx-8">
+    <div className="flex flex-col items-center mt-8 mx-8 mb-52">
       {firstPiece}
       <div className="mt-8 w-48">
         <div
@@ -99,7 +99,7 @@ function VisualizeMap() {
         <p className="text-md">
           You have walked for {totDist.toFixed(2)}km! This means that you burnt
           at least{" "}
-          <span className="bg-accent text-black rounded-sm p-2">
+          <span className="bg-accent text-black rounded-sm p-1">
             {kmToCal(totDist).toFixed(2)} kcal
           </span>
         </p>

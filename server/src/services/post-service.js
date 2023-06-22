@@ -1,4 +1,5 @@
 import { Post } from "../models/Post.js";
+import { Channel } from "../models/Channel.js";
 import { User } from "../models/User.js";
 import * as Const from "../const.js";
 import * as channelService from "./channel-service.js";
@@ -138,6 +139,16 @@ export const searchBody = async (keyword) => {
     return posts;
   } catch {
     console.log(`search body, ${keyword} (${err.message})`);
+    return { status: "failure" };
+  }
+};
+
+export const searchChannel = async (keyword) => {
+  try {
+    const channels = await Channel.find({ name: { $regex: keyword } });
+    return channels;
+  } catch {
+    console.log(`search channel, ${keyword} (${err.message})`);
     return { status: "failure" };
   }
 };

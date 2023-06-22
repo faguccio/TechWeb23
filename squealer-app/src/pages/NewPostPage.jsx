@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from 'react-query';
-import { Const } from '../utils';
-import { isSameDay, isSameWeek, isSameMonth } from 'date-fns';
+import React, { useState, useEffect, useRef } from "react";
+import { useQuery } from "react-query";
+import { Const } from "../utils";
+import { isSameDay, isSameWeek, isSameMonth } from "date-fns";
 
 /*
 const INITIAL_LEFTOVER_CHARS = {
@@ -13,12 +13,14 @@ const INITIAL_LEFTOVER_CHARS = {
 
 function NewPostPage() {
   const token = localStorage.token;
-  const [isPersonalMessage, setIsPersonalMessage] = useState(false);
-  const [avatarPath, setAvatarPath] = useState('https://placekitten.com/100/100');
-  const [postContent, setPostContent] = useState('');
+  const isPersonalMessage = useRef(false);
+  const [avatarPath, setAvatarPath] = useState(
+    "https://placekitten.com/100/100"
+  );
+  const [postContent, setPostContent] = useState("");
   const [letterCount, setLetterCount] = useState(0);
-  const [imageURL, setImageURL] = useState('');
-  const [recipients, setRecipients] = useState('');
+  const [imageURL, setImageURL] = useState("");
+  const [recipients, setRecipients] = useState("");
   const [notification, setNotification] = useState(null);
   const [geoCheck, setGeoCheck] = useState(false);
   const [latitude, setLatitude] = useState(0);
@@ -35,18 +37,18 @@ function NewPostPage() {
     return userData;
   };
 
-  const { data: user } = useQuery('user', fetchUser);
+  const { data: user } = useQuery("user", fetchUser);
 
   const handlePostContentChange = (e) => {
     const content = e.target.value;
     const previousContent = postContent;
-    const newLength = content.replace(/\s/g, '').length;
-    const previousLength = previousContent.replace(/\s/g, '').length;
+    const newLength = content.replace(/\s/g, "").length;
+    const previousLength = previousContent.replace(/\s/g, "").length;
 
     setPostContent(content);
 
     let count = newLength;
-    if (imageURL !== '') {
+    if (imageURL !== "") {
       count += 125;
     }
     if (geoCheck) {
@@ -77,7 +79,7 @@ function NewPostPage() {
 
   useEffect(() => {
     if (user) {
-      if (user.propic_path !== '') {
+      if (user.propic_path !== "") {
         setAvatarPath(user.propic_path);
       }
     }
@@ -96,7 +98,7 @@ function NewPostPage() {
 
   function handlePublishClick() {
     if (letterCount > leftoverChars.day) {
-      setNotification('Non hai caratteri sufficienti per pubblicare');
+      setNotification("Non hai caratteri sufficienti per pubblicare");
       return;
     }
 
@@ -107,62 +109,66 @@ function NewPostPage() {
 
       const newPost = {
         sender: user._id,
-        recipients: recipients ? recipients.split(',') : [],
+        recipients: recipients ? recipients.split(",") : [],
         text: postContent,
         timestamp: new Date(),
-        image_path: imageURL ? imageURL : [],
+        image_path: imageURL ? imageURL : null,
         geolocation: geo,
         reactions: { positive: 0, negative: 0 },
       };
 
       fetch(`${Const.apiurl}/post`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Accept: 'application/json',
+          Accept: "application/json",
           Authorization: token,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newPost),
       })
         .then(async (response) => {
           if (response.ok) {
-            setPostContent('');
-            setImageURL('');
+            setPostContent("");
+            setImageURL("");
             setLatitude(0);
             setLongitude(0);
-            setRecipients('');
-            setNotification('Post inviato con successo');
+            setRecipients("");
+            setNotification("Post inviato con successo");
             const updatedChars = { ...leftoverChars };
             updatedChars.day -= letterCount;
             updatedChars.week -= letterCount;
             updatedChars.month -= letterCount;
             setLeftoverChars(updatedChars);
             await fetch(`${Const.apiurl}/user`, {
-              method: 'PATCH',
+              method: "PATCH",
               headers: {
-                Accept: 'application/json',
+                Accept: "application/json",
                 Authorization: token,
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
               },
               body: JSON.stringify({ leftovers_chars: updatedChars }),
             })
               .then((response) => {
                 if (response.ok) {
-                  console.log('Numero di caratteri giornalieri aggiornato con successo');
+                  console.log(
+                    "Numero di caratteri giornalieri aggiornato con successo"
+                  );
                 } else {
-                  throw new Error("Errore nell'aggiornamento del numero di caratteri giornalieri");
+                  throw new Error(
+                    "Errore nell'aggiornamento del numero di caratteri giornalieri"
+                  );
                 }
               })
               .catch((error) => {
                 console.error(error);
               });
           } else {
-            throw new Error('Errore nell\'invio del post');
+            throw new Error("Errore nell'invio del post");
           }
         })
         .catch((error) => {
           console.error(error);
-          setNotification('Errore nell\'invio del post');
+          setNotification("Errore nell'invio del post");
         });
     }
 
@@ -171,7 +177,7 @@ function NewPostPage() {
 
   const handleImageURLChange = (e) => {
     const newImageURL = e.target.value;
-    if (newImageURL !== '') {
+    if (newImageURL !== "") {
       setImageURL(newImageURL);
       setLetterCount(letterCount + 125);
       setLeftoverChars({
@@ -181,7 +187,7 @@ function NewPostPage() {
         month: leftoverChars.month - 125,
       });
     } else {
-      setImageURL('');
+      setImageURL("");
       setLetterCount(letterCount - 125);
       setLeftoverChars({
         ...leftoverChars,
@@ -227,7 +233,10 @@ function NewPostPage() {
     }
 
     // Reset dei week all'inizio di ogni settimana (lunedì)
-    if (!isSameWeek(currentDate, lastResetDate, { weekStartsOn: 1 }) && currentDate.getDay() === 1) {
+    if (
+      !isSameWeek(currentDate, lastResetDate, { weekStartsOn: 1 }) &&
+      currentDate.getDay() === 1
+    ) {
       setLastResetDate(currentDate);
       setLeftoverChars((prevChars) => ({
         ...prevChars,
@@ -236,7 +245,10 @@ function NewPostPage() {
     }
 
     // Reset dei month all'inizio di ogni mese
-    if (!isSameMonth(currentDate, lastResetDate) && currentDate.getDate() === 1) {
+    if (
+      !isSameMonth(currentDate, lastResetDate) &&
+      currentDate.getDate() === 1
+    ) {
       setLastResetDate(currentDate);
       setLeftoverChars((prevChars) => ({
         ...prevChars,
@@ -272,7 +284,7 @@ function NewPostPage() {
               value={recipients}
               onChange={(e) => {
                 const value = e.target.value;
-                setIsPersonalMessage(value.includes("@"));
+                isPersonalMessage.current = value.includes("@");
                 setRecipients(value);
               }}
             />
@@ -282,7 +294,7 @@ function NewPostPage() {
               value={postContent}
               onChange={handlePostContentChange}
             ></textarea>
-            {isPersonalMessage && (
+            {isPersonalMessage.current && (
               <p className="text-red-500">
                 Questo è un messaggio personale, non le verranno scalati i chars
               </p>
@@ -299,7 +311,8 @@ function NewPostPage() {
             </label>
             <h2>Caratteri Rimanenti</h2>
             <div className="ml-2 button teal font-bold">
-              Giorno: {leftoverChars.day} Settimana: {leftoverChars.week} Mese: {leftoverChars.month}
+              Giorno: {leftoverChars.day} Settimana: {leftoverChars.week} Mese:{" "}
+              {leftoverChars.month}
             </div>
           </div>
         </div>
@@ -313,7 +326,7 @@ function NewPostPage() {
         </div>
         {notification && (
           <div className="text-center mt-4">
-            {notification.includes('success') ? (
+            {notification.includes("success") ? (
               <p className="text-green-500">{notification}</p>
             ) : (
               <p className="text-red-500">{notification}</p>

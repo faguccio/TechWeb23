@@ -22,7 +22,15 @@ const userSchema = new Schema({
   },
 
   posts: { type: [mongoose.Types.ObjectId], default: [] },
-  posts_received: { type: [mongoose.Types.ObjectId], default: [] },
+  posts_received: {
+    type: [
+      {
+        content: { type: mongoose.Types.ObjectId, ref: "Post" },
+        timestamp: Date,
+      },
+    ],
+    default: [],
+  },
   channels: { type: [mongoose.Types.ObjectId], default: [] },
   postsLiked: { type: [mongoose.Types.ObjectId], default: [] },
   postsDisliked: { type: [mongoose.Types.ObjectId], default: [] },

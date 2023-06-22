@@ -1,5 +1,6 @@
 import * as Const from "../const.js";
 import * as userService from "../services/user-service.js";
+import * as channelService from "../services/channel-service.js";
 import { User } from "../models/User.js";
 import jwt from "jsonwebtoken";
 
@@ -46,19 +47,19 @@ export const loginPro = async (req, res) => {
       return res
         .status(Const.STATUS_UNAUTHORIZED)
         .json({ message: authData.message });
-    }else{
+    } else {
       //console.log("authData: ",authData);
-      if(!authData.isPro)
-        return res.status(Const.STATUS_UNAUTHORIZED).json({ message: "User is not Pro" });
-      else{
+      if (!authData.isPro)
+        return res
+          .status(Const.STATUS_UNAUTHORIZED)
+          .json({ message: "User is not Pro" });
+      else {
         const userID = authData.id;
         const token = jwt.sign({ authData: authData }, Const.SECRET);
         return res.status(Const.STATUS_OK).json({ userID, token });
       }
     }
-
-  }
-  catch (err) {
+  } catch (err) {
     console.log(`login pro user route,(${err.message})`);
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
   }
@@ -74,29 +75,31 @@ export const loginAdmin = async (req, res) => {
       return res
         .status(Const.STATUS_UNAUTHORIZED)
         .json({ message: authData.message });
-    }else{
+    } else {
       //console.log("authData: ",authData);
-      if(!authData.isAdmin)
-        return res.status(Const.STATUS_UNAUTHORIZED).json({ message: "User is not Admin" });
-      else{
+      if (!authData.isAdmin)
+        return res
+          .status(Const.STATUS_UNAUTHORIZED)
+          .json({ message: "User is not Admin" });
+      else {
         const userID = authData.id;
         const token = jwt.sign({ authData: authData }, Const.SECRET);
         return res.status(Const.STATUS_OK).json({ userID, token });
       }
-    }   
-  }catch (err) {
+    }
+  } catch (err) {
     console.log(`login admin user route,(${err.message})`);
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
   }
 };
 
 export const getUserById = async (req, res) => {
-  const user = await User.findOne({ _id: req.params.id});
+  const user = await User.findOne({ _id: req.params.id });
   return res.status(200).json(user);
 };
 
 export const getUser = async (req, res) => {
-  const user = await User.findOne({ _id: req.authData.id});
+  const user = await User.findOne({ _id: req.authData.id });
   return res.status(200).json(user);
 };
 
@@ -147,11 +150,18 @@ export const deleteUserById = async (req, res) => {
   }
 };
 
-
 export const updateUser = async (req, res) => {
   try {
     const id = req.authData.id;
     const changes = req.body;
+    if (!!changes.channels) {
+      changes.channels = await Promise.all(
+        changes.channels.map(async (chName) => {
+          const chId = await channelService.channelNameToId(chName);
+          return chId;
+        })
+      );
+    }
     const user = await User.findByIdAndUpdate(id, changes);
     if (!user) {
       return res
@@ -220,15 +230,12 @@ export const getManager = async (req, res) => {
   try {
     const vipId = req.authData.id;
     const manager = await User.findOne({ type: "manager", managing: vipId });
-    if(manager){
-      return res.status(Const.STATUS_OK).json(
-        {
-          _id: manager._id,
-          name: manager.name
-        }
-      );
-    }else
-      return res.status(Const.STATUS_OK).json(null);
+    if (manager) {
+      return res.status(Const.STATUS_OK).json({
+        _id: manager._id,
+        name: manager.name,
+      });
+    } else return res.status(Const.STATUS_OK).json(null);
   } catch (err) {
     console.log(`Get manager service, (${err.message})`);
   }
@@ -237,11 +244,15 @@ export const getManager = async (req, res) => {
 export const updateManager = async (req, res) => {
   try {
     const managerId = req.body.managerId;
-    const manager = await User.findByIdAndUpdate(managerId, {managing: req.body.managing});
-    if(manager){
-      return res.status(Const.STATUS_OK).json({message: "Manager updated"});
-    }else
-      return res.status(Const.STATUS_NOT_FOUND).json({message: "Manager not found, impossible to update"});
+    const manager = await User.findByIdAndUpdate(managerId, {
+      managing: req.body.managing,
+    });
+    if (manager) {
+      return res.status(Const.STATUS_OK).json({ message: "Manager updated" });
+    } else
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ message: "Manager not found, impossible to update" });
   } catch (err) {
     console.log(`Update manager service, (${err.message})`);
   }
@@ -251,21 +262,20 @@ export const getVipManaged = async (req, res) => {
   try {
     const managerId = req.authData.id;
     const manager = await User.findById(managerId);
-    if(manager){
+    if (manager) {
       const vip = await User.findById(manager.managing);
-      if(vip){
-        return res.status(Const.STATUS_OK).json(
-          {
-            _id: vip._id,
-            name: vip.name,
-            propic_path: vip.propic_path,
-            leftovers_chars: vip.leftovers_chars
-          }
-        );
-      }else
-        return res.status(Const.STATUS_OK).json(null);
-    }else
-      return res.status(Const.STATUS_NOT_FOUND).json({message: "Manager not found"});
+      if (vip) {
+        return res.status(Const.STATUS_OK).json({
+          _id: vip._id,
+          name: vip.name,
+          propic_path: vip.propic_path,
+          leftovers_chars: vip.leftovers_chars,
+        });
+      } else return res.status(Const.STATUS_OK).json(null);
+    } else
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ message: "Manager not found" });
   } catch (err) {
     console.log(`Get vip managed service, (${err.message})`);
   }
@@ -275,20 +285,23 @@ export const updateVipManaged = async (req, res) => {
   try {
     const managerId = req.authData.id;
     const manager = await User.findById(managerId);
-    if(manager){
+    if (manager) {
       const changes = req.body;
       const vip = await User.findByIdAndUpdate(manager.managing, changes);
-      if(vip){
-        return res.status(Const.STATUS_OK).json({message: "Vip updated"});
-      }else
-        return res.status(Const.STATUS_NOT_FOUND).json({message: "Vip not found, impossible to update"});
-    }else
-      return res.status(Const.STATUS_NOT_FOUND).json({message: "Manager not found"});
+      if (vip) {
+        return res.status(Const.STATUS_OK).json({ message: "Vip updated" });
+      } else
+        return res
+          .status(Const.STATUS_NOT_FOUND)
+          .json({ message: "Vip not found, impossible to update" });
+    } else
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ message: "Manager not found" });
   } catch (err) {
     console.log(`Update vip managed service, (${err.message})`);
   }
 };
-
 
 export const getUserChannelList = async (req, res) => {
   try {
@@ -320,4 +333,4 @@ export const getUserStats = async (req, res) => {
     console.log(`getUserStats route, (${err.message})`);
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
   }
-}
+};

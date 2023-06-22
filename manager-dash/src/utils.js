@@ -1,6 +1,6 @@
 export const Const = {
-  apiurl : "http://localhost:3000/api"
-  //apiurl: "/api",
+  //apiurl: "http://localhost:8000/api",
+  apiurl: "/api",
 };
 
 export async function fetchUser() {

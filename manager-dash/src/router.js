@@ -30,8 +30,6 @@ const router = createRouter({
       name: "Managing",
       component: PostsPage,
       props:true,
-      
-
     },
      {
       path: "/newpost",
