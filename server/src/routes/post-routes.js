@@ -64,7 +64,7 @@ export const createPost = async (req, res) => {
   try {
     const newPost = req.body;
     console.log(newPost.sender);
-    const userId = !!newPost.sender ? newPost.sender : req.authData.id; 
+    const userId = !!newPost.sender ? newPost.sender : req.authData.id;
     console.log(userId);
     newPost.sender = userId;
 
@@ -73,13 +73,11 @@ export const createPost = async (req, res) => {
     for (const recipient of newPost.recipients) {
       if (recipient[0] === "@") {
         // Controlla che l'utente esista
-        const recipientUsername = recipient;
-        const recipientId = await userService.getUserIdByUsername(
-          recipientUsername
-        );
+        const recipientUsername = recipient.substring(1);
+        const recipientId = await userService.userNameToId(recipientUsername);
 
         if (recipientId) {
-          await userService.addPostToRecieved(postId);
+          await userService.addPostToRecieved(recipientId, postId);
         } else {
           // L'utente non esiste, gestisci l'errore di conseguenza
           console.log(`Utente non trovato: ${recipientUsername}`);
@@ -138,6 +136,18 @@ export const createPost = async (req, res) => {
           .json({ error: "Canale non esiste" });
       }
     }
+
+    newPost.text
+      .split(" ")
+      .filter((word) => {
+        return word[0] == "#";
+      })
+      .map((chName) =>
+        channelService.createChannel({
+          name: chName,
+          description: "",
+        })
+      );
 
     console.log(userId, postId);
     userService.addPostToUser(userId, postId);

@@ -4,6 +4,7 @@ import { User } from "../models/User.js";
 import {
   getChannelPosts,
   channelIdToName,
+  getChannelPostsUn,
 } from "../services/channel-service.js";
 import { getUserPostsStats } from "./post-service.js";
 
@@ -12,11 +13,17 @@ export const getUserHome = async (id) => {
     const user = await User.findOne({ _id: id });
     const posts = await Promise.all(
       user.channels.map(async (item) => {
-        const new_posts = await getChannelPosts(item._id);
+        const new_posts = await getChannelPostsUn(item._id);
         return new_posts;
       })
     );
-    return posts.flat();
+    posts.push(user.posts_received);
+    const ordPosts = posts
+      .flat()
+      .sort((objA, objB) => Number(objB.timestamp) - Number(objA.timestamp))
+      .map((post) => post.content);
+    console.log(ordPosts);
+    return ordPosts;
   } catch (err) {
     console.log(`getUserHome service, ${id} (${err.message})`);
   }
@@ -112,7 +119,7 @@ export const addPostToUser = async (userId, postId) => {
 export const addPostToRecieved = async (userId, postId) => {
   try {
     const user = await User.findOne({ _id: userId });
-    user.posts_received.push(postId);
+    user.posts_received.push({ content: postId, timestamp: new Date() });
     user.save();
   } catch (err) {
     console.log(`addPostToUser, ${postId} (${err.message})`);
@@ -176,7 +183,7 @@ export const getUserStats = async (id) => {
   try {
     const stats = await getUserPostsStats(id);
     return stats;
-  } catch (err) { 
+  } catch (err) {
     console.log(`getUserStats, service ${id} (${err.message})`);
   }
 };
