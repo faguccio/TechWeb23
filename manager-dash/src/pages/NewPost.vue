@@ -1,12 +1,13 @@
 <template>
    <div class="flex justify-center">
       <div class="max-w-xl w-full bg-white shadow-md rounded-md p-4">
-         <h1 class="text-2xl font-bold mb-4 text-center">Scrivi un nuovo Squeal!</h1>
+         <h1 class="text-2xl font-bold mb-4 text-center">
+            Scrivi un nuovo Squeal!
+         </h1>
          <div class="flex items-center mb-4">
             <img class="w-10 h-10 rounded-full mr-3" :src="avatarPath" alt="User Avatar" />
             <div class="flex-1 relative">
                <input class="border border-gray-300 outline-none w-full p-2 mb-2" type="text"
-                  placeholder="Inserisci URL dell'immagine" v-model="imageURL" @input="handleImageURLChange"/>
                   placeholder="Inserisci URL dell'immagine" v-model="imageURL" @input="handleImageURLChange" />
                <input class="border border-gray-300 outline-none w-full p-2 mb-2" type="text"
                   placeholder="Inserisci destinatari (separati da virgole)" v-model="recipients" />
@@ -42,11 +43,11 @@ import { useQuery } from 'vue-query';
 import { Const, fetchUser, fetchUserManaged } from '../utils';
 
 export default {
-   name: 'NewPostPage',
    setup() {
       const token = localStorage.tokenPro;
-      const userManaged = ref(null);
-      const avatarPath = ref('https://placekitten.com/100/100');
+      const user = ref(null);
+      //const userManaged = ref(null);
+      const avatarPath = ref("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
       const postContent = ref('');
       const letterCount = ref(0);
       const imageURL = ref('');
@@ -58,25 +59,33 @@ export default {
       const mediaChars = 125;
       var isImageCharsAdded = false;
 
+      /*
       const fetchUserManaged = async () => {
          const response = await fetch(`${Const.apiurl}/user/${userManaged.value._id}`, {
             headers: { Authorization: token },
          });
-         const userData = await res.json();
-         leftoverChars.day = userData.leftovers_chars.day;
-         leftoverChars.week = userData.leftovers_chars.week;
-         leftoverChars.month = userData.leftovers_chars.month;
-         return userData;
+         const userManagedData = await response.json();
+         Object.assign(leftoverChars, userManagedData.leftovers_chars);
+         return userManagedData;
       };
       */
       //const { data: userManagedData } = useQuery('userManaged', fetchUserManaged);
 
-      onMounted(() => {
-         if (userManagedData) {
-            if (userManagedData.propic_path !== '') {
-               avatarPath.value = userManagedData.propic_path;
-            }
+      onMounted(async () => {
+         const response1 = await fetchUser()
+         user.value = await response1;
+         if (user.value.type === 'manager' && user.value.managing !== null) {
+            const response2 = await fetchUserManaged()
+            user.value = await response2;
          }
+         if (user.value.propic_path !== '') {
+            avatarPath.value = user.value.propic_path;
+         }
+         leftoverChars.day = user.value.leftovers_chars.day;
+         leftoverChars.week = user.value.leftovers_chars.week;
+         leftoverChars.month = user.value.leftovers_chars.month;
+         //console.log("user.value.leftovers_chars.day", user.value.leftovers_chars.day);
+         //console.log("leftoverChars", leftoverChars);    
       });
 
       function getGeolocation() {
@@ -100,18 +109,18 @@ export default {
             notification.value = 'Pubblicazione in corso...';
             let newPost = {
                sender: user.value._id, // Utilizziamo user come sender
-               recipients: recipients.value ? recipients.value.split(',').map((recipients)=>{recipients.trim()}) : [],
+               recipients: recipients.value ? recipients.value.split(',').map((recipients) => { recipients.trim() }) : [],
                text: postContent.value,
                timestamp: new Date(),
                reactions: { positive: 0, negative: 0 },
             };
             if (recipients.value !== '') {
-                newPost.recipients = recipients.value.split(',');
-                newPost.recipients = newPost.recipients.map((recipient)=>{return recipient.trim()});
+               newPost.recipients = recipients.value.split(',');
+               newPost.recipients = newPost.recipients.map((recipient) => { return recipient.trim() });
             }
-            if (imageURL.value !== '') 
+            if (imageURL.value !== '')
                newPost.image_path = imageURL.value;
-            if (geoCheck.value) 
+            if (geoCheck.value)
                newPost.geolocation = geolocation.value;
 
             console.log("newPost", newPost);
@@ -132,24 +141,28 @@ export default {
                      recipients.value = '';
                      isImageCharsAdded = false; // Resetto il flag
                      notification.value = 'Post inviato con successo';
-                     const updatedChars = { ...leftoverChars };
-                     updatedChars.day -= letterCount.value;
-                     updatedChars.week -= letterCount.value;
-                     updatedChars.month -= letterCount.value;
-                     Object.assign(leftoverChars, updatedChars);
-                     await fetch(`${Const.apiurl}/user`, {
+                     setTimeout(() => {
+                        notification.value = "";
+                     }, 2000);
+
+                     leftoverChars.day -= letterCount.value;
+                     leftoverChars.week -= letterCount.value;
+                     leftoverChars.month -= letterCount.value;
+                     letterCount.value = 0;
+                     console.log("leftoverChars", leftoverChars);
+                     await fetch(`${Const.apiurl}/user/${user.value._id}`, {
                         method: 'PATCH',
                         headers: {
                            Accept: 'application/json',
                            Authorization: token,
                            'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ 
-                            leftovers_chars: {
-                                day: leftoverChars.day,
-                                week: leftoverChars.week,
-                                month: leftoverChars.month
-                            } 
+                        body: JSON.stringify({
+                           leftovers_chars: {
+                              day: leftoverChars.day,
+                              week: leftoverChars.week,
+                              month: leftoverChars.month
+                           }
                         }),
                      })
                         .then((response) => {
@@ -177,14 +190,16 @@ export default {
 
       function handleImageURLChange(event) {
          imageURL.value = event.target.value;
-         if (event.target.value !== '') {
+         if (event.target.value !== '' && !isImageCharsAdded) {
+            letterCount.value += mediaChars;
+            isImageCharsAdded = true;
             notification.value = 'Immagine aggiunta +125 Caratteri';
             setTimeout(() => {
-                notification.value = "";
+               notification.value = "";
             }, 2000);
-         }else if(event.target.value === ''){
-             letterCount.value -= mediaChars;
-             isImageCharsAdded = false;  
+         } else if (event.target.value === '') {
+            letterCount.value -= mediaChars;
+            isImageCharsAdded = false;
          }
 
       }
@@ -192,41 +207,32 @@ export default {
       function handleGeoCheckChange(event) {
          geoCheck.value = event.target.checked;
          if (event.target.checked) {
+            geolocation.value = getLongAndLat();
+            letterCount.value += mediaChars;
             notification.value = 'Geolocalizzazione presa +125 Caratteri';
             setTimeout(() => {
-                notification.value = "";
+               notification.value = "";
             }, 3000);
-         }else
+         } else
             letterCount.value -= mediaChars;
       }
 
       function getIncrementedLetterCount() {
-        let increment = 0;
-        if (isImageCharsAdded)
+         let increment = 0;
+         if (isImageCharsAdded)
             increment += mediaChars;
 
-        if (geoCheck.value)
+         if (geoCheck.value)
             increment += mediaChars;
-        return increment;
+         return increment;
       }
 
-      function handleTextChange(event) {      
-            letterCount.value = event.target.value.length+getIncrementedLetterCount();
+      function handleTextChange(event) {
+         letterCount.value = event.target.value.length + getIncrementedLetterCount();
          if (event.target.value.length > leftoverChars.day) {
             notification.value = 'Hai superato il limite di caratteri';
          }
       }
-
-      const updateLetterCount = () => {
-         let count = postContent.value.replace(/\s/g, '').length;
-         if (imageURL.value !== '') {
-            count += 125;
-         }
-         if (geoCheck.value) {
-            count += 125;
-         }
-         letterCount.value = count;
-      };
 
       return {
          avatarPath,
@@ -236,8 +242,6 @@ export default {
          recipients,
          notification,
          geoCheck,
-         latitude,
-         longitude,
          leftoverChars,
          handlePublishClick,
          handleImageURLChange,
@@ -248,4 +252,3 @@ export default {
    },
 };
 </script>
-

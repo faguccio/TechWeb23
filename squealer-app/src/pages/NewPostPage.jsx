@@ -1,27 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { Const } from '../utils';
-
-
 import { isSameDay, isSameWeek, isSameMonth } from 'date-fns';
 
-function isDateResetTriggered(dateToCheck) {
-  const currentDate = new Date();
-  
-  if (isSameDay(dateToCheck, currentDate)) {
-    return 'day';
-  }
-
-  if (isSameWeek(dateToCheck, currentDate)) {
-    return 'week';
-  }
-
-  if (isSameMonth(dateToCheck, currentDate)) {
-    return 'month';
-  }
-
-  return null;
-}
+const INITIAL_LEFTOVER_CHARS = {
+  day: 500,
+  week: 2500,
+  month: 8000,
+};
 
 function NewPostPage() {
   const token = localStorage.token;
@@ -35,19 +21,21 @@ function NewPostPage() {
   const [geoCheck, setGeoCheck] = useState(false);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
-  const [leftoverChars, setLeftoverChars] = useState({ day: 0, week: 0, month: 0 });
+  const [leftoverChars, setLeftoverChars] = useState(INITIAL_LEFTOVER_CHARS);
+  const [lastResetDate, setLastResetDate] = useState(new Date());
 
   const fetchUser = async () => {
-  const res = await fetch(`${Const.apiurl}/user/${user._id}`, {
+    const res = await fetch(`${Const.apiurl}/user/${user._id}`, {
       headers: { Authorization: token },
     });
     const userData = await res.json();
     setLeftoverChars(userData.leftovers_chars);
     return userData;
   };
+
   const { data: user } = useQuery('user', fetchUser);
-  
-    const handlePostContentChange = (e) => {
+
+  const handlePostContentChange = (e) => {
     const content = e.target.value;
     const previousContent = postContent;
     const newLength = content.replace(/\s/g, '').length;
@@ -85,8 +73,6 @@ function NewPostPage() {
     setLeftoverChars(remainingChars);
   };
 
-
-
   useEffect(() => {
     if (user) {
       if (user.propic_path !== '') {
@@ -113,9 +99,9 @@ function NewPostPage() {
     }
 
     async function publishPost() {
-    let geo = geoCheck ? await getLongAndLat() : { lat: 0, lon: 0 };
-    setLatitude(geo.lat);
-    setLongitude(geo.lon);
+      let geo = geoCheck ? await getLongAndLat() : { lat: 0, lon: 0 };
+      setLatitude(geo.lat);
+      setLongitude(geo.lon);
 
       const newPost = {
         sender: user._id,
@@ -136,7 +122,7 @@ function NewPostPage() {
         },
         body: JSON.stringify(newPost),
       })
-        .then(async(response) => {
+        .then(async (response) => {
           if (response.ok) {
             setPostContent('');
             setImageURL('');
@@ -181,39 +167,81 @@ function NewPostPage() {
     publishPost();
   }
 
-  
-
-
-  useEffect(() => {
-
-    if (isPersonalMessage) {
-    setLetterCount(0);
-    setNotification("Questo è un messaggio personale, non le verranno scalati i chars");
-    return;
-  }
-    let count = postContent.replace(/\s/g, '').length;
-    if (imageURL !== '') {
-      count += 125;
-    }
-    if (geoCheck) {
-      count += 125;
-    }
-    setLetterCount(count);
-  }, [postContent, imageURL, geoCheck, isPersonalMessage]);
-
   const handleImageURLChange = (e) => {
-    setImageURL(e.target.value);
-    if (e.target.value !== '') {
-      setNotification('Immagine aggiunta +125 Caratteri');
+    const newImageURL = e.target.value;
+    if (newImageURL !== '') {
+      setImageURL(newImageURL);
+      setLetterCount(letterCount + 125);
+      setLeftoverChars({
+        ...leftoverChars,
+        day: leftoverChars.day - 125,
+        week: leftoverChars.week - 125,
+        month: leftoverChars.month - 125,
+      });
+    } else {
+      setImageURL('');
+      setLetterCount(letterCount - 125);
+      setLeftoverChars({
+        ...leftoverChars,
+        day: leftoverChars.day + 125,
+        week: leftoverChars.week + 125,
+        month: leftoverChars.month + 125,
+      });
     }
   };
 
   const handleGeoCheckChange = (e) => {
-    setGeoCheck(e.target.checked);
-    if (e.target.checked) {
-      setNotification('Geolocalizzazione presa +125 Caratteri');
+    const isChecked = e.target.checked;
+    setGeoCheck(isChecked);
+    if (isChecked) {
+      setLetterCount(letterCount + 125);
+      setLeftoverChars({
+        ...leftoverChars,
+        day: leftoverChars.day - 125,
+        week: leftoverChars.week - 125,
+        month: leftoverChars.month - 125,
+      });
+    } else {
+      setLetterCount(letterCount - 125);
+      setLeftoverChars({
+        ...leftoverChars,
+        day: leftoverChars.day + 125,
+        week: leftoverChars.week + 125,
+        month: leftoverChars.month + 125,
+      });
     }
   };
+
+  useEffect(() => {
+    const currentDate = new Date();
+
+    // Reset dei day all'inizio di ogni giorno
+    if (!isSameDay(currentDate, lastResetDate)) {
+      setLastResetDate(currentDate);
+      setLeftoverChars((prevChars) => ({
+        ...prevChars,
+        day: INITIAL_LEFTOVER_CHARS.day,
+      }));
+    }
+
+    // Reset dei week all'inizio di ogni settimana (lunedì)
+    if (!isSameWeek(currentDate, lastResetDate, { weekStartsOn: 1 }) && currentDate.getDay() === 1) {
+      setLastResetDate(currentDate);
+      setLeftoverChars((prevChars) => ({
+        ...prevChars,
+        week: INITIAL_LEFTOVER_CHARS.week,
+      }));
+    }
+
+    // Reset dei month all'inizio di ogni mese
+    if (!isSameMonth(currentDate, lastResetDate) && currentDate.getDate() === 1) {
+      setLastResetDate(currentDate);
+      setLeftoverChars((prevChars) => ({
+        ...prevChars,
+        month: INITIAL_LEFTOVER_CHARS.month,
+      }));
+    }
+  }, [lastResetDate]);
 
   return (
     <div className="flex mt-6 pt-6 justify-center">
@@ -243,14 +271,20 @@ function NewPostPage() {
               onChange={(e) => {
                 const value = e.target.value;
                 setIsPersonalMessage(value.includes("@"));
-                setRecipients(value);}}
+                setRecipients(value);
+              }}
             />
             <textarea
               className="border border-gray-300 outline-none w-full p-2"
               placeholder="Scrivi un nuovo..."
-               value={postContent}
-                onChange={handlePostContentChange}
+              value={postContent}
+              onChange={handlePostContentChange}
             ></textarea>
+            {isPersonalMessage && (
+              <p className="text-red-500">
+                Questo è un messaggio personale, non le verranno scalati i chars
+              </p>
+            )}
             <label htmlFor="geoCheck" className="flex items-center mt-2">
               <input
                 id="geoCheck"
@@ -258,13 +292,11 @@ function NewPostPage() {
                 className="mr-1"
                 checked={geoCheck}
                 onChange={handleGeoCheckChange}
-                
               />
               Includi geolocalizzazione
             </label>
             <h2>Caratteri Rimanenti</h2>
             <div className="ml-2 button teal font-bold">
-              
               Giorno: {leftoverChars.day} Settimana: {leftoverChars.week} Mese: {leftoverChars.month}
             </div>
           </div>
