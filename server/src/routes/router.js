@@ -50,6 +50,7 @@ appRouter.get(
 
 appRouter.get("/api/user/:id", userRoutes.getUserById);
 appRouter.delete("/api/user/:id", userRoutes.deleteUserById);
+appRouter.patch("/api/user/:id", userRoutes.updateUserById);
 appRouter.get("/api/user/info/:id", userRoutes.getUserInfoById);
 appRouter.get("/api/user", verifyToken, userRoutes.getUser);
 appRouter.patch("/api/user", verifyToken, userRoutes.updateUser);

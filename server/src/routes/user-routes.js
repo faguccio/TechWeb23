@@ -269,6 +269,7 @@ export const getVipManaged = async (req, res) => {
           _id: vip._id,
           name: vip.name,
           propic_path: vip.propic_path,
+          leftovers_chars: vip.leftovers_chars,
         });
       } else return res.status(Const.STATUS_OK).json(null);
     } else
@@ -332,4 +333,4 @@ export const getUserStats = async (req, res) => {
     console.log(`getUserStats route, (${err.message})`);
     return res.status(Const.STATUS_UNAUTHORIZED).json({ error: err.message });
   }
-}
+};
