@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useQuery } from "react-query";
 import { Const } from "../utils";
-import { isSameDay, isSameWeek, isSameMonth } from "date-fns";
+//import { isSameDay, isSameWeek, isSameMonth } from "date-fns";
 
 /*
 const INITIAL_LEFTOVER_CHARS = {
@@ -25,8 +25,8 @@ function NewPostPage() {
   const [geoCheck, setGeoCheck] = useState(false);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
-  const [leftoverChars, setLeftoverChars] = useState(INITIAL_LEFTOVER_CHARS);
-  const [lastResetDate, setLastResetDate] = useState(new Date());
+  const [leftoverChars, setLeftoverChars] = useState({ day: 0, week: 0, month: 0 });
+
 
   const fetchUser = async () => {
     const res = await fetch(`${Const.apiurl}/user/${user._id}`, {
@@ -103,9 +103,13 @@ function NewPostPage() {
     }
 
     async function publishPost() {
-      let geo = geoCheck ? await getLongAndLat() : { lat: 0, lon: 0 };
-      setLatitude(geo.lat);
-      setLongitude(geo.lon);
+        let geo = null;
+  if (geoCheck) {
+    geo = await getLongAndLat();
+  }
+  setLatitude(geo ? geo.lat : 0);
+  setLongitude(geo ? geo.lon : 0);
+
 
       const newPost = {
         sender: user._id,
@@ -219,7 +223,7 @@ function NewPostPage() {
       });
     }
   };
-
+/*
   useEffect(() => {
     const currentDate = new Date();
 
@@ -255,7 +259,7 @@ function NewPostPage() {
         month: INITIAL_LEFTOVER_CHARS.month,
       }));
     }
-  }, [lastResetDate]);
+  }, [lastResetDate]);*/
 
   return (
     <div className="flex mt-6 pt-6 justify-center">
@@ -269,18 +273,22 @@ function NewPostPage() {
             src={avatarPath}
             alt="User Avatar"
           />
-          <div className="flex-1 relative">
-            <input
-              className="border border-gray-300 outline-none w-full p-2 mb-2"
+          <div className="flex flex-col items-left mb-4">
+            <label htmlFor="input-image" className="text-xl">
+              Inserisci un immagine
+            </label>
+            <input  
+              className="input input-bordered input-primary"
               type="text"
-              placeholder="Inserisci URL dell'immagine"
               value={imageURL}
               onChange={handleImageURLChange}
             />
+            <label htmlFor="input-recipients" className="text-xl">
+              Inserisci i destinatari, separali con ,
+            </label>
             <input
-              className="border border-gray-300 outline-none w-full p-2 mb-2"
+              className="input input-bordered input-primary"
               type="text"
-              placeholder="Inserisci destinatari (separati da virgole)"
               value={recipients}
               onChange={(e) => {
                 const value = e.target.value;
@@ -288,17 +296,14 @@ function NewPostPage() {
                 setRecipients(value);
               }}
             />
+            <label htmlFor="text-input" className="text-xl">
+              Scrivi lo squeal
+            </label>
             <textarea
-              className="border border-gray-300 outline-none w-full p-2"
-              placeholder="Scrivi un nuovo..."
+              className="input input-bordered input-primary"
               value={postContent}
               onChange={handlePostContentChange}
             ></textarea>
-            {isPersonalMessage.current && (
-              <p className="text-red-500">
-                Questo è un messaggio personale, non le verranno scalati i chars
-              </p>
-            )}
             <label htmlFor="geoCheck" className="flex items-center mt-2">
               <input
                 id="geoCheck"
