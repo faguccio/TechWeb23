@@ -3,11 +3,13 @@ import { useQuery } from "react-query";
 import { Const } from "../utils";
 import { isSameDay, isSameWeek, isSameMonth } from "date-fns";
 
+/*
 const INITIAL_LEFTOVER_CHARS = {
   day: 500,
   week: 2500,
   month: 8000,
 };
+*/
 
 function NewPostPage() {
   const token = localStorage.token;
