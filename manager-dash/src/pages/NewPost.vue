@@ -1,20 +1,18 @@
 <template>
    <div class="flex justify-center">
       <div class="max-w-xl w-full bg-white shadow-md rounded-md p-4">
-         <h1 class="text-2xl font-bold mb-4 text-center">
-            Scrivi un nuovo Squeal!
-         </h1>
+         <h1 class="text-2xl font-bold mb-4 text-center">Scrivi un nuovo Squeal!</h1>
          <div class="flex items-center mb-4">
             <img class="w-10 h-10 rounded-full mr-3" :src="avatarPath" alt="User Avatar" />
             <div class="flex-1 relative">
                <input class="border border-gray-300 outline-none w-full p-2 mb-2" type="text"
-                  placeholder="Inserisci URL dell'immagine" v-model="imageURL" />
+                  placeholder="Inserisci URL dell'immagine" v-model="imageURL" @input="handleImageURLChange" />
                <input class="border border-gray-300 outline-none w-full p-2 mb-2" type="text"
                   placeholder="Inserisci destinatari (separati da virgole)" v-model="recipients" />
                <textarea class="border border-gray-300 outline-none w-full p-2" placeholder="Scrivi un nuovo..."
                   v-model="postContent"></textarea>
                <label for="geoCheck" class="flex items-center mt-2">
-                  <input id="geoCheck" type="checkbox" class="mr-1" v-model="geoCheck" />
+                  <input id="geoCheck" type="checkbox" class="mr-1" v-model="geoCheck" @change="handleGeoCheckChange" />
                   Includi geolocalizzazione
                </label>
                <h2>Caratteri Rimanenti</h2>
@@ -43,9 +41,9 @@ import { useQuery } from 'vue-query';
 import { Const } from '../utils';
 
 export default {
+   name: 'NewPostPage',
    setup() {
-      const token = localStorage.tokenPro;
-      const userManaged = ref(null);
+      const token = localStorage.token;
       const avatarPath = ref('https://placekitten.com/100/100');
       const postContent = ref('');
       const letterCount = ref(0);
@@ -57,20 +55,36 @@ export default {
       const longitude = ref(0);
       const leftoverChars = reactive({ day: 0, week: 0, month: 0 });
 
-      const fetchUserManaged = async () => {
-         const response = await fetch(`${Const.apiurl}/user/${userManaged.value._id}`, {
-            headers: { Authorization: token },
+      async function fetchUser() {
+         const response = await fetch(`${Const.apiurl}/user`, {
+            method: 'GET',
+            headers: {
+               Authorization: localStorage.tokenPro
+            },
          });
-         const userManagedData = await response.json();
-         Object.assign(leftoverChars, userManagedData.leftovers_chars);
-         return userManagedData;
+         const userData = await res.json();
+         leftoverChars.day = userData.leftovers_chars.day;
+         leftoverChars.week = userData.leftovers_chars.week;
+         leftoverChars.month = userData.leftovers_chars.month;
+         return userData;
       };
-      const { data: userManagedData } = useQuery('userManaged', fetchUserManaged);
+
+      async function fetchUserManaged() {
+         const response = await fetch(`${Const.apiurl}/userManager/vip`, {
+            method: 'GET',
+            headers: {
+               Authorization: localStorage.tokenPro
+            },
+         });
+         return await response.json();
+      }
+      
+      const { data: user } = useQuery('user', fetchUser);
 
       onMounted(() => {
-         if (userManagedData) {
-            if (userManagedData.propic_path !== '') {
-               avatarPath.value = userManagedData.propic_path;
+         if (user) {
+            if (user.propic_path !== '') {
+               avatarPath.value = user.propic_path;
             }
          }
       });
@@ -98,11 +112,11 @@ export default {
             longitude.value = geo.lon;
 
             const newPost = {
-               sender: userManaged.value._id, // Utilizziamo userManaged come sender
+               sender: user._id,
                recipients: recipients.value ? recipients.value.split(',') : [],
                text: postContent.value,
                timestamp: new Date(),
-               image_path: imageURL.value ? [imageURL.value] : [],
+               image_path: imageURL.value ? imageURL.value : [],
                geolocation: geo,
                reactions: { positive: 0, negative: 0 },
             };
@@ -128,7 +142,9 @@ export default {
                      updatedChars.day -= letterCount.value;
                      updatedChars.week -= letterCount.value;
                      updatedChars.month -= letterCount.value;
-                     Object.assign(leftoverChars, updatedChars);
+                     leftoverChars.day = updatedChars.day;
+                     leftoverChars.week = updatedChars.week;
+                     leftoverChars.month = updatedChars.month;
                      await fetch(`${Const.apiurl}/user`, {
                         method: 'PATCH',
                         headers: {
@@ -161,19 +177,30 @@ export default {
          publishPost();
       }
 
-      function handleImageURLChange(event) {
-         imageURL.value = event.target.value;
-         if (event.target.value !== '') {
+      function handleImageURLChange(e) {
+         imageURL.value = e.target.value;
+         if (e.target.value !== '') {
             notification.value = 'Immagine aggiunta +125 Caratteri';
          }
       }
 
-      function handleGeoCheckChange(event) {
-         geoCheck.value = event.target.checked;
-         if (event.target.checked) {
+      function handleGeoCheckChange(e) {
+         geoCheck.value = e.target.checked;
+         if (e.target.checked) {
             notification.value = 'Geolocalizzazione presa +125 Caratteri';
          }
       }
+
+      const updateLetterCount = () => {
+         let count = postContent.value.replace(/\s/g, '').length;
+         if (imageURL.value !== '') {
+            count += 125;
+         }
+         if (geoCheck.value) {
+            count += 125;
+         }
+         letterCount.value = count;
+      };
 
       return {
          avatarPath,
@@ -183,14 +210,15 @@ export default {
          recipients,
          notification,
          geoCheck,
+         latitude,
+         longitude,
          leftoverChars,
          handlePublishClick,
          handleImageURLChange,
          handleGeoCheckChange,
-         userManaged: userManagedData,
-         latitude,
-         longitude,
+         updateLetterCount,
       };
    },
 };
 </script>
+

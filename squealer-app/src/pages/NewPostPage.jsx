@@ -2,8 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { Const } from '../utils';
 
+
+import { isSameDay, isSameWeek, isSameMonth } from 'date-fns';
+
+function isDateResetTriggered(dateToCheck) {
+  const currentDate = new Date();
+  
+  if (isSameDay(dateToCheck, currentDate)) {
+    return 'day';
+  }
+
+  if (isSameWeek(dateToCheck, currentDate)) {
+    return 'week';
+  }
+
+  if (isSameMonth(dateToCheck, currentDate)) {
+    return 'month';
+  }
+
+  return null;
+}
+
 function NewPostPage() {
   const token = localStorage.token;
+  const [isPersonalMessage, setIsPersonalMessage] = useState(false);
   const [avatarPath, setAvatarPath] = useState('https://placekitten.com/100/100');
   const [postContent, setPostContent] = useState('');
   const [letterCount, setLetterCount] = useState(0);
@@ -25,6 +47,46 @@ function NewPostPage() {
   };
   const { data: user } = useQuery('user', fetchUser);
   
+    const handlePostContentChange = (e) => {
+    const content = e.target.value;
+    const previousContent = postContent;
+    const newLength = content.replace(/\s/g, '').length;
+    const previousLength = previousContent.replace(/\s/g, '').length;
+
+    setPostContent(content);
+
+    let count = newLength;
+    if (imageURL !== '') {
+      count += 125;
+    }
+    if (geoCheck) {
+      count += 125;
+    }
+
+    const remainingChars = {
+      day: leftoverChars.day,
+      week: leftoverChars.week,
+      month: leftoverChars.month,
+    };
+
+    if (newLength > previousLength) {
+      const charDifference = newLength - previousLength;
+      remainingChars.day -= charDifference;
+      remainingChars.week -= charDifference;
+      remainingChars.month -= charDifference;
+    } else if (newLength < previousLength) {
+      const charDifference = previousLength - newLength;
+      remainingChars.day += charDifference;
+      remainingChars.week += charDifference;
+      remainingChars.month += charDifference;
+    }
+
+    setLetterCount(count);
+    setLeftoverChars(remainingChars);
+  };
+
+
+
   useEffect(() => {
     if (user) {
       if (user.propic_path !== '') {
@@ -119,7 +181,16 @@ function NewPostPage() {
     publishPost();
   }
 
+  
+
+
   useEffect(() => {
+
+    if (isPersonalMessage) {
+    setLetterCount(0);
+    setNotification("Questo è un messaggio personale, non le verranno scalati i chars");
+    return;
+  }
     let count = postContent.replace(/\s/g, '').length;
     if (imageURL !== '') {
       count += 125;
@@ -128,7 +199,7 @@ function NewPostPage() {
       count += 125;
     }
     setLetterCount(count);
-  }, [postContent, imageURL, geoCheck]);
+  }, [postContent, imageURL, geoCheck, isPersonalMessage]);
 
   const handleImageURLChange = (e) => {
     setImageURL(e.target.value);
@@ -145,7 +216,7 @@ function NewPostPage() {
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex mt-6 pt-6 justify-center">
       <div className="max-w-xl w-full bg-white shadow-md rounded-md p-4">
         <h1 className="text-2xl font-bold mb-4 text-center">
           Scrivi un nuovo Squeal!
@@ -169,13 +240,16 @@ function NewPostPage() {
               type="text"
               placeholder="Inserisci destinatari (separati da virgole)"
               value={recipients}
-              onChange={(e) => setRecipients(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setIsPersonalMessage(value.includes("@"));
+                setRecipients(value);}}
             />
             <textarea
               className="border border-gray-300 outline-none w-full p-2"
               placeholder="Scrivi un nuovo..."
-              value={postContent}
-              onChange={(e) => setPostContent(e.target.value)}
+               value={postContent}
+                onChange={handlePostContentChange}
             ></textarea>
             <label htmlFor="geoCheck" className="flex items-center mt-2">
               <input
@@ -184,6 +258,7 @@ function NewPostPage() {
                 className="mr-1"
                 checked={geoCheck}
                 onChange={handleGeoCheckChange}
+                
               />
               Includi geolocalizzazione
             </label>
