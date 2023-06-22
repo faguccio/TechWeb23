@@ -6,7 +6,6 @@ export const STATUS_UNAUTHORIZED = 401;
 export const STATUS_NOT_FOUND = 404;
 export const STATUS_INTERNAL_SERVER_ERROR = 500;
 
-
 export const SWAGGER_OPTION = {
   definition: {
     openapi: "3.0.0",
@@ -48,7 +47,7 @@ export const standard_chars = {
 };
 
 export const SECRET = "adorousarejavascript";
-export const AUTOMATIC_POST_TIME = 1000 * 60 * 15;
+export const AUTOMATIC_POST_TIME = 1000 * 60 * 5;
 export const ninja_api_key = "ll0U185qnJvIwusy3ldNXw==CJaCR8zTdl5AxiGQ";
 
 export const lorem =

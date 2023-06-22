@@ -5,6 +5,7 @@ import AccountPage from "./pages/AccountPage.vue";
 import LoginPage from "./pages/LoginPage.vue";
 import PostsPage from "./pages/PostsPage.vue";
 import NewPost from "./pages/NewPost.vue";
+import RedirectPage from "./pages/RedirectPage.vue";
 
 const router = createRouter({
   base: "/man",
@@ -29,14 +30,14 @@ const router = createRouter({
       path: "/post/:id",
       name: "Managing",
       component: PostsPage,
-      props:true,
+      props: true,
     },
-     {
+    {
       path: "/newpost",
       name: "newpost",
       component: NewPost,
-      
     },
+    { path: "/man/", name: "redirect1", component: RedirectPage },
   ],
 });
 
