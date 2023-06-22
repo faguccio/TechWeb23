@@ -259,6 +259,7 @@ export const getVipManaged = async (req, res) => {
             _id: vip._id,
             name: vip.name,
             propic_path: vip.propic_path,
+            leftovers_chars: vip.leftovers_chars
           }
         );
       }else

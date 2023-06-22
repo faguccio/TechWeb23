@@ -6,13 +6,14 @@
             <img class="w-10 h-10 rounded-full mr-3" :src="avatarPath" alt="User Avatar" />
             <div class="flex-1 relative">
                <input class="border border-gray-300 outline-none w-full p-2 mb-2" type="text"
+                  placeholder="Inserisci URL dell'immagine" v-model="imageURL" @input="handleImageURLChange"/>
                   placeholder="Inserisci URL dell'immagine" v-model="imageURL" @input="handleImageURLChange" />
                <input class="border border-gray-300 outline-none w-full p-2 mb-2" type="text"
                   placeholder="Inserisci destinatari (separati da virgole)" v-model="recipients" />
                <textarea class="border border-gray-300 outline-none w-full p-2" placeholder="Scrivi un nuovo..."
-                  v-model="postContent"></textarea>
+                  v-model="postContent" @input="handleTextChange"></textarea>
                <label for="geoCheck" class="flex items-center mt-2">
-                  <input id="geoCheck" type="checkbox" class="mr-1" v-model="geoCheck" @change="handleGeoCheckChange" />
+                  <input id="geoCheck" type="checkbox" class="mr-1" v-model="geoCheck" @input="handleGeoCheckChange" />
                   Includi geolocalizzazione
                </label>
                <h2>Caratteri Rimanenti</h2>
@@ -38,12 +39,13 @@
 <script>
 import { ref, reactive, onMounted } from 'vue';
 import { useQuery } from 'vue-query';
-import { Const } from '../utils';
+import { Const, fetchUser, fetchUserManaged } from '../utils';
 
 export default {
    name: 'NewPostPage',
    setup() {
-      const token = localStorage.token;
+      const token = localStorage.tokenPro;
+      const userManaged = ref(null);
       const avatarPath = ref('https://placekitten.com/100/100');
       const postContent = ref('');
       const letterCount = ref(0);
@@ -51,16 +53,14 @@ export default {
       const recipients = ref('');
       const notification = ref(null);
       const geoCheck = ref(false);
-      const latitude = ref(0);
-      const longitude = ref(0);
+      const geolocation = ref(null);
       const leftoverChars = reactive({ day: 0, week: 0, month: 0 });
+      const mediaChars = 125;
+      var isImageCharsAdded = false;
 
-      async function fetchUser() {
-         const response = await fetch(`${Const.apiurl}/user`, {
-            method: 'GET',
-            headers: {
-               Authorization: localStorage.tokenPro
-            },
+      const fetchUserManaged = async () => {
+         const response = await fetch(`${Const.apiurl}/user/${userManaged.value._id}`, {
+            headers: { Authorization: token },
          });
          const userData = await res.json();
          leftoverChars.day = userData.leftovers_chars.day;
@@ -68,23 +68,13 @@ export default {
          leftoverChars.month = userData.leftovers_chars.month;
          return userData;
       };
-
-      async function fetchUserManaged() {
-         const response = await fetch(`${Const.apiurl}/userManager/vip`, {
-            method: 'GET',
-            headers: {
-               Authorization: localStorage.tokenPro
-            },
-         });
-         return await response.json();
-      }
-      
-      const { data: user } = useQuery('user', fetchUser);
+      */
+      //const { data: userManagedData } = useQuery('userManaged', fetchUserManaged);
 
       onMounted(() => {
-         if (user) {
-            if (user.propic_path !== '') {
-               avatarPath.value = user.propic_path;
+         if (userManagedData) {
+            if (userManagedData.propic_path !== '') {
+               avatarPath.value = userManagedData.propic_path;
             }
          }
       });
@@ -107,19 +97,24 @@ export default {
          }
 
          async function publishPost() {
-            let geo = geoCheck.value ? await getLongAndLat() : { lat: 0, lon: 0 };
-            latitude.value = geo.lat;
-            longitude.value = geo.lon;
-
-            const newPost = {
-               sender: user._id,
-               recipients: recipients.value ? recipients.value.split(',') : [],
+            notification.value = 'Pubblicazione in corso...';
+            let newPost = {
+               sender: user.value._id, // Utilizziamo user come sender
+               recipients: recipients.value ? recipients.value.split(',').map((recipients)=>{recipients.trim()}) : [],
                text: postContent.value,
                timestamp: new Date(),
-               image_path: imageURL.value ? imageURL.value : [],
-               geolocation: geo,
                reactions: { positive: 0, negative: 0 },
             };
+            if (recipients.value !== '') {
+                newPost.recipients = recipients.value.split(',');
+                newPost.recipients = newPost.recipients.map((recipient)=>{return recipient.trim()});
+            }
+            if (imageURL.value !== '') 
+               newPost.image_path = imageURL.value;
+            if (geoCheck.value) 
+               newPost.geolocation = geolocation.value;
+
+            console.log("newPost", newPost);
 
             fetch(`${Const.apiurl}/post`, {
                method: 'POST',
@@ -134,17 +129,14 @@ export default {
                   if (response.ok) {
                      postContent.value = '';
                      imageURL.value = '';
-                     latitude.value = 0;
-                     longitude.value = 0;
                      recipients.value = '';
+                     isImageCharsAdded = false; // Resetto il flag
                      notification.value = 'Post inviato con successo';
                      const updatedChars = { ...leftoverChars };
                      updatedChars.day -= letterCount.value;
                      updatedChars.week -= letterCount.value;
                      updatedChars.month -= letterCount.value;
-                     leftoverChars.day = updatedChars.day;
-                     leftoverChars.week = updatedChars.week;
-                     leftoverChars.month = updatedChars.month;
+                     Object.assign(leftoverChars, updatedChars);
                      await fetch(`${Const.apiurl}/user`, {
                         method: 'PATCH',
                         headers: {
@@ -152,7 +144,13 @@ export default {
                            Authorization: token,
                            'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ leftovers_chars: updatedChars }),
+                        body: JSON.stringify({ 
+                            leftovers_chars: {
+                                day: leftoverChars.day,
+                                week: leftoverChars.week,
+                                month: leftoverChars.month
+                            } 
+                        }),
                      })
                         .then((response) => {
                            if (response.ok) {
@@ -177,17 +175,45 @@ export default {
          publishPost();
       }
 
-      function handleImageURLChange(e) {
-         imageURL.value = e.target.value;
-         if (e.target.value !== '') {
+      function handleImageURLChange(event) {
+         imageURL.value = event.target.value;
+         if (event.target.value !== '') {
             notification.value = 'Immagine aggiunta +125 Caratteri';
+            setTimeout(() => {
+                notification.value = "";
+            }, 2000);
+         }else if(event.target.value === ''){
+             letterCount.value -= mediaChars;
+             isImageCharsAdded = false;  
          }
+
       }
 
-      function handleGeoCheckChange(e) {
-         geoCheck.value = e.target.checked;
-         if (e.target.checked) {
+      function handleGeoCheckChange(event) {
+         geoCheck.value = event.target.checked;
+         if (event.target.checked) {
             notification.value = 'Geolocalizzazione presa +125 Caratteri';
+            setTimeout(() => {
+                notification.value = "";
+            }, 3000);
+         }else
+            letterCount.value -= mediaChars;
+      }
+
+      function getIncrementedLetterCount() {
+        let increment = 0;
+        if (isImageCharsAdded)
+            increment += mediaChars;
+
+        if (geoCheck.value)
+            increment += mediaChars;
+        return increment;
+      }
+
+      function handleTextChange(event) {      
+            letterCount.value = event.target.value.length+getIncrementedLetterCount();
+         if (event.target.value.length > leftoverChars.day) {
+            notification.value = 'Hai superato il limite di caratteri';
          }
       }
 
@@ -216,7 +242,8 @@ export default {
          handlePublishClick,
          handleImageURLChange,
          handleGeoCheckChange,
-         updateLetterCount,
+         handleTextChange,
+         user,
       };
    },
 };
