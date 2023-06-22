@@ -38,7 +38,7 @@ appRouter.get(
 appRouter.get("/api/users", userRoutes.getAllUsersFiltered);
 
 appRouter.patch("/api/user/:id/chars", userRoutes.updateUserChars);
-
+appRouter.get("/api/user/:id/stats", userRoutes.getUserStats);
 appRouter.get("/api/user/manager/:id", userRoutes.getManager);
 
 appRouter.get("/api/users/managers", userRoutes.getAvailableManagers);

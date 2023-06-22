@@ -59,7 +59,7 @@ onMounted(() => {
           </small>
         </div>
         <div>
-          <p>Destinatari</p>
+          <p>{{ postData.recipients.map((recipient) => recipient).join(", ") }}</p>
         </div>
         <p class="mt-3 text-gray-700 text-xs md:text-sm">{{ postData.text }}</p>
         <img
