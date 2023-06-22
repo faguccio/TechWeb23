@@ -61,8 +61,10 @@ export const searchPostBody = async (req, res) => {
 
 export const createPost = async (req, res) => {
   try {
-    const userId = req.authData.id;
     const newPost = req.body;
+    console.log(newPost.sender);
+    const userId = !!newPost.sender ? newPost.sender : req.authData.id; 
+    console.log(userId);
     newPost.sender = userId;
 
     const postId = await postService.createPost(newPost);
