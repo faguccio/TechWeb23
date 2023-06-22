@@ -17,8 +17,9 @@ export const getChannelPosts = async (req, res, next) => {
           res.locals.content = ret;
           next();
         } else {
-          console.log("prendi i post normali");
-          //ritorna solo canali squeal ufficiali
+          const ret = await userService.getStandardHome();
+          res.locals.content = ret;
+          next();
         }
       }
       //ritorna i post inviati dall'utente, dovranno essere leggibili dal pubblico
@@ -69,7 +70,7 @@ export const createChannel = async (req, res) => {
   try {
     const name = req.body.name;
     const description = req.body.description;
-    console.log(res)
+    console.log(res);
     if (!(await channelService.isNameAvailable(name)))
       return res
         .status(Const.STATUS_CONFLICT)
@@ -118,37 +119,50 @@ export const getChannelPostsById = async (req, res) => {
   try {
     const channel_ID = req.params.id;
     const channel = await Channel.findById(channel_ID).populate({
-      path: 'posts.content',
-      model: 'Post'
+      path: "posts.content",
+      model: "Post",
     });
     return res.status(Const.STATUS_OK).json(channel.posts);
   } catch (err) {
     console.log(`getChannelPostsById, channel routes, (${err.message})`);
   }
-}
+};
 
 export const updateChannelById = async (req, res) => {
   try {
     const channel_ID = req.params.id;
     const newChannel = req.body;
-    const updatedChannel = await Channel.findByIdAndUpdate(channel_ID, newChannel);
-    if (!updatedChannel) return res.status(Const.STATUS_NOT_FOUND).json({ status: "error", msg: "Channel to update not found" });
-    return res.status(Const.STATUS_OK).json({ status: "success", message: "Channel updated successfully" });
+    const updatedChannel = await Channel.findByIdAndUpdate(
+      channel_ID,
+      newChannel
+    );
+    if (!updatedChannel)
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ status: "error", msg: "Channel to update not found" });
+    return res
+      .status(Const.STATUS_OK)
+      .json({ status: "success", message: "Channel updated successfully" });
   } catch (err) {
     console.log(`updateChannelById, channel routes, (${err.message})`);
   }
-}
+};
 
 export const deleteChannelById = async (req, res) => {
   try {
     const channel_ID = req.params.id;
     const deletedChannel = await Channel.findByIdAndDelete(channel_ID);
-    if (!deletedChannel) return res.status(Const.STATUS_NOT_FOUND).json({ status: "error", msg: "Channel to delete not found" });
-    return res.status(Const.STATUS_OK).json({ status: "success", message: "Channel deleted successfully" });
+    if (!deletedChannel)
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ status: "error", msg: "Channel to delete not found" });
+    return res
+      .status(Const.STATUS_OK)
+      .json({ status: "success", message: "Channel deleted successfully" });
   } catch (err) {
     console.log(`deleteChannelById, channel routes, (${err.message})`);
   }
-}
+};
 
 export const removePostFromChannel = async (req, res) => {
   try {
@@ -157,18 +171,30 @@ export const removePostFromChannel = async (req, res) => {
     const post_ID = req.body.post_ID;
 
     const channel_ID = await channelService.channelNameToId(channelName);
-    const updatedChannel = await channelService.removePostFromChannel(channel_ID, post_ID);
+    const updatedChannel = await channelService.removePostFromChannel(
+      channel_ID,
+      post_ID
+    );
 
-    if (!updatedChannel) return res.status(Const.STATUS_NOT_FOUND).json({ status: "error", msg: "Channel to update not found" });
+    if (!updatedChannel)
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ status: "error", msg: "Channel to update not found" });
 
-    const response = await postService.removeRecipient(post_ID, channelName)
-    if (response.status != "success") return res.status(Const.STATUS_NOT_FOUND).json({ status: "error", msg: "Post to update not found" });
+    const response = await postService.removeRecipient(post_ID, channelName);
+    if (response.status != "success")
+      return res
+        .status(Const.STATUS_NOT_FOUND)
+        .json({ status: "error", msg: "Post to update not found" });
 
-    return res.status(Const.STATUS_OK).json({ status: "success", message: "Post from Channel removed successfully" });
+    return res.status(Const.STATUS_OK).json({
+      status: "success",
+      message: "Post from Channel removed successfully",
+    });
   } catch (err) {
     console.log(`removePostFromChannel, channel routes, (${err.message})`);
   }
-}
+};
 
 export const addPostToChannel_Admin = async (req, res) => {
   try {
@@ -177,17 +203,33 @@ export const addPostToChannel_Admin = async (req, res) => {
     const timestamp = req.body.timestamp;
     const channel_ID = await channelService.channelNameToId(channelName);
 
-    if(await channelService.isPostInChannel(channel_ID, post_ID)) return res.status(Const.STATUS_OK).json({ status: "success", msg: "Post already in channel" });
-    else{
-      const updatedChannel = await channelService.addPostToChannel(channel_ID, post_ID, timestamp);
-      if (!updatedChannel) return res.status(Const.STATUS_NOT_FOUND).json({ status: "error", msg: "Channel to update not found" });
+    if (await channelService.isPostInChannel(channel_ID, post_ID))
+      return res
+        .status(Const.STATUS_OK)
+        .json({ status: "success", msg: "Post already in channel" });
+    else {
+      const updatedChannel = await channelService.addPostToChannel(
+        channel_ID,
+        post_ID,
+        timestamp
+      );
+      if (!updatedChannel)
+        return res
+          .status(Const.STATUS_NOT_FOUND)
+          .json({ status: "error", msg: "Channel to update not found" });
 
-      const response = await postService.addRecipient(post_ID, channelName)
-      if (response.status != "success") return res.status(Const.STATUS_NOT_FOUND).json({ status: "error", msg: "Post to update not found" });
+      const response = await postService.addRecipient(post_ID, channelName);
+      if (response.status != "success")
+        return res
+          .status(Const.STATUS_NOT_FOUND)
+          .json({ status: "error", msg: "Post to update not found" });
 
-      return res.status(Const.STATUS_OK).json({ status: "success", message: "Post added to Channel successfully" });
+      return res.status(Const.STATUS_OK).json({
+        status: "success",
+        message: "Post added to Channel successfully",
+      });
     }
   } catch (err) {
     console.log(`addPostToChannelById, channel routes, (${err.message})`);
   }
-}
+};

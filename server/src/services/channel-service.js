@@ -11,6 +11,15 @@ export const getChannelPosts = async (id) => {
   }
 };
 
+export const getChannelPostsUn = async (id) => {
+  try {
+    const channel = await Channel.findOne({ _id: id });
+    return channel.posts;
+  } catch (err) {
+    console.log(`get channel service, ${id} (${err.message})`);
+  }
+};
+
 export const getChannelPostByName = async (name) => {
   try {
     const channel = await Channel.findOne({ name: name });
@@ -35,7 +44,10 @@ export const addPostToChannel = async (channel_ID, post_ID, timestamp) => {
 export const removePostFromChannel = async (channel_ID, post_ID) => {
   try {
     //const channel = await Channel.find({ _id: channel_ID, posts: { content: post_ID } });
-    const updatedChannel = await Channel.findOneAndUpdate({ _id: channel_ID },{ $pull: { posts: { content: post_ID } } }); 
+    const updatedChannel = await Channel.findOneAndUpdate(
+      { _id: channel_ID },
+      { $pull: { posts: { content: post_ID } } }
+    );
     //console.log(updatedChannel);
     return updatedChannel;
   } catch (err) {
@@ -102,6 +114,8 @@ export const isNameAvailable = async (name) => {
 
 export const createChannel = async (newChannel) => {
   try {
+    const check = await Channel.findOne({ name: newChannel.name });
+    if (!!check) return { status: "fail" };
     const item = new Channel(newChannel);
     item.save();
     return { status: "success" };
@@ -118,4 +132,4 @@ export const isPostInChannel = async (channel_ID, post_ID) => {
   } catch (err) {
     console.log(`isPostInChannel service, ${channel_ID} (${err.message})`);
   }
-}
+};

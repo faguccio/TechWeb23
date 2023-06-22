@@ -20,9 +20,18 @@
   <body class="flex flex-col items-center">
     <div>
       <a href="./home.html" class="btn btn-neutral fixed top-5 left-5 z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-          <path fill-rule="evenodd" d="M20.25 12a.75.75 0 01-.75.75H6.31l5.47 5.47a.75.75 0 11-1.06 1.06l-6.75-6.75a.75.75 0 010-1.06l6.75-6.75a.75.75 0 111.06 1.06l-5.47 5.47H19.5a.75.75 0 01.75.75z" clip-rule="evenodd" />
-        </svg>        
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M20.25 12a.75.75 0 01-.75.75H6.31l5.47 5.47a.75.75 0 11-1.06 1.06l-6.75-6.75a.75.75 0 010-1.06l6.75-6.75a.75.75 0 111.06 1.06l-5.47 5.47H19.5a.75.75 0 01.75.75z"
+            clip-rule="evenodd"
+          />
+        </svg>
         Back to home
       </a>
     </div>
@@ -84,7 +93,7 @@
         </div>
 
         <!-- mostrare informazioni dentro o fuori dal form? -->
-        <h3 class="font-semibold text-2xl mt-4">Leftover chars</h3>
+        <h3 class="font-semibold text-2xl mt-8 mx-auto mb-2">Leftover chars</h3>
         <div class="flex justify-around gap-x-4">
           <div class="flex flex-col items-center">
             <h4 for="leftover-day">Day</h4>
@@ -103,7 +112,7 @@
         </div>
 
         <form class="mt-5 flex flex-col">
-          <h3 class="font-semibold text-2xl">Modify characters</h3>
+          <h3 class="font-semibold text-2xl mx-auto my-4">Modify characters</h3>
           <div class="flex gap-x-4">
             <div class="flex-col">
               <label for="leftover-day-mod">Day</label>
@@ -255,8 +264,8 @@
       }
 
       $(document).ready(() => {
-        if(!document.cookie) {
-          window.location.href = `login.html`
+        if (!document.cookie) {
+          window.location.href = `login.html`;
         }
         setUpFiltering();
         makeRequest(`${apiurl}/users`);

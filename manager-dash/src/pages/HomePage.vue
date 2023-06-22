@@ -15,7 +15,10 @@ const fetchPosts = async () => {
     },
   });
   res = await res.json();
+  console.log("--------------");
   console.log(res);
+  console.log("--------------");
+
   posts.value = res;
 };
 

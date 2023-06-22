@@ -5,7 +5,8 @@
   "scripts": {
     "srv": "docker-compose up > /dev/null 2> /dev/null & yarn --cwd ./server dev",
     "sqlr": "footclient yarn --cwd ./squealer-app dev & yarn srv",
-    "man": "yarn --cwd ./manager-dash dev & footclient yarn srv"
+    "man": "yarn --cwd ./manager-dash dev & footclient yarn srv",
+    "build": "yarn --cwd ./manager-dash build; yarn --cwd ./squealer-app build"
   },
   "repository": "git@github.com:faguccio/TechWeb23.git",
   "author": "Fabio <faga2703@gmail.com>",

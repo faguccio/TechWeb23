@@ -10,7 +10,10 @@ function UserChars(props) {
       <div className="flex gap-4">
         {["day", "week", "month"].map((field) => {
           return (
-            <p className="text-black p-2 text-center rounded-lg bg-secondary" key={field}>
+            <p
+              className="text-black p-2 text-center rounded-lg bg-secondary"
+              key={field}
+            >
               {field} {user.leftovers_chars[field]}
             </p>
           );
@@ -18,8 +21,8 @@ function UserChars(props) {
       </div>
       <div>
         {nAum >= 1 ? (
-          <p className="bg-success">
-            You recieved {nAum} increase of chars due to having
+          <p className="bg-success text-black rounded-md p-2">
+            You recieved {nAum} increase of chars due to having{" "}
             {user.popularPosts.length} popular posts.
           </p>
         ) : null}

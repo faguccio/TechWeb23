@@ -13,7 +13,7 @@ function NavBar() {
 
   return (
     <div>
-      <div className="bg-primary md:flex md:justify-between px-2 md:py-2 sticky z-10 top-0 items-center">
+      <div className="bg-primary flex flex-col justify-between px-2 md:py-2 sticky z-10 top-0">
         <div className="flex justify-between items-center">
           <div className="-ml-2 md:ml-0">
             <Link to="/">
@@ -27,19 +27,12 @@ function NavBar() {
             </Link>
           </div>
 
+          <div className="hidden md:flex md:flex-row md:mx-5">{linkList}</div>
 
-        <div
-          className={
-            isNavExpanded ? "grid md:flex md:mx-5" : "hidden md:flex md:mx-5"
-          }
-          >
-          {linkList}
-        </div>
-
-          <div className="flex items-center">
-            {!isNavExpanded ? (<UserAvatar />) : null}
+          <div className="flex items-center mr-4">
+            <UserAvatar />
             <button
-              className="btn btn-square btn-ghost scale-125 mr-4 ml-4 md:hidden"
+              className="btn btn-square btn-ghost scale-125 ml-4 md:hidden"
               onClick={handleClick}
             >
               <svg
@@ -58,7 +51,9 @@ function NavBar() {
             </button>
           </div>
         </div>
-
+        <div className={isNavExpanded ? "flex flex-col md:hidden" : "hidden"}>
+          {linkList}
+        </div>
       </div>
       <Outlet />
     </div>
